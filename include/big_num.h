@@ -1,10 +1,11 @@
-// Author: Pedro Soares (0200566850)
 #ifndef BIG_NUM_H
 #define BIG_NUM_H
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+
+#define MAX(x, y) (((x) > (y)) ? (x) : (y))
+#define MIN(x, y) (((x) < (y)) ? (x) : (y))
 
 /**
  * @brief Big number structure
@@ -19,12 +20,20 @@ typedef struct bignum {
 } bignum_t;
 
 /**
+ * @brief Convert an integer to a binary string
+ *
+ * @param n Integer to convert
+ * @return char*
+ */
+char *int2bin(int n);
+
+/**
  * @brief Initialize a big number
  *
  * @param size Size of the big number
  * @return bignum_t
  */
-bignum_t init_bignum(int size);
+bignum_t init_big_num(int size);
 
 /**
  * @brief Convert a string to a big number
@@ -33,14 +42,15 @@ bignum_t init_bignum(int size);
  * @return bignum_t
  */
 bignum_t str2bignum(char *str);
+bignum_t int2bignum(int num);
 
 /**
- * @brief Convert an integer to a big number (Max number is 0xFFFFFFFF)
+ * @brief Convert a big number to a string
  *
- * @param num Integer to convert
- * @return bignum_t
+ * @param a Big number to convert
+ * @return char*
  */
-bignum_t int2bignum(int num);
+void print_bignum(bignum_t *a);
 
 /**
  * @brief Free a big number
@@ -59,6 +69,36 @@ void free_bignum(bignum_t *a);
 bignum_t add(bignum_t *a, bignum_t *b);
 
 /**
+ * @brief Add two big numbers modulo m
+ *
+ * @param a First big number
+ * @param b Second big number
+ * @param m Modulo
+ * @return bignum_t
+ */
+bignum_t add_mod(bignum_t *a, bignum_t *b, bignum_t *m);
+
+/**
+ * @brief Subtract two big numbers
+ * Expects a > b. If a < b, it will call sub(b, a) and return the result!
+ *
+ * @param a First big number
+ * @param b Second big number
+ * @return bignum_t
+ */
+bignum_t sub(bignum_t *a, bignum_t *b);
+
+/**
+ * @brief Subtract two big numbers modulo m
+ *
+ * @param a First big number
+ * @param b Second big number
+ * @param m Modulo
+ * @return bignum_t
+ */
+bignum_t sub_mod(bignum_t *a, bignum_t *b, bignum_t *m);
+
+/**
  * @brief Multiply two big numbers
  *
  * @param a First big number
@@ -68,29 +108,33 @@ bignum_t add(bignum_t *a, bignum_t *b);
 bignum_t mul(bignum_t *a, bignum_t *b);
 
 /**
- * @brief Modular exponentiation
+ * @brief Multiply two big numbers modulo m
  *
- * @param base
+ * @param a First big number
+ * @param b Second big number
+ * @param m Modulo
+ * @return bignum_t
+ */
+bignum_t mul_mod(bignum_t *a, bignum_t *b, bignum_t *m);
+
+/**
+ * @brief Divide two big numbers
+ *
+ * @param a First big number
+ * @param b Second big number
+ * @return bignum_t
+ */
+bignum_t remainder_bignum(bignum_t *a, bignum_t *b);
+
+/**
+ * @brief Divide two big numbers modulo m
+ *
+ * @param base Base
  * @param exp Exponent
- * @return int
- */
-int expmod(int base, int exp, int m);
-
-/**
- * @brief Fibonacci
- *
- * @param n
+ * @param m Modulo
  * @return bignum_t
  */
-bignum_t fibonacci(int n);
-
-/**
- * @brief Factorial
- *
- * @param n
- * @return bignum_t
- */
-bignum_t factorial(int n);
+bignum_t expmod(bignum_t *base, bignum_t *exp, bignum_t *m);
 
 /**
  * @brief Compare two big numbers
@@ -99,69 +143,6 @@ bignum_t factorial(int n);
  * @param b Second big number
  * @return 0 if a == b, 1 if a > b, -1 if a < b
  */
-static inline int cmp_bignum(bignum_t *a, bignum_t *b) {
-    if (a->size > b->size) return 1;
-    if (a->size < b->size) return -1;
-    for (int i = a->size - 1; i >= 0; i--) {
-        if (a->tab[i] > b->tab[i]) return 1;
-        if (a->tab[i] < b->tab[i]) return -1;
-    }
-    return 0;
-}
-
-/**
- * @brief Prints a big number
- *
- * @param a Big number to print
- * @return char*
- */
-static inline void print_bignum(bignum_t *a) {
-    for (int i = a->size - 1; i >= 0; i--) {
-        printf("%d", a->tab[i]);
-    }
-    printf("\n");
-}
-
-/**
- * @brief Convert an integer to a binary string
- *
- * @param n Integer to convert
- * @return char*
- */
-static inline char *int2bin(int num) {
-    size_t size = sizeof(int) * 8;
-    char *result = (char *)calloc(size + 1, sizeof(char));
-    if (result == NULL) {
-        printf("Memory allocation failed\n");
-        exit(1);
-    }
-
-    for (int i = size - 1; i >= 0; i--) {
-        result[i] = (num & 1) + '0';
-        num >>= 1;
-    }
-
-    // Truncate leading zeros
-    int i = 0;
-    while (result[i] == '0') {
-        i++;
-    }
-
-    if (i == size) {
-        result[0] = '0';
-        result[1] = '\0';
-    } else {
-        char *tmp = (char *)calloc(size + 1 - i, sizeof(char));
-        if (tmp == NULL) {
-            printf("Memory allocation failed\n");
-            exit(1);
-        }
-        strcpy(tmp, result + i);
-        free(result);
-        result = tmp;
-    }
-
-    return result;
-}
+int compare_bignum(bignum_t *a, bignum_t *b);
 
 #endif  // !BIG_NUM_H
