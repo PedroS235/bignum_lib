@@ -15,8 +15,8 @@
  * @param size Size of the array
  */
 typedef struct bignum {
-    int *tab;
-    int size;
+  int *tab;
+  int size;
 } bignum_t;
 
 /**
@@ -135,6 +135,7 @@ bignum_t remainder_bignum(bignum_t *a, bignum_t *b);
  * @return bignum_t
  */
 bignum_t expmod(bignum_t *base, bignum_t *exp, bignum_t *m);
+int expmod_(int base, int exp, int m);
 
 /**
  * @brief Compare two big numbers
@@ -145,4 +146,4 @@ bignum_t expmod(bignum_t *base, bignum_t *exp, bignum_t *m);
  */
 int compare_bignum(bignum_t *a, bignum_t *b);
 
-#endif  // !BIG_NUM_H
+#endif // !BIG_NUM_H
