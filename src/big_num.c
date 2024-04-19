@@ -1,10 +1,7 @@
-#include "include/big_num.h"
+#include "big_num.h"
 
-#include <math.h>
 #include <stdlib.h>
 #include <string.h>
-
-#include "include/tests.h"
 
 #define BASE 2
 
@@ -237,17 +234,4 @@ int expmod_(int base, int exp, int mod) {
   }
 
   return c;
-}
-
-int main() {
-  test_add();
-  test_sub();
-  test_mul();
-
-  char *bin = int2bin(10);
-  printf("%s\n", bin);
-
-  free(bin);
-
-  return 0;
 }
