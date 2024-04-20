@@ -2,14 +2,12 @@
 #include "tests.h"
 
 int main() {
-  test_add();
-  test_sub();
-  test_mul();
+    test_compare();
+    test_add();
+    test_sub();
+    test_mul();
 
-  char *bin = int2bin(10);
-  printf("%s\n", bin);
+    // printf("%d", compare_bignum(&a, &b));
 
-  free(bin);
-
-  return 0;
+    return 0;
 }

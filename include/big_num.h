@@ -1,8 +1,8 @@
 #ifndef BIG_NUM_H
 #define BIG_NUM_H
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <stddef.h>
+#include <stdint.h>
 
 #define MAX(x, y) (((x) > (y)) ? (x) : (y))
 #define MIN(x, y) (((x) < (y)) ? (x) : (y))
@@ -15,17 +15,15 @@
  * @param size Size of the array
  */
 typedef struct bignum {
-  int *tab;
-  int size;
+    uint8_t *digits;
+    size_t size;
+    uint8_t sign;
 } bignum_t;
 
-/**
- * @brief Convert an integer to a binary string
- *
- * @param n Integer to convert
- * @return char*
- */
-char *int2bin(int n);
+typedef struct div_result {
+    bignum_t quotient;
+    bignum_t remainder;
+} div_result_t;
 
 /**
  * @brief Initialize a big number
@@ -42,7 +40,22 @@ bignum_t init_big_num(int size);
  * @return bignum_t
  */
 bignum_t str2bignum(char *str);
+
+/**
+ * @brief Convert an integer to a big number
+ *
+ * @param num Integer to convert
+ * @return bignum_t
+ */
 bignum_t int2bignum(int num);
+
+/**
+ * @brief Convert an integer to a binary string
+ *
+ * @param n Integer to convert
+ * @return char*
+ */
+char *int2bin(int n);
 
 /**
  * @brief Convert a big number to a string
@@ -67,6 +80,7 @@ void free_bignum(bignum_t *a);
  * @return bignum_t
  */
 bignum_t add(bignum_t *a, bignum_t *b);
+bignum_t add_unsigned(bignum_t *a, bignum_t *b);
 
 /**
  * @brief Add two big numbers modulo m
@@ -87,6 +101,7 @@ bignum_t add_mod(bignum_t *a, bignum_t *b, bignum_t *m);
  * @return bignum_t
  */
 bignum_t sub(bignum_t *a, bignum_t *b);
+bignum_t sub_unsigned(bignum_t *a, bignum_t *b);
 
 /**
  * @brief Subtract two big numbers modulo m
@@ -106,6 +121,15 @@ bignum_t sub_mod(bignum_t *a, bignum_t *b, bignum_t *m);
  * @return bignum_t
  */
 bignum_t mul(bignum_t *a, bignum_t *b);
+
+/**
+ * @brief Binary Euclidian Division of two big numbers
+ *
+ * @param a First big number
+ * @param b Second big number
+ * @return div_result_t
+ */
+div_result_t div_bignum(bignum_t *a, bignum_t *b);
 
 /**
  * @brief Multiply two big numbers modulo m
@@ -146,4 +170,4 @@ int expmod_(int base, int exp, int m);
  */
 int compare_bignum(bignum_t *a, bignum_t *b);
 
-#endif // !BIG_NUM_H
+#endif  // !BIG_NUM_H

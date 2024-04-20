@@ -1,0 +1,14 @@
+{
+    "files.associations": {
+        "big_num.h": "c",
+        "stdlib.h": "c",
+        "string_view": "c",
+        "limits": "c",
+        "stddef.h": "c",
+        "array": "c",
+        "bitset": "c",
+        "initializer_list": "c",
+        "ranges": "c",
+        "utility": "c"
+    }
+}
