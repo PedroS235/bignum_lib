@@ -11,7 +11,7 @@ int main() {
     test_addmod();
     test_multmod();
     test_expmod();
-    // test_inversemod();
+    test_inversemod();
 
     // printf("%d", compare_bignum(&a, &b));
 

@@ -389,19 +389,21 @@ bignum_t multmod(bignum_t a, bignum_t b, bignum_t n) {
     return result;
 }
 
-bignum_t expmod(bignum_t *base, bignum_t *exp, bignum_t *m) {
-    bignum_t c = str2bignum("1");
+bignum_t expmod(bignum_t *a, bignum_t *b, bignum_t *n) {
+    bignum_t result = init_big_num(1);
+    result.digits[0] = 1;  // Initialize result to 1
+    bignum_t base = *a;
 
-    for (size_t i = exp->size - 1; i >= 0; i++) {
-        // c = (c * c) % m;
-        c = multmod(c, c, *m);
-        if (exp->digits[i] == 1) {
-            // c = (c * base) % m;
-            c = multmod(c, *base, *m);
+    int i;
+    for (i = 0; i < b->size; i++) {
+        uint8_t bit = b->digits[i];
+        if (bit) {
+            result = multmod(result, base, *n);
         }
+        base = multmod(base, base, *n);
     }
 
-    return c;
+    return result;
 }
 
 void resize_bignum(bignum_t *num, size_t new_size) {
