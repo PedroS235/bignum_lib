@@ -90,7 +90,7 @@ bignum_t add_unsigned(bignum_t *a, bignum_t *b);
  * @param m Modulo
  * @return bignum_t
  */
-bignum_t add_mod(bignum_t *a, bignum_t *b, bignum_t *m);
+bignum_t addmod(bignum_t *a, bignum_t *b, bignum_t *n);
 
 /**
  * @brief Subtract two big numbers
@@ -139,7 +139,7 @@ div_result_t div_bignum(bignum_t *a, bignum_t *b);
  * @param m Modulo
  * @return bignum_t
  */
-bignum_t mul_mod(bignum_t *a, bignum_t *b, bignum_t *m);
+bignum_t multmod(bignum_t a, bignum_t b, bignum_t m);
 
 /**
  * @brief Divide two big numbers
@@ -148,7 +148,7 @@ bignum_t mul_mod(bignum_t *a, bignum_t *b, bignum_t *m);
  * @param b Second big number
  * @return bignum_t
  */
-bignum_t remainder_bignum(bignum_t *a, bignum_t *b);
+bignum_t bignum_remainder(bignum_t a, bignum_t b);
 
 /**
  * @brief Divide two big numbers modulo m

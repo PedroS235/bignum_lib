@@ -7,7 +7,7 @@
 
 #define BASE 2
 #define MAX_DIGITS 1000
-#define DEBUG
+// #define DEBUG
 
 bignum_t init_big_num(int size) {
     bignum_t num;
@@ -82,6 +82,12 @@ bignum_t int2bignum(int num) {
     }
 
     return result;
+}
+
+void trim_bignum(bignum_t *num) {
+    while (num->size > 1 && num->digits[num->size - 1] == 0) {
+        num->size--;  // Reduce the size if the most significant digit is zero
+    }
 }
 
 void free_bignum(bignum_t *a) { free(a->digits); }
@@ -236,8 +242,39 @@ bignum_t mul(bignum_t *a, bignum_t *b) {
 }
 
 bignum_t binary_shift(bignum_t a, int shift) {
-    bignum_t result = init_big_num(a.size + shift);
-    memcpy(result.digits + shift, a.digits, a.size * sizeof(int));
+    int new_size;
+    bignum_t result;
+
+    if (shift == 0) {
+        // No shift required, return a copy of 'a'
+        result = init_big_num(a.size);
+        memcpy(result.digits, a.digits, a.size * sizeof(uint8_t));
+        return result;
+    }
+
+    if (shift > 0) {
+        // Left shift (positive shift)
+        new_size = a.size + shift;
+        result = init_big_num(new_size);
+        memset(result.digits, 0, new_size * sizeof(uint8_t));  // Initialize all to zero
+        memcpy(result.digits + shift, a.digits, a.size * sizeof(uint8_t));
+    } else {
+        // Right shift (negative shift)
+        // Ensure we do not create a negative size if the shift is larger than the
+        // number of digits
+        if (-shift >= a.size) {
+            result = init_big_num(1);  // At minimum keep one digit set to zero
+            result.digits[0] = 0;
+            return result;
+        }
+        new_size = a.size + shift;  // shift is negative, so this actually subtracts
+        result = init_big_num(new_size);
+        memset(result.digits, 0, new_size * sizeof(uint8_t));  // Initialize all to zero
+        memcpy(result.digits,
+               a.digits - shift,
+               new_size * sizeof(uint8_t));  // Shift digits right
+    }
+
     return result;
 }
 
@@ -248,22 +285,68 @@ div_result_t div_bignum(bignum_t *a, bignum_t *b) {
         exit(1);
     }
 
-    bignum_t q = str2bignum("0");
-    bignum_t r = str2bignum("0");
-    q.sign = (a->sign + b->sign) % 2;
+    bignum_t q = init_big_num(a->size);
+    bignum_t r = *a;  // Remainder initially set to the dividend
 
-    for (size_t i = 0; i < a->size; i++) {
-        r = binary_shift(r, 1);
-        r.digits[0] = a->digits[i];
-        if (compare_bignum(&r, b) >= 0) {
-            r = sub(&r, b);
-            q.digits[i] = 1;
+    int shift = a->size - b->size;
+
+    // Align the divisor with the highest non-zero digit of the dividend
+    bignum_t shifted_b = binary_shift(*b, shift);
+
+    while (shift >= 0) {
+        if (compare_bignum_unsigned(&r, &shifted_b) >= 0) {
+            r = sub_unsigned(&r, &shifted_b);
+            q.digits[shift] = 1;
+        } else {
+            q.digits[shift] = 0;
         }
+
+        shift--;
+        shifted_b =
+            binary_shift(shifted_b, -1);  // Shift the divisor one position to the right
     }
 
-    div_result_t result = {quotient : &q, remainder : &r};
+    // Correct signs based on input signs
+    q.sign = (a->sign + b->sign) % 2;  // XOR of the signs
+    r.sign = 0;  // Remainder is always non-negative in Euclidean division
 
-    return result;
+    trim_bignum(&q);
+    trim_bignum(&r);
+    free_bignum(&zero);
+    free_bignum(&shifted_b);
+    return (div_result_t){.quotient = q, .remainder = r};
+}
+
+bignum_t bignum_remainder(bignum_t a, bignum_t n) {
+    // Check if the divisor is zero
+    bignum_t zero = str2bignum("0");
+    if (compare_bignum(&n, &zero) == 0) {
+        printf("Division by zero in remainder calculation\n");
+        free_bignum(&zero);
+        exit(1);  // Ideally handle errors more gracefully in real applications
+    }
+    free_bignum(&zero);
+
+    // Initialize the remainder to 'a' (copy of a)
+    bignum_t r = init_big_num(a.size);
+    memcpy(r.digits, a.digits, a.size * sizeof(uint8_t));
+
+    // Calculate the necessary shift to align the most significant digits of 'n' and 'a'
+    int shift = a.size - n.size;
+    bignum_t shifted_n = binary_shift(n, shift);
+
+    // Subtract shifted 'n' from 'r' until 'r' is less than 'n'
+    while (shift >= 0) {
+        while (compare_bignum_unsigned(&r, &shifted_n) >= 0) {
+            r = sub_unsigned(&r, &shifted_n);
+        }
+        shifted_n = binary_shift(shifted_n, -1);  // Shift right
+        shift--;
+    }
+
+    // At this point, 'r' is the remainder of 'a' divided by 'n'
+    trim_bignum(&r);
+    return r;
 }
 
 int expmod_(int base, int exp, int mod) {
@@ -274,6 +357,47 @@ int expmod_(int base, int exp, int mod) {
         c = (c * c) % mod;
         if (exp_bin[i] == '1') {
             c = (c * base) % mod;
+        }
+    }
+
+    return c;
+}
+
+bignum_t addmod(bignum_t *a, bignum_t *b, bignum_t *n) {
+    // First, add a and b
+    bignum_t sum = add(a, b);
+
+    // Then, calculate the remainder of sum divided by n
+    bignum_t result = bignum_remainder(sum, *n);
+
+    // Clean up intermediate sum if necessary
+    free_bignum(&sum);
+
+    return result;
+}
+
+bignum_t multmod(bignum_t a, bignum_t b, bignum_t n) {
+    // First, multiply a and b
+    bignum_t product = mul(&a, &b);
+
+    // Then, calculate the remainder of product divided by n
+    bignum_t result = bignum_remainder(product, n);
+
+    // Clean up intermediate product if necessary
+    free_bignum(&product);
+
+    return result;
+}
+
+bignum_t expmod(bignum_t *base, bignum_t *exp, bignum_t *m) {
+    bignum_t c = str2bignum("1");
+
+    for (size_t i = exp->size - 1; i >= 0; i++) {
+        // c = (c * c) % m;
+        c = multmod(c, c, *m);
+        if (exp->digits[i] == 1) {
+            // c = (c * base) % m;
+            c = multmod(c, *base, *m);
         }
     }
 

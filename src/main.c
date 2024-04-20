@@ -6,6 +6,12 @@ int main() {
     test_add();
     test_sub();
     test_mul();
+    test_div();
+    test_remainder();
+    test_addmod();
+    test_multmod();
+    test_expmod();
+    // test_inversemod();
 
     // printf("%d", compare_bignum(&a, &b));
 
