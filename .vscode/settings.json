@@ -9,6 +9,7 @@
         "bitset": "c",
         "initializer_list": "c",
         "ranges": "c",
-        "utility": "c"
+        "utility": "c",
+        "cmath": "c"
     }
 }
