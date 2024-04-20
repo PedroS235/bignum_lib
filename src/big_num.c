@@ -286,7 +286,8 @@ div_result_t div_bignum(bignum_t *a, bignum_t *b) {
     }
 
     bignum_t q = init_big_num(a->size);
-    bignum_t r = *a;  // Remainder initially set to the dividend
+    bignum_t r = init_big_num(a->size);  // Remainder initially set to the dividend
+    memcpy(r.digits, a->digits, a->size);
 
     int shift = a->size - b->size;
 
@@ -295,15 +296,19 @@ div_result_t div_bignum(bignum_t *a, bignum_t *b) {
 
     while (shift >= 0) {
         if (compare_bignum_unsigned(&r, &shifted_b) >= 0) {
-            r = sub_unsigned(&r, &shifted_b);
+            bignum_t temp_r = sub_unsigned(&r, &shifted_b);
+            free_bignum(&r);
+            r = temp_r;
             q.digits[shift] = 1;
         } else {
             q.digits[shift] = 0;
         }
 
         shift--;
-        shifted_b =
+        bignum_t shifted_temp =
             binary_shift(shifted_b, -1);  // Shift the divisor one position to the right
+        free_bignum(&shifted_b);
+        shifted_b = shifted_temp;
     }
 
     // Correct signs based on input signs
@@ -338,14 +343,20 @@ bignum_t bignum_remainder(bignum_t a, bignum_t n) {
     // Subtract shifted 'n' from 'r' until 'r' is less than 'n'
     while (shift >= 0) {
         while (compare_bignum_unsigned(&r, &shifted_n) >= 0) {
-            r = sub_unsigned(&r, &shifted_n);
+            bignum_t temp = sub_unsigned(&r, &shifted_n);
+            free_bignum(&r);
+            r = temp;
         }
-        shifted_n = binary_shift(shifted_n, -1);  // Shift right
+        bignum_t shifted_temp =
+            binary_shift(shifted_n, -1);  // Shift the divisor one position to the right
+        free_bignum(&shifted_n);
+        shifted_n = shifted_temp;
         shift--;
     }
 
     // At this point, 'r' is the remainder of 'a' divided by 'n'
     trim_bignum(&r);
+    free_bignum(&shifted_n);
     return r;
 }
 
@@ -392,18 +403,127 @@ bignum_t multmod(bignum_t a, bignum_t b, bignum_t n) {
 bignum_t expmod(bignum_t *a, bignum_t *b, bignum_t *n) {
     bignum_t result = init_big_num(1);
     result.digits[0] = 1;  // Initialize result to 1
-    bignum_t base = *a;
+
+    bignum_t base = init_big_num(a->size);
+    memcpy(base.digits, a->digits, a->size);
 
     int i;
     for (i = 0; i < b->size; i++) {
         uint8_t bit = b->digits[i];
         if (bit) {
-            result = multmod(result, base, *n);
+            bignum_t temp = multmod(result, base, *n);
+            free_bignum(&result);
+            result = temp;
         }
-        base = multmod(base, base, *n);
+        bignum_t temp = multmod(base, base, *n);
+        free_bignum(&base);
+        base = temp;
     }
 
+    free_bignum(&base);
     return result;
+}
+
+// bignum_t extended_gcd(bignum_t a, bignum_t b, bignum_t *x, bignum_t *y) {
+//     if (compare_bignum(&b, &a) == 1) {
+//         return extended_gcd(b, a, x, y);
+//     }
+//
+//     bignum_t zero = str2bignum("0");
+//     if (compare_bignum(&b, &zero) == 0) {
+//         free_bignum(x);
+//         free_bignum(y);
+//         *x = str2bignum("1");
+//         *y = str2bignum("0");
+//         free_bignum(&b);
+//         return a;
+//     }
+//
+//     bignum_t remainder = bignum_remainder(a, b);
+//     bignum_t gcd = extended_gcd(b, remainder, x, y);
+//     // Free the memory allocated for the remainder
+//
+//     bignum_t temp = init_big_num(x->size);
+//     memcpy(temp.digits, x->digits, x->size);
+//     free_bignum(x);
+//
+//     *x = init_big_num(y->size);
+//     memcpy(x->digits, y->digits, y->size);
+//     x->sign = y->sign;
+//
+//     div_result_t div_res = div_bignum(&a, &b);
+//     bignum_t muly = mul(&div_res.quotient, y);
+//     free_bignum(y);
+//     *y = sub(&temp, &muly);
+//
+//     free_bignum(&div_res.remainder);
+//     free_bignum(&div_res.quotient);
+//     free_bignum(&muly);
+//     free_bignum(&temp);
+//     free_bignum(&zero);
+//
+//     return gcd;
+// }
+
+bignum_t extended_gcd(bignum_t a, bignum_t b, bignum_t *x, bignum_t *y) {
+    bignum_t zero = str2bignum("0");
+    free_bignum(x);
+    free_bignum(y);
+    if (compare_bignum(&a, &zero) == 0) {
+        *x = zero;
+        *y = str2bignum("1");
+        free_bignum(&a);
+        return b;
+    }
+
+    bignum_t x1 = init_big_num(1);
+    bignum_t y1 = init_big_num(1);
+
+    bignum_t remainder = bignum_remainder(b, a);
+    bignum_t gcd = extended_gcd(remainder, a, &x1, &y1);
+
+    div_result_t tmp = div_bignum(&b, &a);
+    bignum_t tmp2 = mul(&tmp.quotient, &x1);
+    *x = sub(&y1, &tmp2);
+
+    *y = init_big_num(x1.size);
+    memcpy(y->digits, x1.digits, x1.size);
+    y->sign = x1.sign;
+
+    free_bignum(&x1);
+    free_bignum(&y1);
+    // free_bignum(&remainder);
+    free_bignum(&tmp.quotient);
+    free_bignum(&tmp.remainder);
+    free_bignum(&tmp2);
+    free_bignum(&zero);
+
+    return gcd;
+}
+
+bignum_t inversemod(bignum_t a, bignum_t n) {
+    bignum_t x = init_big_num(1);
+    bignum_t y = init_big_num(1);
+
+    bignum_t gcd = extended_gcd(a, n, &x, &y);
+    bignum_t one = str2bignum("1");
+
+    if (compare_bignum(&gcd, &one) == 0) {
+        if (x.sign == 1) {  // Negative sign, adjust by adding n
+            x = add(&x, &n);
+        }
+        free_bignum(&y);
+        free_bignum(&gcd);
+        free_bignum(&one);
+        return x;
+    } else {
+        printf("Inverse does not exist since gcd(a, n) != 1\n");
+        free_bignum(&x);
+        free_bignum(&y);
+        free_bignum(&gcd);
+        free_bignum(&one);
+        // exit(1);  // or handle error appropriately
+    }
 }
 
 void resize_bignum(bignum_t *num, size_t new_size) {

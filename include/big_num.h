@@ -170,4 +170,7 @@ int expmod_(int base, int exp, int m);
  */
 int compare_bignum(bignum_t *a, bignum_t *b);
 
+bignum_t extended_gcd(bignum_t a, bignum_t b, bignum_t *x, bignum_t *y);
+bignum_t inversemod(bignum_t a, bignum_t n);
+
 #endif  // !BIG_NUM_H
