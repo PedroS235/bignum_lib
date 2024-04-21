@@ -36,9 +36,9 @@ char *int2bin(int num, int *length) {
     return result;
 }
 
-void trim_bignum(bignum_t *num) {
+void trim_leading_zeros_bignum(bignum_t *num) {
     while (num->size > 1 && num->digits[num->size - 1] == 0) {
-        num->size--;  // Reduce the size if the most significant digit is zero
+        num->size--;
     }
 }
 

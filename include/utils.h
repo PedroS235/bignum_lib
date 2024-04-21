@@ -28,7 +28,7 @@ void print_bignum(bignum_t *a);
  *
  * @param num Big number to trim
  */
-void trim_bignum(bignum_t *num);
+void trim_leading_zeros_bignum(bignum_t *num);
 
 /**
  * @brief Convert a big number to a string
