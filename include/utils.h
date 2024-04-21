@@ -30,4 +30,28 @@ void print_bignum(bignum_t *a);
  */
 void trim_bignum(bignum_t *num);
 
+/**
+ * @brief Convert a big number to a string
+ *
+ * @param a Big number to convert
+ * @return char*
+ */
+bignum_t left_shift(bignum_t a, int shift);
+
+/**
+ * @brief Convert a big number to a string
+ *
+ * @param a Big number to convert
+ * @return char*
+ */
+bignum_t right_shift(bignum_t a, int shift);
+
+/**
+ * @brief Convert a big number to a string
+ *
+ * @param a Big number to convert
+ * @return char*
+ */
+bignum_t binary_shift(bignum_t a, int shift);
+
 #endif  // !UTILS_H

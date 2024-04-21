@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "big_num.h"
 #include "config.h"
 #include "utils.h"
 
@@ -69,16 +70,13 @@ bignum_t add_unsigned(bignum_t *a, bignum_t *b) {
 
 bignum_t add(bignum_t *a, bignum_t *b) {
     if (a->sign == b->sign) {
-        // Same sign addition (simple add and carry, preserve sign)
         bignum_t result = add_unsigned(a, b);
-        result.sign = a->sign;  // The sign remains the same as both operands
+        result.sign = a->sign;
         return result;
     } else {
-        // Different signs, effectively a subtraction operation
         if (compare_bignum_unsigned(a, b) >= 0) {
             bignum_t result = sub_unsigned(a, b);
-            result.sign =
-                a->sign;  // Result takes the sign of the bigger number (in magnitude)
+            result.sign = a->sign;
             return result;
         } else {
             bignum_t result = sub_unsigned(b, a);
@@ -156,43 +154,6 @@ bignum_t mul(bignum_t *a, bignum_t *b) {
     return result;
 }
 
-bignum_t binary_shift(bignum_t a, int shift) {
-    int new_size;
-    bignum_t result;
-
-    if (shift == 0) {
-        // No shift required, return a copy of 'a'
-        result = init_bignum(a.size);
-        memcpy(result.digits, a.digits, a.size * sizeof(uint8_t));
-        return result;
-    }
-
-    if (shift > 0) {
-        // Left shift (positive shift)
-        new_size = a.size + shift;
-        result = init_bignum(new_size);
-        memset(result.digits, 0, new_size * sizeof(uint8_t));  // Initialize all to zero
-        memcpy(result.digits + shift, a.digits, a.size * sizeof(uint8_t));
-    } else {
-        // Right shift (negative shift)
-        // Ensure we do not create a negative size if the shift is larger than the
-        // number of digits
-        if (-shift >= a.size) {
-            result = init_bignum(1);  // At minimum keep one digit set to zero
-            result.digits[0] = 0;
-            return result;
-        }
-        new_size = a.size + shift;  // shift is negative, so this actually subtracts
-        result = init_bignum(new_size);
-        memset(result.digits, 0, new_size * sizeof(uint8_t));  // Initialize all to zero
-        memcpy(result.digits,
-               a.digits - shift,
-               new_size * sizeof(uint8_t));  // Shift digits right
-    }
-
-    return result;
-}
-
 div_result_t div_bignum(bignum_t *a, bignum_t *b) {
     bignum_t zero = str2bignum("0");
     if (compare_bignum(b, &zero) == 0) {
@@ -202,7 +163,7 @@ div_result_t div_bignum(bignum_t *a, bignum_t *b) {
 
     bignum_t q = init_bignum(a->size);
     bignum_t r = init_bignum(a->size);  // Remainder initially set to the dividend
-    memcpy(r.digits, a->digits, a->size);
+    memcpy(r.digits, a->digits, a->size * sizeof(uint8_t));
 
     int shift = a->size - b->size;
 
@@ -220,15 +181,14 @@ div_result_t div_bignum(bignum_t *a, bignum_t *b) {
         }
 
         shift--;
-        bignum_t shifted_temp =
-            binary_shift(shifted_b, -1);  // Shift the divisor one position to the right
+        bignum_t shifted_temp = binary_shift(shifted_b, -1);
         free_bignum(&shifted_b);
         shifted_b = shifted_temp;
     }
 
     // Correct signs based on input signs
-    q.sign = (a->sign + b->sign) % 2;  // XOR of the signs
-    r.sign = 0;  // Remainder is always non-negative in Euclidean division
+    q.sign = a->sign ^ b->sign;
+    r.sign = 0;
 
     trim_bignum(&q);
     trim_bignum(&r);
@@ -274,7 +234,7 @@ bignum_t expmod(bignum_t *a, bignum_t *b, bignum_t *n) {
     result.digits[0] = 1;  // Initialize result to 1
 
     bignum_t base = init_bignum(a->size);
-    memcpy(base.digits, a->digits, a->size);
+    memcpy(base.digits, a->digits, a->size * sizeof(uint8_t));
 
     int i;
     for (i = 0; i < b->size; i++) {
@@ -315,7 +275,7 @@ bignum_t extended_gcd(bignum_t a, bignum_t b, bignum_t *x, bignum_t *y) {
     *x = sub(&y1, &tmp2);
 
     *y = init_bignum(x1.size);
-    memcpy(y->digits, x1.digits, x1.size);
+    memcpy(y->digits, x1.digits, x1.size * sizeof(uint8_t));
     y->sign = x1.sign;
 
     free_bignum(&x1);
