@@ -212,7 +212,7 @@ int div_bignum(bignum_t *q, bignum_t *r, bignum_t *a, bignum_t *b) {
     return 0;
 }
 
-int bignum_remainder(bignum_t *res, bignum_t *a, bignum_t *n) {
+int bignum_mod(bignum_t *res, bignum_t *a, bignum_t *n) {
     bignum_t q;
     int ret = div_bignum(&q, res, a, n);
     if (ret) return 1;  // div failed
@@ -226,7 +226,7 @@ int addmod_bignum(bignum_t *res, bignum_t *a, bignum_t *b, bignum_t *n) {
     if (ret) return ret;  // add failed
 
     bignum_t tmp;
-    bignum_remainder(&tmp, res, n);
+    bignum_mod(&tmp, res, n);
     free_bignum(res);
     *res = tmp;
 
@@ -239,7 +239,7 @@ int multmod_bignum(bignum_t *res, bignum_t *a, bignum_t *b, bignum_t *n) {
 
     // Then, calculate the remainder of product divided by n
     bignum_t tmp;
-    ret = bignum_remainder(&tmp, res, n);
+    ret = bignum_mod(&tmp, res, n);
     if (ret) return ret;  // remainder failed
     free_bignum(res);
     *res = tmp;
@@ -295,7 +295,7 @@ int extended_gcd(bignum_t *res, bignum_t a, bignum_t b, bignum_t *x, bignum_t *y
     bignum_t y1;
 
     bignum_t b_mod_a;
-    bignum_remainder(&b_mod_a, &b, &a);
+    bignum_mod(&b_mod_a, &b, &a);
     extended_gcd(res, b_mod_a, a, &x1, &y1);
 
     bignum_t q;

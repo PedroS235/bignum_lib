@@ -2,15 +2,15 @@
 #include <CUnit/CUnit.h>
 
 // Functions to add test cases from other files
-void bignum_add_tests_to_suite(CU_pSuite suite);        // From test_bignum_add.c
-void bignum_addmod_tests_to_suite(CU_pSuite suite);     // From test_bignum_add.c
-void bignum_multmod_tests_to_suite(CU_pSuite suite);    // From test_bignum_add.c
-void bignum_sub_tests_to_suite(CU_pSuite suite);        // From test_bignum_sub.c
-void bignum_mul_tests_to_suite(CU_pSuite suite);        // From test_bignum_mul.c
-void bignum_div_tests_to_suite(CU_pSuite suite);        // From test_bignum_div.c
-void bignum_compare_tests_to_suite(CU_pSuite suite);    // From test_bignum_compare.c
-void bignum_remainder_tests_to_suite(CU_pSuite suite);  // From test_bignum_remainder.c
-void bignum_expmod_tests_to_suite(CU_pSuite suite);     // From test_bignum_expmod.c
+void bignum_compare_tests_to_suite(CU_pSuite suite);  // From test_bignum_compare.c
+void bignum_add_tests_to_suite(CU_pSuite suite);      // From test_bignum_add.c
+void bignum_sub_tests_to_suite(CU_pSuite suite);      // From test_bignum_sub.c
+void bignum_mul_tests_to_suite(CU_pSuite suite);      // From test_bignum_mul.c
+void bignum_div_tests_to_suite(CU_pSuite suite);      // From test_bignum_div.c
+void bignum_mod_tests_to_suite(CU_pSuite suite);      // From test_bignum_remainder.c
+void bignum_addmod_tests_to_suite(CU_pSuite suite);   // From test_bignum_add.c
+void bignum_multmod_tests_to_suite(CU_pSuite suite);  // From test_bignum_add.c
+void bignum_expmod_tests_to_suite(CU_pSuite suite);   // From test_bignum_expmod.c
 void bignum_extended_gcd_tests_to_suite(
     CU_pSuite suite);  // From test_bignum_extended_gcd.c
 void bignum_inversemod_tests_to_suite(
@@ -61,12 +61,12 @@ int main() {
     }
     bignum_compare_tests_to_suite(compare_suite);
 
-    CU_pSuite remainder_suite = CU_add_suite("Remainder Tests", NULL, NULL);
-    if (NULL == remainder_suite) {
+    CU_pSuite mod_suite = CU_add_suite("mod Tests", NULL, NULL);
+    if (NULL == mod_suite) {
         CU_cleanup_registry();
         return CU_get_error();
     }
-    bignum_remainder_tests_to_suite(remainder_suite);
+    bignum_mod_tests_to_suite(mod_suite);
 
     CU_pSuite multmod_suite = CU_add_suite("Multiplication with mod Tests", NULL, NULL);
     if (NULL == multmod_suite) {

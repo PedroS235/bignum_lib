@@ -107,7 +107,7 @@ int multmod_bignum(bignum_t *res, bignum_t *a, bignum_t *b, bignum_t *n);
  * @param b Second big number
  * @return 0 if success, 1 if failure
  */
-int bignum_remainder(bignum_t *res, bignum_t *a, bignum_t *b);
+int bignum_mod(bignum_t *res, bignum_t *a, bignum_t *b);
 
 /**
  * @brief Divide two big numbers modulo m

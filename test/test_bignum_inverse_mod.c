@@ -13,7 +13,7 @@ void test_inversemod_simple() {
     bignum_t product;
     mult_bignum(&product, &mod_inverse, &a);
     bignum_t remainder;
-    bignum_remainder(&remainder, &product, &b);
+    bignum_mod(&remainder, &product, &b);
     bignum_t one = str2bignum("1");
     CU_ASSERT(compare_bignum(&remainder, &one) == 0);
 
