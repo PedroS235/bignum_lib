@@ -76,7 +76,7 @@ int sub_bignum_unsigned(bignum_t *res, bignum_t *a, bignum_t *b);
  * @param b Second big number
  * @return 0 if success, 1 if failure
  */
-int mul_bignum(bignum_t *res, bignum_t *a, bignum_t *b);
+int mult_bignum(bignum_t *res, bignum_t *a, bignum_t *b);
 
 /**
  * @brief Binary Euclidian Division of two big numbers
@@ -97,7 +97,7 @@ int div_bignum(bignum_t *q, bignum_t *r, bignum_t *a, bignum_t *b);
  * @param m Modulo
  * @return bignum_t
  */
-bignum_t multmod(bignum_t a, bignum_t b, bignum_t m);
+int multmod(bignum_t *res, bignum_t a, bignum_t b, bignum_t m);
 
 /**
  * @brief Divide two big numbers
@@ -118,7 +118,6 @@ int bignum_remainder(bignum_t *res, bignum_t *a, bignum_t *b);
  * @return bignum_t
  */
 bignum_t expmod(bignum_t *base, bignum_t *exp, bignum_t *m);
-
 bignum_t extended_gcd(bignum_t a, bignum_t b, bignum_t *x, bignum_t *y);
 bignum_t inversemod(bignum_t a, bignum_t n);
 

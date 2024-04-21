@@ -13,7 +13,8 @@ static inline void test_multmod() {
     bignum_t a = str2bignum("7");
     bignum_t b = str2bignum("6");
     bignum_t n = str2bignum("11");
-    bignum_t result = multmod(a, b, n);
+    bignum_t result;
+    multmod(&result, a, b, n);
     bignum_t expected = str2bignum("9");
 
     if (compare_bignum(&expected, &result) == 0) {
@@ -113,7 +114,7 @@ static inline void test_inversemod() {
     bignum_t mod_inverse = inversemod(a, b);
     // To check the correctness of the inversemod, (mod_inverse * a) % b should be 1
     bignum_t product;
-    mul_bignum(&product, &mod_inverse, &a);
+    mult_bignum(&product, &mod_inverse, &a);
     bignum_t remainder;
     bignum_remainder(&remainder, &product, &b);
     bignum_t one = str2bignum("1");

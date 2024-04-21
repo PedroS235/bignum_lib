@@ -128,7 +128,7 @@ int sub_bignum_unsigned(bignum_t *res, bignum_t *a, bignum_t *b) {
     return 0;
 }
 
-int mul_bignum(bignum_t *res, bignum_t *a, bignum_t *b) {
+int mult_bignum(bignum_t *res, bignum_t *a, bignum_t *b) {
     size_t size = a->size + b->size;
     int ret = init_bignum_(res, size);
     if (ret) return ret;  // init failed
@@ -234,19 +234,18 @@ int addmod_bignum(bignum_t *res, bignum_t *a, bignum_t *b, bignum_t *n) {
     return 0;
 }
 
-bignum_t multmod(bignum_t a, bignum_t b, bignum_t n) {
-    // First, multiply a and b
-    bignum_t product;
-    int ret = mul_bignum(&product, &a, &b);
+int multmod(bignum_t *res, bignum_t a, bignum_t b, bignum_t n) {
+    int ret = mult_bignum(res, &a, &b);
+    if (ret) return ret;  // mult failed
 
     // Then, calculate the remainder of product divided by n
-    bignum_t result;
-    ret = bignum_remainder(&result, &product, &n);
+    bignum_t tmp;
+    ret = bignum_remainder(&tmp, res, &n);
+    if (ret) return ret;  // remainder failed
+    free_bignum(res);
+    *res = tmp;
 
-    // Clean up intermediate product if necessary
-    free_bignum(&product);
-
-    return result;
+    return 0;
 }
 
 bignum_t expmod(bignum_t *a, bignum_t *b, bignum_t *n) {
@@ -260,11 +259,13 @@ bignum_t expmod(bignum_t *a, bignum_t *b, bignum_t *n) {
     for (i = 0; i < b->size; i++) {
         uint8_t bit = b->digits[i];
         if (bit) {
-            bignum_t temp = multmod(result, base, *n);
+            bignum_t temp;
+            multmod(&temp, result, base, *n);
             free_bignum(&result);
             result = temp;
         }
-        bignum_t temp = multmod(base, base, *n);
+        bignum_t temp;
+        multmod(&temp, base, base, *n);
         free_bignum(&base);
         base = temp;
     }
@@ -295,7 +296,7 @@ bignum_t extended_gcd(bignum_t a, bignum_t b, bignum_t *x, bignum_t *y) {
     bignum_t r;
     div_bignum(&q, &r, &b, &a);
     bignum_t tmp2;
-    mul_bignum(&tmp2, &q, &x1);
+    mult_bignum(&tmp2, &q, &x1);
     sub_bignum(x, &y1, &tmp2);
 
     *y = init_bignum(x1.size);
