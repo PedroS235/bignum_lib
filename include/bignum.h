@@ -64,12 +64,4 @@ bignum_t str2bignum(char *str);
  */
 int str2bignum_(bignum_t *num, char *str);
 
-/**
- * @brief Convert an integer to a big number
- *
- * @param num Integer to convert
- * @return bignum_t
- */
-bignum_t int2bignum(int num);
-
 #endif  // !BIGNUM_H

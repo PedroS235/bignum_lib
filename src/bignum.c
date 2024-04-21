@@ -86,15 +86,15 @@ int str2bignum_(bignum_t *num, char *str) {
 
     // Decide the sign of the number
     if (str[0] == '-') {
-        num->sign = NEG;  // Set sign to negative
-        str++;            // Skip the negative sign character
-        size--;           // Adjust size to exclude the negative sign
+        num->sign = NEG;
+        str++;
+        size--;
     } else if (str[0] == '+') {
-        num->sign = POS;  // Set sign to positive
-        str++;            // Skip the negative sign character
-        size--;           // Adjust size to exclude the negative sign
+        num->sign = POS;
+        str++;
+        size--;
     } else {
-        num->sign = POS;  // Set sign to positive
+        num->sign = POS;
     }
 
     for (size_t i = 0; i < size; i++) {
@@ -119,29 +119,4 @@ int str2bignum_(bignum_t *num, char *str) {
     trim_leading_zeros_bignum(num);
 
     return 0;
-}
-
-bignum_t int2bignum(int num) {
-    if (num == 0) {
-        bignum_t result = init_bignum(1);
-        result.digits[0] = 0;
-        return result;
-    }
-
-    int tmp = num;
-    int length = 0;
-    while (tmp > 0) {
-        tmp /= 10;
-        length++;
-    }
-
-    bignum_t result = init_bignum(length);
-
-    while (num > 0) {
-        result.digits[result.size - length] = num % 10;
-        num /= 10;
-        length--;
-    }
-
-    return result;
 }
