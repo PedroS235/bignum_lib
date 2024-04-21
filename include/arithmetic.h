@@ -1,7 +1,7 @@
 #ifndef ARITHMETIC_H
 #define ARITHMETIC_H
 
-#include "core.h"
+#include "bignum.h"
 
 typedef struct div_result {
     bignum_t quotient;

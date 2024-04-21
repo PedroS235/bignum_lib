@@ -1,7 +1,7 @@
 #include <CUnit/CUnit.h>
 
 #include "arithmetic.h"
-#include "core.h"
+#include "bignum.h"
 
 void test_sub_basic() {
     bignum_t a = str2bignum("1");

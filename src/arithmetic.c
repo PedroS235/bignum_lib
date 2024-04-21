@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "big_num.h"
 #include "config.h"
 #include "utils.h"
 

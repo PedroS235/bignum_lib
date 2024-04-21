@@ -1,8 +1,7 @@
 #include <CUnit/CUnit.h>
 
 #include "arithmetic.h"
-#include "big_num.h"
-#include "core.h"
+#include "bignum.h"
 
 void test_addmod_basic() {
     bignum_t a = str2bignum("10");

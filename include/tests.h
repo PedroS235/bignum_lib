@@ -3,7 +3,9 @@
 
 #include <stdio.h>
 
-#include "big_num.h"
+#include "arithmetic.h"
+#include "bignum.h"
+#include "utils.h"
 
 static inline void test_multmod() {
     printf("Testing multmod...\n");

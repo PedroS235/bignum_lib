@@ -1,5 +1,5 @@
-#ifndef CORE_H
-#define CORE_H
+#ifndef BIGNUM_H
+#define BIGNUM_H
 
 #include <stddef.h>
 #include <stdint.h>
@@ -72,4 +72,4 @@ int str2bignum_(bignum_t *num, char *str);
  */
 bignum_t int2bignum(int num);
 
-#endif  // !CORE_H
+#endif  // !BIGNUM_H

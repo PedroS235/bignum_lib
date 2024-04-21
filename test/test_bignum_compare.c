@@ -1,7 +1,7 @@
 #include <CUnit/CUnit.h>
 
 #include "arithmetic.h"
-#include "core.h"
+#include "bignum.h"
 
 void test_compare_equal_positive() {
     bignum_t a = str2bignum("18446744073709551615");
