@@ -277,7 +277,6 @@ int expmod(bignum_t *res, bignum_t *a, bignum_t *b, bignum_t *n) {
 }
 
 int extended_gcd(bignum_t *res, bignum_t a, bignum_t b, bignum_t *x, bignum_t *y) {
-    // WARN: This funtion is leaking memory
     bignum_t a_1;
     int ret = init_bignum_(&a_1, a.size);
     if (ret) return ret;  // init failed
