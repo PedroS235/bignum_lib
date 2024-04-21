@@ -7,8 +7,12 @@
 - [x] addmod
 - [x] multmod
 - [x] expomod
-- [ ] inversemod
-- [ ] genrandom
+- [x] inversemod
+- [x] genrandom
 - [ ] fermat
 - [ ] genrandomprime
 - [ ] RSA
+
+## Installation
+
+`sudo apt-get install libcunit1 libcunit1-doc libcunit1-dev`
