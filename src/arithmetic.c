@@ -10,8 +10,7 @@
 int compare_bignum(bignum_t *a, bignum_t *b) {
     // First, compare signs
     if (a->sign != b->sign) {
-        return a->sign > b->sign ? -1
-                                 : 1;  // Assume sign 0 is non-negative, 1 is negative
+        return a->sign > b->sign ? -1 : 1;
     }
 
     // Sign is the same: compare sizes
@@ -239,41 +238,9 @@ div_result_t div_bignum(bignum_t *a, bignum_t *b) {
 }
 
 bignum_t bignum_remainder(bignum_t a, bignum_t n) {
-    // Check if the divisor is zero
-    bignum_t zero = str2bignum("0");
-    if (compare_bignum(&n, &zero) == 0) {
-        printf("Division by zero in remainder calculation\n");
-        free_bignum(&zero);
-        exit(1);  // Ideally handle errors more gracefully in real applications
-    }
-    free_bignum(&zero);
-
-    // Initialize the remainder to 'a' (copy of a)
-    bignum_t r = init_bignum(a.size);
-    memcpy(r.digits, a.digits, a.size * sizeof(uint8_t));
-
-    // Calculate the necessary shift to align the most significant digits of 'n' and 'a'
-    int shift = a.size - n.size;
-    bignum_t shifted_n = binary_shift(n, shift);
-
-    // Subtract shifted 'n' from 'r' until 'r' is less than 'n'
-    while (shift >= 0) {
-        while (compare_bignum_unsigned(&r, &shifted_n) >= 0) {
-            bignum_t temp = sub_unsigned(&r, &shifted_n);
-            free_bignum(&r);
-            r = temp;
-        }
-        bignum_t shifted_temp =
-            binary_shift(shifted_n, -1);  // Shift the divisor one position to the right
-        free_bignum(&shifted_n);
-        shifted_n = shifted_temp;
-        shift--;
-    }
-
-    // At this point, 'r' is the remainder of 'a' divided by 'n'
-    trim_bignum(&r);
-    free_bignum(&shifted_n);
-    return r;
+    div_result_t res = div_bignum(&a, &n);
+    free_bignum(&res.quotient);
+    return res.remainder;
 }
 
 bignum_t addmod(bignum_t *a, bignum_t *b, bignum_t *n) {
