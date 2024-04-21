@@ -24,6 +24,7 @@ void test_compare_greater_pos_pos() {
     bignum_t b = str2bignum("18446744073709551615");
     CU_ASSERT(compare_bignum(&a, &b) == 1)
     free_bignum(&a);
+    free_bignum(&b);
 }
 
 void test_compare_greater_pos_neg() {
@@ -31,6 +32,7 @@ void test_compare_greater_pos_neg() {
     bignum_t b = str2bignum("-36893488147419103230");
     CU_ASSERT(compare_bignum(&a, &b) == 1)
     free_bignum(&a);
+    free_bignum(&b);
 }
 
 void test_compare_greater_neg_neg() {
@@ -38,6 +40,7 @@ void test_compare_greater_neg_neg() {
     bignum_t b = str2bignum("-36893488147419103230");
     CU_ASSERT(compare_bignum(&a, &b) == 1)
     free_bignum(&a);
+    free_bignum(&b);
 }
 
 void test_compare_smaller_pos_pos() {
@@ -45,6 +48,7 @@ void test_compare_smaller_pos_pos() {
     bignum_t b = str2bignum("36893488147419103230");
     CU_ASSERT(compare_bignum(&a, &b) == -1)
     free_bignum(&a);
+    free_bignum(&b);
 }
 
 void test_compare_smaller_neg_pos() {
@@ -52,6 +56,7 @@ void test_compare_smaller_neg_pos() {
     bignum_t b = str2bignum("36893488147419103230");
     CU_ASSERT(compare_bignum(&a, &b) == -1)
     free_bignum(&a);
+    free_bignum(&b);
 }
 
 void test_compare_smaller_neg_neg() {
@@ -59,6 +64,7 @@ void test_compare_smaller_neg_neg() {
     bignum_t b = str2bignum("-18446744073709551615");
     CU_ASSERT(compare_bignum(&a, &b) == -1)
     free_bignum(&a);
+    free_bignum(&b);
 }
 
 void bignum_compare_tests_to_suite(CU_pSuite suite) {
