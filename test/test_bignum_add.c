@@ -6,7 +6,8 @@
 void test_add_simple() {
     bignum_t a = str2bignum("50");
     bignum_t b = str2bignum("40");
-    bignum_t c = add_bignum(&a, &b);
+    bignum_t c;
+    add_bignum(&c, &a, &b);
     bignum_t expected = str2bignum("90");
     CU_ASSERT(compare_bignum(&c, &expected) == 0)
     free_bignum(&a);
@@ -18,7 +19,8 @@ void test_add_simple() {
 void test_add_pos_neg() {
     bignum_t a = str2bignum("18446744073709551615");
     bignum_t b = str2bignum("-36893488147419103230");
-    bignum_t c = add_bignum(&a, &b);
+    bignum_t c;
+    add_bignum(&c, &a, &b);
     bignum_t expected = str2bignum("-18446744073709551615");
     CU_ASSERT(compare_bignum(&c, &expected) == 0)
     free_bignum(&a);
@@ -30,7 +32,8 @@ void test_add_pos_neg() {
 void test_add_neg_pos() {
     bignum_t a = str2bignum("-18446744073709551615");
     bignum_t b = str2bignum("36893488147419103230");
-    bignum_t c = add_bignum(&a, &b);
+    bignum_t c;
+    add_bignum(&c, &a, &b);
     bignum_t expected = str2bignum("18446744073709551615");
     CU_ASSERT(compare_bignum(&c, &expected) == 0)
     free_bignum(&a);
@@ -42,7 +45,8 @@ void test_add_neg_pos() {
 void test_add_neg_pos_2() {
     bignum_t a = str2bignum("-36893488147419103230");
     bignum_t b = str2bignum("18446744073709551615");
-    bignum_t c = add_bignum(&a, &b);
+    bignum_t c;
+    add_bignum(&c, &a, &b);
     bignum_t expected = str2bignum("-18446744073709551615");
     CU_ASSERT(compare_bignum(&c, &expected) == 0)
     free_bignum(&a);
@@ -54,7 +58,8 @@ void test_add_neg_pos_2() {
 void test_add_max_uint64() {
     bignum_t a = str2bignum("18446744073709551615");
     bignum_t b = str2bignum("18446744073709551615");
-    bignum_t c = add_bignum(&a, &b);
+    bignum_t c;
+    add_bignum(&c, &a, &b);
     bignum_t expected = str2bignum("36893488147419103230");
     CU_ASSERT(compare_bignum(&c, &expected) == 0)
     free_bignum(&a);
@@ -66,7 +71,8 @@ void test_add_max_uint64() {
 void test_add_w_negative_simple() {
     bignum_t a = str2bignum("-10");
     bignum_t b = str2bignum("-5");
-    bignum_t c = add_bignum(&a, &b);
+    bignum_t c;
+    add_bignum(&c, &a, &b);
     bignum_t expected = str2bignum("-15");
     CU_ASSERT(compare_bignum(&c, &expected) == 0)
     free_bignum(&a);
@@ -78,7 +84,8 @@ void test_add_w_negative_simple() {
 void test_add_w_negative_large() {
     bignum_t a = str2bignum("-18446744073709551615");
     bignum_t b = str2bignum("-18446744073709551615");
-    bignum_t c = add_bignum(&a, &b);
+    bignum_t c;
+    add_bignum(&c, &a, &b);
     bignum_t expected = str2bignum("-36893488147419103230");
     CU_ASSERT(compare_bignum(&c, &expected) == 0)
     free_bignum(&a);

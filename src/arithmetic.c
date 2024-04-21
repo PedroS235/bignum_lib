@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "bignum.h"
 #include "config.h"
 #include "utils.h"
 
@@ -34,7 +35,6 @@ int compare_bignum(bignum_t *a, bignum_t *b) {
     return 0;
 }
 
-// TODO: Possibly ignore this and just use the compare_bignum function
 int compare_bignum_unsigned(bignum_t *a, bignum_t *b) {
     if (a->size > b->size) return 1;
     if (a->size < b->size) return -1;
@@ -46,22 +46,23 @@ int compare_bignum_unsigned(bignum_t *a, bignum_t *b) {
     return 0;
 }
 
-bignum_t add_bignum(bignum_t *a, bignum_t *b) {
+int add_bignum(bignum_t *res, bignum_t *a, bignum_t *b) {
     if (a->sign != b->sign) {
         if (compare_bignum_unsigned(a, b) >= 0) {
-            bignum_t result = sub_bignum_unsigned(a, b);
-            result.sign = a->sign;
-            return result;
+            *res = sub_bignum_unsigned(a, b);
+            res->sign = a->sign;
+            return 0;
         } else {
-            bignum_t result = sub_bignum_unsigned(b, a);
-            result.sign = b->sign;
-            return result;
+            *res = sub_bignum_unsigned(b, a);
+            res->sign = b->sign;
+            return 0;
         }
     }
 
     size_t size = a->size > b->size ? a->size : b->size;
-    bignum_t result = init_bignum(size + 1);
-    result.sign = a->sign;
+    int ret = init_bignum_(res, size + 1);
+    if (ret) return ret;
+    res->sign = a->sign;
 
     int carry = 0;
     for (size_t i = 0; i < size; i++) {
@@ -69,23 +70,24 @@ bignum_t add_bignum(bignum_t *a, bignum_t *b) {
         if (i < a->size) sum += a->digits[i];
         if (i < b->size) sum += b->digits[i];
 
-        result.digits[i] = sum % BASE;
+        res->digits[i] = sum % BASE;
         carry = sum / BASE;
     }
 
     if (carry) {
-        result.digits[size] = carry;
+        res->digits[size] = carry;
     } else {
-        result.size = size;
+        res->size = size;
     }
 
-    return result;
+    return 0;
 }
 
 bignum_t sub_bignum(bignum_t *a, bignum_t *b) {
     if (a->sign != b->sign) {
         b->sign = a->sign;
-        bignum_t result = add_bignum(a, b);
+        bignum_t result;
+        add_bignum(&result, a, b);
         return result;
     }
     // Same signs
@@ -127,7 +129,7 @@ bignum_t sub_bignum_unsigned(bignum_t *a, bignum_t *b) {
     return result;
 }
 
-bignum_t mul(bignum_t *a, bignum_t *b) {
+bignum_t mul_bignum(bignum_t *a, bignum_t *b) {
     size_t size = a->size + b->size;
     bignum_t result = init_bignum(size);
     result.sign = (a->sign + b->sign) % 2;
@@ -157,12 +159,11 @@ div_result_t div_bignum(bignum_t *a, bignum_t *b) {
     }
 
     bignum_t q = init_bignum(a->size);
-    bignum_t r = init_bignum(a->size);  // Remainder initially set to the dividend
+    bignum_t r = init_bignum(a->size);
     memcpy(r.digits, a->digits, a->size * sizeof(uint8_t));
 
     int shift = a->size - b->size;
 
-    // Align the divisor with the highest non-zero digit of the dividend
     bignum_t shifted_b = binary_shift(*b, shift);
 
     while (shift >= 0) {
@@ -187,10 +188,10 @@ div_result_t div_bignum(bignum_t *a, bignum_t *b) {
 
     // Ensure the remainder is non-negative
     if (r.sign > 0) {
-        // Add n to the remainder to make it non-negative
-        bignum_t adjusted_remainder = add_bignum(&r, b);
-        free_bignum(&r);         // Free the original negative remainder
-        r = adjusted_remainder;  // Return the adjusted, non-negative remainder
+        bignum_t adjusted_remainder;
+        add_bignum(&adjusted_remainder, &r, b);
+        free_bignum(&r);
+        r = adjusted_remainder;
     }
 
     trim_leading_zeros_bignum(&q);
@@ -208,7 +209,8 @@ bignum_t bignum_remainder(bignum_t a, bignum_t n) {
 
 bignum_t addmod_bignum(bignum_t *a, bignum_t *b, bignum_t *n) {
     // First, add a and b
-    bignum_t sum = add_bignum(a, b);
+    bignum_t sum;
+    add_bignum(&sum, a, b);
 
     // Then, calculate the remainder of sum divided by n
     bignum_t result = bignum_remainder(sum, *n);
@@ -221,7 +223,7 @@ bignum_t addmod_bignum(bignum_t *a, bignum_t *b, bignum_t *n) {
 
 bignum_t multmod(bignum_t a, bignum_t b, bignum_t n) {
     // First, multiply a and b
-    bignum_t product = mul(&a, &b);
+    bignum_t product = mul_bignum(&a, &b);
 
     // Then, calculate the remainder of product divided by n
     bignum_t result = bignum_remainder(product, n);
@@ -274,7 +276,7 @@ bignum_t extended_gcd(bignum_t a, bignum_t b, bignum_t *x, bignum_t *y) {
     bignum_t gcd = extended_gcd(remainder, a, &x1, &y1);
 
     div_result_t tmp = div_bignum(&b, &a);
-    bignum_t tmp2 = mul(&tmp.quotient, &x1);
+    bignum_t tmp2 = mul_bignum(&tmp.quotient, &x1);
     *x = sub_bignum(&y1, &tmp2);
 
     *y = init_bignum(x1.size);
@@ -301,7 +303,8 @@ bignum_t inversemod(bignum_t a, bignum_t n) {
 
     if (compare_bignum(&gcd, &one) == 0) {
         if (x.sign == 1) {  // Negative sign, adjust by adding n
-            x = add_bignum(&x, &n);
+            // TODO: This is wrong most likely because we are overwriting x
+            add_bignum(&x, &x, &n);
         }
         free_bignum(&y);
         free_bignum(&gcd);

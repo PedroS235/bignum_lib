@@ -33,7 +33,7 @@ int compare_bignum_unsigned(bignum_t *a, bignum_t *b);
  * @param b Second big number
  * @return bignum_t
  */
-bignum_t add_bignum(bignum_t *a, bignum_t *b);
+int add_bignum(bignum_t *res, bignum_t *a, bignum_t *b);
 
 /**
  * @brief Add two big numbers modulo m
@@ -81,7 +81,7 @@ bignum_t sub_mod(bignum_t *a, bignum_t *b, bignum_t *m);
  * @param b Second big number
  * @return bignum_t
  */
-bignum_t mul(bignum_t *a, bignum_t *b);
+bignum_t mul_bignum(bignum_t *a, bignum_t *b);
 
 /**
  * @brief Binary Euclidian Division of two big numbers
