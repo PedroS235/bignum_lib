@@ -38,6 +38,7 @@ int compare_bignum(bignum_t *a, bignum_t *b) {
 int compare_bignum_unsigned(bignum_t *a, bignum_t *b) {
     if (a->size > b->size) return 1;
     if (a->size < b->size) return -1;
+
     for (int i = a->size - 1; i >= 0; i--) {
         if (a->digits[i] > b->digits[i]) return 1;
         if (a->digits[i] < b->digits[i]) return -1;
@@ -48,11 +49,11 @@ int compare_bignum_unsigned(bignum_t *a, bignum_t *b) {
 bignum_t add_bignum(bignum_t *a, bignum_t *b) {
     if (a->sign != b->sign) {
         if (compare_bignum_unsigned(a, b) >= 0) {
-            bignum_t result = sub_unsigned(a, b);
+            bignum_t result = sub_bignum_unsigned(a, b);
             result.sign = a->sign;
             return result;
         } else {
-            bignum_t result = sub_unsigned(b, a);
+            bignum_t result = sub_bignum_unsigned(b, a);
             result.sign = b->sign;
             return result;
         }
@@ -81,26 +82,25 @@ bignum_t add_bignum(bignum_t *a, bignum_t *b) {
     return result;
 }
 
-bignum_t sub(bignum_t *a, bignum_t *b) {
+bignum_t sub_bignum(bignum_t *a, bignum_t *b) {
     if (a->sign != b->sign) {
-        // Different signs imply addition
         b->sign = a->sign;
         bignum_t result = add_bignum(a, b);
         return result;
+    }
+    // Same signs
+    if (compare_bignum_unsigned(a, b) >= 0) {
+        bignum_t result = sub_bignum_unsigned(a, b);
+        result.sign = a->sign;  // Result takes the sign of 'a'
+        return result;
     } else {
-        // Same signs
-        if (compare_bignum_unsigned(a, b) >= 0) {
-            bignum_t result = sub_unsigned(a, b);
-            result.sign = a->sign;  // Result takes the sign of 'a'
-            return result;
-        } else {
-            bignum_t result = sub_unsigned(b, a);
-            result.sign = 1 - a->sign;  // Result takes the opposite sign
-            return result;
-        }
+        bignum_t result = sub_bignum_unsigned(b, a);
+        result.sign = 1 - a->sign;  // Result takes the opposite sign
+        return result;
     }
 }
-bignum_t sub_unsigned(bignum_t *a, bignum_t *b) {
+
+bignum_t sub_bignum_unsigned(bignum_t *a, bignum_t *b) {
     size_t size = a->size > b->size ? a->size : b->size;
     bignum_t result = init_bignum(size);
 
@@ -167,7 +167,7 @@ div_result_t div_bignum(bignum_t *a, bignum_t *b) {
 
     while (shift >= 0) {
         if (compare_bignum_unsigned(&r, &shifted_b) >= 0) {
-            bignum_t temp_r = sub_unsigned(&r, &shifted_b);
+            bignum_t temp_r = sub_bignum_unsigned(&r, &shifted_b);
             free_bignum(&r);
             r = temp_r;
             q.digits[shift] = 1;
@@ -275,7 +275,7 @@ bignum_t extended_gcd(bignum_t a, bignum_t b, bignum_t *x, bignum_t *y) {
 
     div_result_t tmp = div_bignum(&b, &a);
     bignum_t tmp2 = mul(&tmp.quotient, &x1);
-    *x = sub(&y1, &tmp2);
+    *x = sub_bignum(&y1, &tmp2);
 
     *y = init_bignum(x1.size);
     memcpy(y->digits, x1.digits, x1.size * sizeof(uint8_t));

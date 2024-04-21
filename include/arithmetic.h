@@ -16,6 +16,14 @@ typedef struct div_result {
  * @return 0 if a == b, 1 if a > b, -1 if a < b
  */
 int compare_bignum(bignum_t *a, bignum_t *b);
+
+/**
+ * @brief Compare two big numbers, ignoring sign
+ *
+ * @param a First big number
+ * @param b Second big number
+ * @return 0 if a == b, 1 if a > b, -1 if a < b
+ */
 int compare_bignum_unsigned(bignum_t *a, bignum_t *b);
 
 /**
@@ -45,8 +53,16 @@ bignum_t addmod_bignum(bignum_t *a, bignum_t *b, bignum_t *n);
  * @param b Second big number
  * @return bignum_t
  */
-bignum_t sub(bignum_t *a, bignum_t *b);
-bignum_t sub_unsigned(bignum_t *a, bignum_t *b);
+bignum_t sub_bignum(bignum_t *a, bignum_t *b);
+
+/**
+ * @brief Subtract two big numbers, ignoring sign
+ *
+ * @param a First big number
+ * @param b Second big number
+ * @return bignum_t
+ */
+bignum_t sub_bignum_unsigned(bignum_t *a, bignum_t *b);
 
 /**
  * @brief Subtract two big numbers modulo m
