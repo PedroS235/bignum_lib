@@ -3,6 +3,7 @@
 
 // Functions to add test cases from other files
 void bignum_add_tests_to_suite(CU_pSuite suite);        // From test_bignum_add.c
+void bignum_addmod_tests_to_suite(CU_pSuite suite);     // From test_bignum_add.c
 void bignum_sub_tests_to_suite(CU_pSuite suite);        // From test_bignum_sub.c
 void bignum_mul_tests_to_suite(CU_pSuite suite);        // From test_bignum_mul.c
 void bignum_div_tests_to_suite(CU_pSuite suite);        // From test_bignum_div.c
@@ -18,6 +19,13 @@ int main() {
         return CU_get_error();
     }
     bignum_add_tests_to_suite(add_suite);
+
+    CU_pSuite addmod_suite = CU_add_suite("Addition with mod Tests", NULL, NULL);
+    if (NULL == addmod_suite) {
+        CU_cleanup_registry();
+        return CU_get_error();
+    }
+    bignum_addmod_tests_to_suite(addmod_suite);
 
     CU_pSuite subtract_suite = CU_add_suite("Subtraction Tests", NULL, NULL);
     if (NULL == subtract_suite) {
