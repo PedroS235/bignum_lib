@@ -97,7 +97,7 @@ void print_bignum(bignum_t *num) {
 #endif
 }
 
-bignum_t left_shift(bignum_t a, int shift) {
+bignum_t left_shift(bignum_t a, size_t shift) {
     if (shift == 0) return a;  // No shift needed
 
     int new_size = a.size + shift;
@@ -110,7 +110,7 @@ bignum_t left_shift(bignum_t a, int shift) {
     return result;
 }
 
-bignum_t right_shift(bignum_t a, int shift) {
+bignum_t right_shift(bignum_t a, size_t shift) {
     if (shift == 0) return a;  // No shift needed
     if (shift >= a.size) {
         // Entire number is shifted out, return zero

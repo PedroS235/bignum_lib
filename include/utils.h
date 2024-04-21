@@ -36,7 +36,7 @@ void trim_leading_zeros_bignum(bignum_t *num);
  * @param a Big number to convert
  * @return char*
  */
-bignum_t left_shift(bignum_t a, int shift);
+bignum_t left_shift(bignum_t a, size_t shift);
 
 /**
  * @brief Convert a big number to a string
@@ -44,7 +44,7 @@ bignum_t left_shift(bignum_t a, int shift);
  * @param a Big number to convert
  * @return char*
  */
-bignum_t right_shift(bignum_t a, int shift);
+bignum_t right_shift(bignum_t a, size_t shift);
 
 /**
  * @brief Convert a big number to a string

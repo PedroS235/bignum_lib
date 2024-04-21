@@ -243,7 +243,7 @@ bignum_t expmod(bignum_t *a, bignum_t *b, bignum_t *n) {
     bignum_t base = init_bignum(a->size);
     memcpy(base.digits, a->digits, a->size * sizeof(uint8_t));
 
-    int i;
+    size_t i;
     for (i = 0; i < b->size; i++) {
         uint8_t bit = b->digits[i];
         if (bit) {
