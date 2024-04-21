@@ -234,7 +234,7 @@ int addmod_bignum(bignum_t *res, bignum_t *a, bignum_t *b, bignum_t *n) {
     return 0;
 }
 
-int multmod(bignum_t *res, bignum_t *a, bignum_t *b, bignum_t *n) {
+int multmod_bignum(bignum_t *res, bignum_t *a, bignum_t *b, bignum_t *n) {
     int ret = mult_bignum(res, a, b);
     if (ret) return ret;  // mult failed
 
@@ -263,13 +263,13 @@ int expmod(bignum_t *res, bignum_t *a, bignum_t *b, bignum_t *n) {
         uint8_t bit = b->digits[i];
         if (bit) {
             bignum_t temp;
-            multmod(&temp, res, &base, n);
+            multmod_bignum(&temp, res, &base, n);
             free_bignum(res);
             *res = temp;
         }
         bignum_t temp;
         // NOTE: not too sure about this
-        multmod(&temp, &base, &base, n);
+        multmod_bignum(&temp, &base, &base, n);
         free_bignum(&base);
         base = temp;
     }

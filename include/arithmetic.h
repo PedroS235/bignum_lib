@@ -97,7 +97,7 @@ int div_bignum(bignum_t *q, bignum_t *r, bignum_t *a, bignum_t *b);
  * @param m Modulo
  * @return bignum_t
  */
-int multmod(bignum_t *res, bignum_t *a, bignum_t *b, bignum_t *n);
+int multmod_bignum(bignum_t *res, bignum_t *a, bignum_t *b, bignum_t *n);
 
 /**
  * @brief Divide two big numbers
