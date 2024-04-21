@@ -128,26 +128,27 @@ int sub_bignum_unsigned(bignum_t *res, bignum_t *a, bignum_t *b) {
     return 0;
 }
 
-bignum_t mul_bignum(bignum_t *a, bignum_t *b) {
+int mul_bignum(bignum_t *res, bignum_t *a, bignum_t *b) {
     size_t size = a->size + b->size;
-    bignum_t result = init_bignum(size);
-    result.sign = (a->sign + b->sign) % 2;
+    int ret = init_bignum_(res, size);
+    if (ret) return ret;  // init failed
+    res->sign = (a->sign + b->sign) % 2;
 
     for (size_t i = 0; i < a->size; i++) {
         int carry = 0;
         for (size_t j = 0; j < b->size; j++) {
-            int sum = a->digits[i] * b->digits[j] + result.digits[i + j] + carry;
-            result.digits[i + j] = sum % BASE;
+            int sum = a->digits[i] * b->digits[j] + res->digits[i + j] + carry;
+            res->digits[i + j] = sum % BASE;
             carry = sum / BASE;
         }
-        result.digits[i + b->size] = carry;
+        res->digits[i + b->size] = carry;
     }
 
-    while (result.size > 1 && result.digits[result.size - 1] == 0) {
-        result.size--;
+    while (res->size > 1 && res->digits[res->size - 1] == 0) {
+        res->size--;
     }
 
-    return result;
+    return 0;
 }
 
 div_result_t div_bignum(bignum_t *a, bignum_t *b) {
@@ -223,7 +224,8 @@ bignum_t addmod_bignum(bignum_t *a, bignum_t *b, bignum_t *n) {
 
 bignum_t multmod(bignum_t a, bignum_t b, bignum_t n) {
     // First, multiply a and b
-    bignum_t product = mul_bignum(&a, &b);
+    bignum_t product;
+    mul_bignum(&product, &a, &b);
 
     // Then, calculate the remainder of product divided by n
     bignum_t result = bignum_remainder(product, n);
@@ -276,7 +278,8 @@ bignum_t extended_gcd(bignum_t a, bignum_t b, bignum_t *x, bignum_t *y) {
     bignum_t gcd = extended_gcd(remainder, a, &x1, &y1);
 
     div_result_t tmp = div_bignum(&b, &a);
-    bignum_t tmp2 = mul_bignum(&tmp.quotient, &x1);
+    bignum_t tmp2;
+    mul_bignum(&tmp2, &tmp.quotient, &x1);
     sub_bignum(x, &y1, &tmp2);
 
     *y = init_bignum(x1.size);

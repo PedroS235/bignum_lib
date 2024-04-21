@@ -81,7 +81,7 @@ bignum_t sub_mod(bignum_t *a, bignum_t *b, bignum_t *m);
  * @param b Second big number
  * @return bignum_t
  */
-bignum_t mul_bignum(bignum_t *a, bignum_t *b);
+int mul_bignum(bignum_t *res, bignum_t *a, bignum_t *b);
 
 /**
  * @brief Binary Euclidian Division of two big numbers
