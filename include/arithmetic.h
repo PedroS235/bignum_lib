@@ -25,8 +25,7 @@ int compare_bignum_unsigned(bignum_t *a, bignum_t *b);
  * @param b Second big number
  * @return bignum_t
  */
-bignum_t add(bignum_t *a, bignum_t *b);
-bignum_t add_unsigned(bignum_t *a, bignum_t *b);
+bignum_t add_bignum(bignum_t *a, bignum_t *b);
 
 /**
  * @brief Add two big numbers modulo m
@@ -36,7 +35,7 @@ bignum_t add_unsigned(bignum_t *a, bignum_t *b);
  * @param m Modulo
  * @return bignum_t
  */
-bignum_t addmod(bignum_t *a, bignum_t *b, bignum_t *n);
+bignum_t addmod_bignum(bignum_t *a, bignum_t *b, bignum_t *n);
 
 /**
  * @brief Subtract two big numbers

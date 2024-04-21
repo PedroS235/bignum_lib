@@ -45,9 +45,22 @@ int compare_bignum_unsigned(bignum_t *a, bignum_t *b) {
     return 0;
 }
 
-bignum_t add_unsigned(bignum_t *a, bignum_t *b) {
+bignum_t add_bignum(bignum_t *a, bignum_t *b) {
+    if (a->sign != b->sign) {
+        if (compare_bignum_unsigned(a, b) >= 0) {
+            bignum_t result = sub_unsigned(a, b);
+            result.sign = a->sign;
+            return result;
+        } else {
+            bignum_t result = sub_unsigned(b, a);
+            result.sign = b->sign;
+            return result;
+        }
+    }
+
     size_t size = a->size > b->size ? a->size : b->size;
     bignum_t result = init_bignum(size + 1);
+    result.sign = a->sign;
 
     int carry = 0;
     for (size_t i = 0; i < size; i++) {
@@ -68,29 +81,11 @@ bignum_t add_unsigned(bignum_t *a, bignum_t *b) {
     return result;
 }
 
-bignum_t add(bignum_t *a, bignum_t *b) {
-    if (a->sign == b->sign) {
-        bignum_t result = add_unsigned(a, b);
-        result.sign = a->sign;
-        return result;
-    } else {
-        if (compare_bignum_unsigned(a, b) >= 0) {
-            bignum_t result = sub_unsigned(a, b);
-            result.sign = a->sign;
-            return result;
-        } else {
-            bignum_t result = sub_unsigned(b, a);
-            result.sign = b->sign;
-            return result;
-        }
-    }
-}
-
 bignum_t sub(bignum_t *a, bignum_t *b) {
     if (a->sign != b->sign) {
         // Different signs imply addition
-        bignum_t result = add_unsigned(a, b);
-        result.sign = a->sign;  // Result takes the sign of 'a'
+        b->sign = a->sign;
+        bignum_t result = add_bignum(a, b);
         return result;
     } else {
         // Same signs
@@ -193,7 +188,7 @@ div_result_t div_bignum(bignum_t *a, bignum_t *b) {
     // Ensure the remainder is non-negative
     if (r.sign > 0) {
         // Add n to the remainder to make it non-negative
-        bignum_t adjusted_remainder = add(&r, b);
+        bignum_t adjusted_remainder = add_bignum(&r, b);
         free_bignum(&r);         // Free the original negative remainder
         r = adjusted_remainder;  // Return the adjusted, non-negative remainder
     }
@@ -211,9 +206,9 @@ bignum_t bignum_remainder(bignum_t a, bignum_t n) {
     return res.remainder;
 }
 
-bignum_t addmod(bignum_t *a, bignum_t *b, bignum_t *n) {
+bignum_t addmod_bignum(bignum_t *a, bignum_t *b, bignum_t *n) {
     // First, add a and b
-    bignum_t sum = add(a, b);
+    bignum_t sum = add_bignum(a, b);
 
     // Then, calculate the remainder of sum divided by n
     bignum_t result = bignum_remainder(sum, *n);
@@ -306,7 +301,7 @@ bignum_t inversemod(bignum_t a, bignum_t n) {
 
     if (compare_bignum(&gcd, &one) == 0) {
         if (x.sign == 1) {  // Negative sign, adjust by adding n
-            x = add(&x, &n);
+            x = add_bignum(&x, &n);
         }
         free_bignum(&y);
         free_bignum(&gcd);
