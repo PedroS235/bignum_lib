@@ -130,7 +130,7 @@ int expmod(bignum_t *res, bignum_t *base, bignum_t *exp, bignum_t *m);
  * @return 0 if success, 1 if failure
  * @return bignum_t
  */
-int extended_gcd(bignum_t *res, bignum_t *a, bignum_t *b, bignum_t *x, bignum_t *y);
+int extended_gcd(bignum_t *res, bignum_t a, bignum_t b, bignum_t *x, bignum_t *y);
 
 /**
  * @brief Inverse modulo

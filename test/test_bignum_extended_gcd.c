@@ -4,12 +4,12 @@
 #include "bignum.h"
 
 void test_extended_gcd_simple() {
-    bignum_t a = str2bignum("13");
-    bignum_t b = str2bignum("5");
-    bignum_t x = str2bignum("0");
-    bignum_t y = str2bignum("0");
+    bignum_t a = str2bignum("35");
+    bignum_t b = str2bignum("15");
+    bignum_t x;
+    bignum_t y;
     bignum_t gcd;
-    extended_gcd(&gcd, &a, &b, &x, &y);
+    extended_gcd(&gcd, a, b, &x, &y);
     bignum_t expected_gcd = str2bignum("5");
 
     CU_ASSERT(compare_bignum(&gcd, &expected_gcd) == 0);
