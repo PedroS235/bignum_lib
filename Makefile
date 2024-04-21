@@ -51,4 +51,10 @@ $(BUILD_DIR):
 clean:
 	rm -rf $(BUILD_DIR)
 
-.PHONY: all clean run test
+compdb:
+	echo '[' > compile_commands.json
+	$(foreach SRC,$(SOURCES),echo '{ "directory": "$(CURDIR)", "command": "$(CC) $(CFLAGS) -c $(SRC) -o $(BUILD_DIR)/$$(notdir $$(SRC:.c=.o))", "file": "$(SRC)" },' >> compile_commands.json;)
+	sed -i '$$ s/.$$//' compile_commands.json
+	echo ']' >> compile_commands.json
+
+.PHONY: all clean run test compdb
