@@ -49,11 +49,11 @@ int compare_bignum_unsigned(bignum_t *a, bignum_t *b) {
 int add_bignum(bignum_t *res, bignum_t *a, bignum_t *b) {
     if (a->sign != b->sign) {
         if (compare_bignum_unsigned(a, b) >= 0) {
-            *res = sub_bignum_unsigned(a, b);
+            sub_bignum_unsigned(res, a, b);
             res->sign = a->sign;
             return 0;
         } else {
-            *res = sub_bignum_unsigned(b, a);
+            sub_bignum_unsigned(res, b, a);
             res->sign = b->sign;
             return 0;
         }
@@ -61,7 +61,7 @@ int add_bignum(bignum_t *res, bignum_t *a, bignum_t *b) {
 
     size_t size = a->size > b->size ? a->size : b->size;
     int ret = init_bignum_(res, size + 1);
-    if (ret) return ret;
+    if (ret) return ret;  // init failed
     res->sign = a->sign;
 
     int carry = 0;
@@ -83,28 +83,27 @@ int add_bignum(bignum_t *res, bignum_t *a, bignum_t *b) {
     return 0;
 }
 
-bignum_t sub_bignum(bignum_t *a, bignum_t *b) {
+int sub_bignum(bignum_t *res, bignum_t *a, bignum_t *b) {
     if (a->sign != b->sign) {
         b->sign = a->sign;
-        bignum_t result;
-        add_bignum(&result, a, b);
-        return result;
+        return add_bignum(res, a, b);
     }
     // Same signs
     if (compare_bignum_unsigned(a, b) >= 0) {
-        bignum_t result = sub_bignum_unsigned(a, b);
-        result.sign = a->sign;  // Result takes the sign of 'a'
-        return result;
+        int ret = sub_bignum_unsigned(res, a, b);
+        res->sign = a->sign;
+        return ret;
     } else {
-        bignum_t result = sub_bignum_unsigned(b, a);
-        result.sign = 1 - a->sign;  // Result takes the opposite sign
-        return result;
+        int ret = sub_bignum_unsigned(res, b, a);
+        res->sign = 1 - a->sign;
+        return ret;
     }
 }
 
-bignum_t sub_bignum_unsigned(bignum_t *a, bignum_t *b) {
+int sub_bignum_unsigned(bignum_t *res, bignum_t *a, bignum_t *b) {
     size_t size = a->size > b->size ? a->size : b->size;
-    bignum_t result = init_bignum(size);
+    int ret = init_bignum_(res, size);
+    if (ret) return ret;  // init failed
 
     int carry = 0;
     for (size_t i = 0; i < size; i++) {
@@ -119,14 +118,14 @@ bignum_t sub_bignum_unsigned(bignum_t *a, bignum_t *b) {
             carry = 0;
         }
 
-        result.digits[i] = sum;
+        res->digits[i] = sum;
     }
 
-    while (result.size > 1 && result.digits[result.size - 1] == 0) {
-        result.size--;
+    while (res->size > 1 && res->digits[res->size - 1] == 0) {
+        res->size--;
     }
 
-    return result;
+    return 0;
 }
 
 bignum_t mul_bignum(bignum_t *a, bignum_t *b) {
@@ -168,7 +167,8 @@ div_result_t div_bignum(bignum_t *a, bignum_t *b) {
 
     while (shift >= 0) {
         if (compare_bignum_unsigned(&r, &shifted_b) >= 0) {
-            bignum_t temp_r = sub_bignum_unsigned(&r, &shifted_b);
+            bignum_t temp_r;
+            sub_bignum_unsigned(&temp_r, &r, &shifted_b);
             free_bignum(&r);
             r = temp_r;
             q.digits[shift] = 1;
@@ -277,7 +277,7 @@ bignum_t extended_gcd(bignum_t a, bignum_t b, bignum_t *x, bignum_t *y) {
 
     div_result_t tmp = div_bignum(&b, &a);
     bignum_t tmp2 = mul_bignum(&tmp.quotient, &x1);
-    *x = sub_bignum(&y1, &tmp2);
+    sub_bignum(x, &y1, &tmp2);
 
     *y = init_bignum(x1.size);
     memcpy(y->digits, x1.digits, x1.size * sizeof(uint8_t));

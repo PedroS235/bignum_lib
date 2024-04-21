@@ -53,7 +53,7 @@ bignum_t addmod_bignum(bignum_t *a, bignum_t *b, bignum_t *n);
  * @param b Second big number
  * @return bignum_t
  */
-bignum_t sub_bignum(bignum_t *a, bignum_t *b);
+int sub_bignum(bignum_t *res, bignum_t *a, bignum_t *b);
 
 /**
  * @brief Subtract two big numbers, ignoring sign
@@ -62,7 +62,7 @@ bignum_t sub_bignum(bignum_t *a, bignum_t *b);
  * @param b Second big number
  * @return bignum_t
  */
-bignum_t sub_bignum_unsigned(bignum_t *a, bignum_t *b);
+int sub_bignum_unsigned(bignum_t *res, bignum_t *a, bignum_t *b);
 
 /**
  * @brief Subtract two big numbers modulo m
