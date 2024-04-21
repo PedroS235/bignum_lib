@@ -151,30 +151,36 @@ int mul_bignum(bignum_t *res, bignum_t *a, bignum_t *b) {
     return 0;
 }
 
-div_result_t div_bignum(bignum_t *a, bignum_t *b) {
+int div_bignum(bignum_t *q, bignum_t *r, bignum_t *a, bignum_t *b) {
     bignum_t zero = str2bignum("0");
     if (compare_bignum(b, &zero) == 0) {
-        printf("Division by zero\n");
-        exit(1);
+        fprintf(stderr, "Division by zero in div_bignum(...)\n");
+        return 1;
     }
 
-    bignum_t q = init_bignum(a->size);
-    bignum_t r = init_bignum(a->size);
-    memcpy(r.digits, a->digits, a->size * sizeof(uint8_t));
+    int ret1 = init_bignum_(q, a->size);
+    int ret2 = init_bignum_(r, a->size);
+    if (ret1 || ret2) return 1;  // init failed
+    memcpy(r->digits, a->digits, a->size * sizeof(uint8_t));
 
     int shift = a->size - b->size;
 
     bignum_t shifted_b = binary_shift(*b, shift);
 
     while (shift >= 0) {
-        if (compare_bignum_unsigned(&r, &shifted_b) >= 0) {
+        if (compare_bignum_unsigned(r, &shifted_b) >= 0) {
             bignum_t temp_r;
-            sub_bignum_unsigned(&temp_r, &r, &shifted_b);
-            free_bignum(&r);
-            r = temp_r;
-            q.digits[shift] = 1;
+            int ret = sub_bignum_unsigned(&temp_r, r, &shifted_b);
+            if (ret) {
+                free_bignum(&zero);
+                free_bignum(&shifted_b);
+                return ret;
+            }  // sub failed
+            free_bignum(r);
+            *r = temp_r;
+            q->digits[shift] = 1;
         } else {
-            q.digits[shift] = 0;
+            q->digits[shift] = 0;
         }
 
         shift--;
@@ -184,34 +190,42 @@ div_result_t div_bignum(bignum_t *a, bignum_t *b) {
     }
 
     // Correct signs based on input signs
-    q.sign = a->sign ^ b->sign;
-    r.sign = a->sign;
+    q->sign = a->sign ^ b->sign;
+    r->sign = a->sign;
 
     // Ensure the remainder is non-negative
-    if (r.sign > 0) {
+    if (r->sign > 0) {
         bignum_t adjusted_remainder;
-        add_bignum(&adjusted_remainder, &r, b);
-        free_bignum(&r);
-        r = adjusted_remainder;
+        int ret = add_bignum(&adjusted_remainder, r, b);
+        if (ret) {
+            free_bignum(&zero);
+            free_bignum(&shifted_b);
+            return ret;
+        }  // sub failed
+        free_bignum(r);
+        *r = adjusted_remainder;
     }
 
-    trim_leading_zeros_bignum(&q);
-    trim_leading_zeros_bignum(&r);
+    trim_leading_zeros_bignum(q);
+    trim_leading_zeros_bignum(r);
     free_bignum(&zero);
     free_bignum(&shifted_b);
-    return (div_result_t){.quotient = q, .remainder = r};
+    return 0;
 }
 
 bignum_t bignum_remainder(bignum_t a, bignum_t n) {
-    div_result_t res = div_bignum(&a, &n);
-    free_bignum(&res.quotient);
-    return res.remainder;
+    bignum_t r;
+    bignum_t q;
+    div_bignum(&q, &r, &a, &n);
+    free_bignum(&q);
+    return r;
 }
 
 int addmod_bignum(bignum_t *res, bignum_t *a, bignum_t *b, bignum_t *n) {
     // First, add a and b
     int ret = add_bignum(res, a, b);
     if (ret) return ret;  // add failed
+    // TODO: needs revisiting after bignum_remainder is ported
 
     // Then, calculate the remainder of sum divided by n
     *res = bignum_remainder(*res, *n);
@@ -274,9 +288,11 @@ bignum_t extended_gcd(bignum_t a, bignum_t b, bignum_t *x, bignum_t *y) {
     bignum_t remainder = bignum_remainder(b, a);
     bignum_t gcd = extended_gcd(remainder, a, &x1, &y1);
 
-    div_result_t tmp = div_bignum(&b, &a);
+    bignum_t q;
+    bignum_t r;
+    div_bignum(&q, &r, &b, &a);
     bignum_t tmp2;
-    mul_bignum(&tmp2, &tmp.quotient, &x1);
+    mul_bignum(&tmp2, &q, &x1);
     sub_bignum(x, &y1, &tmp2);
 
     *y = init_bignum(x1.size);
@@ -286,8 +302,8 @@ bignum_t extended_gcd(bignum_t a, bignum_t b, bignum_t *x, bignum_t *y) {
     free_bignum(&x1);
     free_bignum(&y1);
     // free_bignum(&remainder);
-    free_bignum(&tmp.quotient);
-    free_bignum(&tmp.remainder);
+    free_bignum(&q);
+    free_bignum(&r);
     free_bignum(&tmp2);
     free_bignum(&zero);
 

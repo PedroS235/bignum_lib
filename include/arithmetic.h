@@ -29,19 +29,21 @@ int compare_bignum_unsigned(bignum_t *a, bignum_t *b);
 /**
  * @brief Add two big numbers
  *
+ * @param res Result will be stored here
  * @param a First big number
  * @param b Second big number
- * @return bignum_t
+ * @return 0 if success, 1 if failure
  */
 int add_bignum(bignum_t *res, bignum_t *a, bignum_t *b);
 
 /**
  * @brief Add two big numbers modulo m
  *
+ * @param res Result will be stored here
  * @param a First big number
  * @param b Second big number
  * @param m Modulo
- * @return bignum_t
+ * @return 0 if success, 1 if failure
  */
 int addmod_bignum(bignum_t *res, bignum_t *a, bignum_t *b, bignum_t *n);
 
@@ -49,48 +51,43 @@ int addmod_bignum(bignum_t *res, bignum_t *a, bignum_t *b, bignum_t *n);
  * @brief Subtract two big numbers
  * Expects a > b. If a < b, it will call sub(b, a) and return the result!
  *
+ * @param res Result will be stored here
  * @param a First big number
  * @param b Second big number
- * @return bignum_t
+ * @return 0 if success, 1 if failure
  */
 int sub_bignum(bignum_t *res, bignum_t *a, bignum_t *b);
 
 /**
  * @brief Subtract two big numbers, ignoring sign
  *
+ * @param res Result will be stored here
  * @param a First big number
  * @param b Second big number
- * @return bignum_t
+ * @return 0 if success, 1 if failure
  */
 int sub_bignum_unsigned(bignum_t *res, bignum_t *a, bignum_t *b);
 
 /**
- * @brief Subtract two big numbers modulo m
- *
- * @param a First big number
- * @param b Second big number
- * @param m Modulo
- * @return bignum_t
- */
-bignum_t sub_mod(bignum_t *a, bignum_t *b, bignum_t *m);
-
-/**
  * @brief Multiply two big numbers
  *
+ * @param res Result will be stored here
  * @param a First big number
  * @param b Second big number
- * @return bignum_t
+ * @return 0 if success, 1 if failure
  */
 int mul_bignum(bignum_t *res, bignum_t *a, bignum_t *b);
 
 /**
  * @brief Binary Euclidian Division of two big numbers
  *
+ * @param q Quotient will be stored here
+ * @param r Remainder will be stored here
  * @param a First big number
  * @param b Second big number
- * @return div_result_t
+ * @return 0 if success, 1 if failure
  */
-div_result_t div_bignum(bignum_t *a, bignum_t *b);
+int div_bignum(bignum_t *q, bignum_t *r, bignum_t *a, bignum_t *b);
 
 /**
  * @brief Multiply two big numbers modulo m

@@ -112,7 +112,8 @@ static inline void test_inversemod() {
     bignum_t b = str2bignum("18");
     bignum_t mod_inverse = inversemod(a, b);
     // To check the correctness of the inversemod, (mod_inverse * a) % b should be 1
-    bignum_t product = mul_bignum(&mod_inverse, &a);
+    bignum_t product;
+    mul_bignum(&product, &mod_inverse, &a);
     bignum_t remainder = bignum_remainder(product, b);
     bignum_t one = str2bignum("1");
     if (compare_bignum(&remainder, &one) == 0) {
