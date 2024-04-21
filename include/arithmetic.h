@@ -102,11 +102,12 @@ bignum_t multmod(bignum_t a, bignum_t b, bignum_t m);
 /**
  * @brief Divide two big numbers
  *
+ * @param res Result will be stored here
  * @param a First big number
  * @param b Second big number
- * @return bignum_t
+ * @return 0 if success, 1 if failure
  */
-bignum_t bignum_remainder(bignum_t a, bignum_t b);
+int bignum_remainder(bignum_t *res, bignum_t *a, bignum_t *b);
 
 /**
  * @brief Divide two big numbers modulo m

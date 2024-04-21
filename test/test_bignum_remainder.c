@@ -6,7 +6,8 @@
 void test_remainder_simple() {
     bignum_t a = str2bignum("10");
     bignum_t b = str2bignum("4");
-    bignum_t c = bignum_remainder(a, b);
+    bignum_t c;
+    bignum_remainder(&c, &a, &b);
     bignum_t r_c = str2bignum("2");
 
     CU_ASSERT(compare_bignum(&c, &r_c) == 0);
@@ -20,7 +21,8 @@ void test_remainder_simple() {
 void test_remainder_negative() {
     bignum_t a = str2bignum("-10");
     bignum_t b = str2bignum("4");
-    bignum_t c = bignum_remainder(a, b);
+    bignum_t c;
+    bignum_remainder(&c, &a, &b);
     bignum_t r_c = str2bignum("2");
 
     CU_ASSERT(compare_bignum(&c, &r_c) == 0);
@@ -34,7 +36,8 @@ void test_remainder_negative() {
 void test_remainder_zero() {
     bignum_t a = str2bignum("0");
     bignum_t b = str2bignum("4");
-    bignum_t c = bignum_remainder(a, b);
+    bignum_t c;
+    bignum_remainder(&c, &a, &b);
     bignum_t r_c = str2bignum("0");
 
     CU_ASSERT(compare_bignum(&c, &r_c) == 0);
@@ -48,7 +51,8 @@ void test_remainder_zero() {
 void test_remainder_zero_divisor() {
     bignum_t a = str2bignum("10");
     bignum_t b = str2bignum("0");
-    bignum_t c = bignum_remainder(a, b);
+    bignum_t c;
+    bignum_remainder(&c, &a, &b);
     bignum_t r_c = str2bignum("0");
 
     CU_ASSERT(compare_bignum(&c, &r_c) == 0);
@@ -62,7 +66,8 @@ void test_remainder_zero_divisor() {
 void test_remainder_large() {
     bignum_t a = str2bignum("340282366920938463426481119284349108225");
     bignum_t b = str2bignum("1042");
-    bignum_t c = bignum_remainder(a, b);
+    bignum_t c;
+    bignum_remainder(&c, &a, &b);
     bignum_t r_c = str2bignum("887");
 
     CU_ASSERT(compare_bignum(&c, &r_c) == 0);

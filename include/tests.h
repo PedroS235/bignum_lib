@@ -114,7 +114,8 @@ static inline void test_inversemod() {
     // To check the correctness of the inversemod, (mod_inverse * a) % b should be 1
     bignum_t product;
     mul_bignum(&product, &mod_inverse, &a);
-    bignum_t remainder = bignum_remainder(product, b);
+    bignum_t remainder;
+    bignum_remainder(&remainder, &product, &b);
     bignum_t one = str2bignum("1");
     if (compare_bignum(&remainder, &one) == 0) {
         printf("Test 1 (Inverse Mod): OK\n");
