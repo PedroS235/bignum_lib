@@ -30,6 +30,7 @@ void print_bignum(bignum_t *a);
  */
 void trim_leading_zeros_bignum(bignum_t *num);
 
+// TODO: Possibly convert a to a pointer
 /**
  * @brief Convert a big number to a string
  *
@@ -38,6 +39,7 @@ void trim_leading_zeros_bignum(bignum_t *num);
  */
 bignum_t left_shift(bignum_t a, size_t shift);
 
+// TODO: Possibly convert a to a pointer
 /**
  * @brief Convert a big number to a string
  *
@@ -46,6 +48,7 @@ bignum_t left_shift(bignum_t a, size_t shift);
  */
 bignum_t right_shift(bignum_t a, size_t shift);
 
+// TODO: Possibly convert a to a pointer
 /**
  * @brief Convert a big number to a string
  *

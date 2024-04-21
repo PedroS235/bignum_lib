@@ -34,6 +34,7 @@ int compare_bignum(bignum_t *a, bignum_t *b) {
     return 0;
 }
 
+// TODO: Possibly ignore this and just use the compare_bignum function
 int compare_bignum_unsigned(bignum_t *a, bignum_t *b) {
     if (a->size > b->size) return 1;
     if (a->size < b->size) return -1;
