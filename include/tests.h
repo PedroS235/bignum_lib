@@ -66,7 +66,8 @@ static inline void test_extended_gcd() {
     bignum_t b = str2bignum("5");
     bignum_t x = str2bignum("0");
     bignum_t y = str2bignum("0");
-    bignum_t gcd = extended_gcd(a, b, &x, &y);
+    bignum_t gcd;
+    extended_gcd(&gcd, &a, &b, &x, &y);
     bignum_t expected_gcd = str2bignum("1");
 
     if (compare_bignum(&gcd, &expected_gcd) == 0) {
@@ -86,7 +87,7 @@ static inline void test_extended_gcd() {
     b = str2bignum("11");
     x = str2bignum("0");
     y = str2bignum("0");
-    gcd = extended_gcd(a, b, &x, &y);
+    extended_gcd(&gcd, &a, &b, &x, &y);
     expected_gcd = str2bignum("1");
 
     print_bignum(&x);
@@ -112,7 +113,8 @@ static inline void test_inversemod() {
     printf("Testing extended_gcd and inversemod...\n");
     bignum_t a = str2bignum("35");
     bignum_t b = str2bignum("18");
-    bignum_t mod_inverse = inversemod(a, b);
+    bignum_t mod_inverse;
+    inversemod(&mod_inverse, &a, &b);
     // To check the correctness of the inversemod, (mod_inverse * a) % b should be 1
     bignum_t product;
     mult_bignum(&product, &mod_inverse, &a);
@@ -138,7 +140,7 @@ static inline void test_inversemod() {
 
     // Since gcd is not 1, there should be no modular inverse
     printf("Test 2 (Inverse Mod): Expecting failure message next...\n");
-    inversemod(a, b);  // This should trigger an error and exit.
+    inversemod(&mod_inverse, &a, &b);
 
     free_bignum(&a);
     free_bignum(&b);
@@ -146,10 +148,10 @@ static inline void test_inversemod() {
     // Test3
     a = str2bignum("3");
     b = str2bignum("11");
-    bignum_t c = inversemod(a, b);
+    inversemod(&mod_inverse, &a, &b);
     bignum_t c_expected = str2bignum("4");
 
-    if (compare_bignum(&c, &c_expected) == 0) {
+    if (compare_bignum(&mod_inverse, &c_expected) == 0) {
         printf("Test 3 (Inverse Mod): OK\n");
     } else {
         printf("Test 3 (Inverse Mod): FAIL\n");
@@ -158,28 +160,5 @@ static inline void test_inversemod() {
     free_bignum(&a);
     free_bignum(&b);
 }
-
-// static inline void test_inversemod() {
-//     printf("Testing inversemod...\n");
-//
-//     bignum_t a = str2bignum("3");
-//     bignum_t n = str2bignum("11");
-//     bignum_t result = inversemod(a, n);
-//     bignum_t expected = str2bignum("4");  // 3*4 mod 11 = 1
-//
-//     if (compare_bignum(&expected, &result) == 0) {
-//         printf("Test 1: OK\n");
-//     } else {
-//         printf("Test 1: FAIL\n");
-//     }
-//
-//     free_bignum(&a);
-//     free_bignum(&n);
-//     free_bignum(&result);
-//     free_bignum(&expected);
-//
-//     // Additional tests can be added here
-//     printf("Done testing inversemod\n");
-// }
 
 #endif  // !TESTS_H

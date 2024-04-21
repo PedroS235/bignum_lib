@@ -112,13 +112,34 @@ int bignum_remainder(bignum_t *res, bignum_t *a, bignum_t *b);
 /**
  * @brief Divide two big numbers modulo m
  *
- * @param base Base
+ * @param res Result will be stored here
  * @param exp Exponent
  * @param m Modulo
- * @return bignum_t
+ * @return 0 if success, 1 if failure
  */
 int expmod(bignum_t *res, bignum_t *base, bignum_t *exp, bignum_t *m);
-bignum_t extended_gcd(bignum_t a, bignum_t b, bignum_t *x, bignum_t *y);
-bignum_t inversemod(bignum_t a, bignum_t n);
+
+/**
+ * @brief Extended Euclidean Algorithm
+ *
+ * @param res Result will be stored here
+ * @param a First big number
+ * @param b Second big number
+ * @param x Coefficient of a
+ * @param y Coefficient of b
+ * @return 0 if success, 1 if failure
+ * @return bignum_t
+ */
+int extended_gcd(bignum_t *res, bignum_t *a, bignum_t *b, bignum_t *x, bignum_t *y);
+
+/**
+ * @brief Inverse modulo
+ *
+ * @param res Result will be stored here
+ * @param a First big number
+ * @param n Modulo
+ * @return 0 if success, 1 if failure
+ */
+int inversemod(bignum_t *res, bignum_t *a, bignum_t *n);
 
 #endif  // !ARITHMETIC_H

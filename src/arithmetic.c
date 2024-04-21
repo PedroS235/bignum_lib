@@ -278,27 +278,34 @@ int expmod(bignum_t *res, bignum_t *a, bignum_t *b, bignum_t *n) {
     return 0;
 }
 
-bignum_t extended_gcd(bignum_t a, bignum_t b, bignum_t *x, bignum_t *y) {
+int extended_gcd(bignum_t *res, bignum_t *a, bignum_t *b, bignum_t *x, bignum_t *y) {
+    // TODO: Possibly check if things need to be free when returning early
     bignum_t zero = str2bignum("0");
     free_bignum(x);
     free_bignum(y);
-    if (compare_bignum(&a, &zero) == 0) {
+    if (compare_bignum(a, &zero) == 0) {
         *x = zero;
         *y = str2bignum("1");
-        free_bignum(&a);
-        return b;
+        free_bignum(a);
+        res = b;
+        return 0;
     }
 
-    bignum_t x1 = init_bignum(1);
-    bignum_t y1 = init_bignum(1);
+    bignum_t x1;
+    int ret = init_bignum_(&x1, 1);
+    if (ret) return ret;  // init failed
+    bignum_t y1;
+    ret = init_bignum_(&y1, 1);
+    if (ret) return ret;  // init failed
 
     bignum_t remainder;
-    bignum_remainder(&remainder, &b, &a);
-    bignum_t gcd = extended_gcd(remainder, a, &x1, &y1);
+    bignum_remainder(&remainder, b, a);
+    ret = extended_gcd(res, &remainder, a, &x1, &y1);
+    if (ret) return ret;  // recursive call failed
 
     bignum_t q;
     bignum_t r;
-    div_bignum(&q, &r, &b, &a);
+    div_bignum(&q, &r, b, a);
     bignum_t tmp2;
     mult_bignum(&tmp2, &q, &x1);
     sub_bignum(x, &y1, &tmp2);
@@ -315,31 +322,39 @@ bignum_t extended_gcd(bignum_t a, bignum_t b, bignum_t *x, bignum_t *y) {
     free_bignum(&tmp2);
     free_bignum(&zero);
 
-    return gcd;
+    return 0;
 }
 
-bignum_t inversemod(bignum_t a, bignum_t n) {
-    bignum_t x = init_bignum(1);
-    bignum_t y = init_bignum(1);
+int inversemod(bignum_t *res, bignum_t *a, bignum_t *n) {
+    bignum_t x;
+    int ret = init_bignum_(&x, 1);
+    if (ret) return ret;  // init failed
+    bignum_t y;
+    ret = init_bignum_(&y, 1);
+    if (ret) return ret;  // init failed
 
-    bignum_t gcd = extended_gcd(a, n, &x, &y);
-    bignum_t one = str2bignum("1");
+    ret = extended_gcd(res, a, n, &x, &y);
+    if (ret) return ret;  // extended gcd failed
 
-    if (compare_bignum(&gcd, &one) == 0) {
+    bignum_t one;
+    ret = str2bignum_(&one, "1");
+    if (ret) return ret;  // init failed
+
+    if (compare_bignum(res, &one) == 0) {
         if (x.sign == 1) {  // Negative sign, adjust by adding n
-            // TODO: This is wrong most likely because we are overwriting x
-            add_bignum(&x, &x, &n);
+            free_bignum(res);
+            add_bignum(res, &x, n);
         }
         free_bignum(&y);
-        free_bignum(&gcd);
+        free_bignum(&x);
         free_bignum(&one);
-        return x;
+        return 0;
     } else {
-        printf("Inverse does not exist since gcd(a, n) != 1\n");
+        fprintf(stderr, "Inverse does not exist since gcd(a, n) != 1\n");
         free_bignum(&x);
         free_bignum(&y);
-        free_bignum(&gcd);
+        free_bignum(res);
         free_bignum(&one);
-        // exit(1);  // or handle error appropriately
+        return 1;
     }
 }
