@@ -97,7 +97,7 @@ int div_bignum(bignum_t *q, bignum_t *r, bignum_t *a, bignum_t *b);
  * @param m Modulo
  * @return bignum_t
  */
-int multmod(bignum_t *res, bignum_t a, bignum_t b, bignum_t m);
+int multmod(bignum_t *res, bignum_t *a, bignum_t *b, bignum_t *n);
 
 /**
  * @brief Divide two big numbers
@@ -117,7 +117,7 @@ int bignum_remainder(bignum_t *res, bignum_t *a, bignum_t *b);
  * @param m Modulo
  * @return bignum_t
  */
-bignum_t expmod(bignum_t *base, bignum_t *exp, bignum_t *m);
+int expmod(bignum_t *res, bignum_t *base, bignum_t *exp, bignum_t *m);
 bignum_t extended_gcd(bignum_t a, bignum_t b, bignum_t *x, bignum_t *y);
 bignum_t inversemod(bignum_t a, bignum_t n);
 

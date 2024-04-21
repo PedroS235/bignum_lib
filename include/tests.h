@@ -14,7 +14,7 @@ static inline void test_multmod() {
     bignum_t b = str2bignum("6");
     bignum_t n = str2bignum("11");
     bignum_t result;
-    multmod(&result, a, b, n);
+    multmod(&result, &a, &b, &n);
     bignum_t expected = str2bignum("9");
 
     if (compare_bignum(&expected, &result) == 0) {
@@ -38,7 +38,8 @@ static inline void test_expmod() {
     bignum_t base = str2bignum("2342");
     bignum_t exp = str2bignum("6762");
     bignum_t n = str2bignum("9343");
-    bignum_t result = expmod(&base, &exp, &n);
+    bignum_t result;
+    expmod(&result, &base, &exp, &n);
     bignum_t expected = str2bignum("7147");
     print_bignum(&result);
     if (compare_bignum(&expected, &result) == 0) {

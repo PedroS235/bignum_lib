@@ -234,13 +234,13 @@ int addmod_bignum(bignum_t *res, bignum_t *a, bignum_t *b, bignum_t *n) {
     return 0;
 }
 
-int multmod(bignum_t *res, bignum_t a, bignum_t b, bignum_t n) {
-    int ret = mult_bignum(res, &a, &b);
+int multmod(bignum_t *res, bignum_t *a, bignum_t *b, bignum_t *n) {
+    int ret = mult_bignum(res, a, b);
     if (ret) return ret;  // mult failed
 
     // Then, calculate the remainder of product divided by n
     bignum_t tmp;
-    ret = bignum_remainder(&tmp, res, &n);
+    ret = bignum_remainder(&tmp, res, n);
     if (ret) return ret;  // remainder failed
     free_bignum(res);
     *res = tmp;
@@ -248,11 +248,14 @@ int multmod(bignum_t *res, bignum_t a, bignum_t b, bignum_t n) {
     return 0;
 }
 
-bignum_t expmod(bignum_t *a, bignum_t *b, bignum_t *n) {
-    bignum_t result = init_bignum(1);
-    result.digits[0] = 1;  // Initialize result to 1
+int expmod(bignum_t *res, bignum_t *a, bignum_t *b, bignum_t *n) {
+    int ret = init_bignum_(res, 1);
+    if (ret) return ret;  // init failed
+    res->digits[0] = 1;   // Initialize result to 1
 
-    bignum_t base = init_bignum(a->size);
+    bignum_t base;
+    ret = init_bignum_(&base, a->size);
+    if (ret) return ret;  // init failed
     memcpy(base.digits, a->digits, a->size * sizeof(uint8_t));
 
     size_t i;
@@ -260,18 +263,19 @@ bignum_t expmod(bignum_t *a, bignum_t *b, bignum_t *n) {
         uint8_t bit = b->digits[i];
         if (bit) {
             bignum_t temp;
-            multmod(&temp, result, base, *n);
-            free_bignum(&result);
-            result = temp;
+            multmod(&temp, res, &base, n);
+            free_bignum(res);
+            *res = temp;
         }
         bignum_t temp;
-        multmod(&temp, base, base, *n);
+        // NOTE: not too sure about this
+        multmod(&temp, &base, &base, n);
         free_bignum(&base);
         base = temp;
     }
 
     free_bignum(&base);
-    return result;
+    return 0;
 }
 
 bignum_t extended_gcd(bignum_t a, bignum_t b, bignum_t *x, bignum_t *y) {
