@@ -5,6 +5,11 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+// Helper macros for sign
+#define POS 0
+#define NEG 1
+#define MAX_DIGIT_SIZE 4  // A digit is a maximum of 4 bits, meaning 9 = 1001
+
 /**
  * @brief Big number structure
  *
@@ -27,6 +32,15 @@ typedef struct bignum {
 bignum_t init_bignum(int size);
 
 /**
+ * @brief Initialize a big number
+ *
+ * @param num Big number to initialize
+ * @param size Size of the big number
+ * @return 0 if success, 1 otherwise
+ */
+int init_bignum_(bignum_t *num, int size);
+
+/**
  * @brief Free a big number
  *
  * @param a Big number to free
@@ -40,6 +54,15 @@ void free_bignum(bignum_t *a);
  * @return bignum_t
  */
 bignum_t str2bignum(char *str);
+
+/**
+ * @brief Convert a string to a big number
+ *
+ * @param num Big where to store the result
+ * @param str String to convert
+ * @return 0 if success, 1 otherwise
+ */
+int str2bignum_(bignum_t *num, char *str);
 
 /**
  * @brief Convert an integer to a big number
