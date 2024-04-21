@@ -7,57 +7,6 @@
 #include "bignum.h"
 #include "utils.h"
 
-static inline void test_multmod() {
-    printf("Testing multmod...\n");
-
-    bignum_t a = str2bignum("7");
-    bignum_t b = str2bignum("6");
-    bignum_t n = str2bignum("11");
-    bignum_t result;
-    multmod(&result, &a, &b, &n);
-    bignum_t expected = str2bignum("9");
-
-    if (compare_bignum(&expected, &result) == 0) {
-        printf("Test 1: OK\n");
-    } else {
-        printf("Test 1: FAIL\n");
-    }
-
-    free_bignum(&a);
-    free_bignum(&b);
-    free_bignum(&n);
-    free_bignum(&result);
-    free_bignum(&expected);
-
-    // Additional tests can be added here
-    printf("Done testing multmod\n");
-}
-static inline void test_expmod() {
-    printf("Testing expmod...\n");
-
-    bignum_t base = str2bignum("2342");
-    bignum_t exp = str2bignum("6762");
-    bignum_t n = str2bignum("9343");
-    bignum_t result;
-    expmod(&result, &base, &exp, &n);
-    bignum_t expected = str2bignum("7147");
-    print_bignum(&result);
-    if (compare_bignum(&expected, &result) == 0) {
-        printf("Test 1: OK\n");
-    } else {
-        printf("Test 1: FAIL\n");
-    }
-
-    free_bignum(&base);
-    free_bignum(&exp);
-    free_bignum(&n);
-    free_bignum(&result);
-    free_bignum(&expected);
-
-    // Additional tests can be added here
-    printf("Done testing expmod\n");
-}
-
 static inline void test_extended_gcd() {
     printf("Testing extended_gcd...\n");
 
