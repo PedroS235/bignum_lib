@@ -51,18 +51,6 @@ void resize_bignum(bignum_t *num, size_t new_size) {
     num->size = new_size;
 }
 
-void reverse_string(uint8_t *str) {
-    if (str) {
-        char *left = str;
-        char *right = str + strlen(str) - 1;
-        while (left < right) {
-            char tmp = *left;
-            *left++ = *right;
-            *right-- = tmp;
-        }
-    }
-}
-
 void print_bignum(bignum_t *num) {
     int decimal[MAX_DIGITS] = {0};  // Array to store decimal digits
     int len = num->size;
