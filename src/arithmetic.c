@@ -208,18 +208,15 @@ bignum_t bignum_remainder(bignum_t a, bignum_t n) {
     return res.remainder;
 }
 
-bignum_t addmod_bignum(bignum_t *a, bignum_t *b, bignum_t *n) {
+int addmod_bignum(bignum_t *res, bignum_t *a, bignum_t *b, bignum_t *n) {
     // First, add a and b
-    bignum_t sum;
-    add_bignum(&sum, a, b);
+    int ret = add_bignum(res, a, b);
+    if (ret) return ret;  // add failed
 
     // Then, calculate the remainder of sum divided by n
-    bignum_t result = bignum_remainder(sum, *n);
+    *res = bignum_remainder(*res, *n);
 
-    // Clean up intermediate sum if necessary
-    free_bignum(&sum);
-
-    return result;
+    return 0;
 }
 
 bignum_t multmod(bignum_t a, bignum_t b, bignum_t n) {

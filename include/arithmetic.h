@@ -43,7 +43,7 @@ int add_bignum(bignum_t *res, bignum_t *a, bignum_t *b);
  * @param m Modulo
  * @return bignum_t
  */
-bignum_t addmod_bignum(bignum_t *a, bignum_t *b, bignum_t *n);
+int addmod_bignum(bignum_t *res, bignum_t *a, bignum_t *b, bignum_t *n);
 
 /**
  * @brief Subtract two big numbers
