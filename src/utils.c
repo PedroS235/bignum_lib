@@ -43,7 +43,7 @@ void trim_leading_zeros_bignum(bignum_t *num) {
 }
 
 void resize_bignum(bignum_t *num, size_t new_size) {
-    num->digits = (int *)realloc(num->digits, new_size * sizeof(int));
+    num->digits = (uint8_t *)realloc(num->digits, new_size * sizeof(int));
     if (num->digits == NULL) {
         printf("Memory reallocation failed\n");
         exit(1);
