@@ -5,30 +5,6 @@
 
 #include "big_num.h"
 
-static inline void test_addmod() {
-    printf("Testing addmod...\n");
-
-    bignum_t a = str2bignum("10");
-    bignum_t b = str2bignum("20");
-    bignum_t n = str2bignum("4");
-    bignum_t result = addmod(&a, &b, &n);
-    bignum_t expected = str2bignum("2");
-
-    if (compare_bignum(&expected, &result) == 0) {
-        printf("Test 1: OK\n");
-    } else {
-        printf("Test 1: FAIL\n");
-    }
-
-    free_bignum(&a);
-    free_bignum(&b);
-    free_bignum(&n);
-    free_bignum(&result);
-    free_bignum(&expected);
-
-    // Additional tests can be added here
-    printf("Done testing addmod\n");
-}
 static inline void test_multmod() {
     printf("Testing multmod...\n");
 

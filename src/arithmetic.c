@@ -188,10 +188,18 @@ div_result_t div_bignum(bignum_t *a, bignum_t *b) {
 
     // Correct signs based on input signs
     q.sign = a->sign ^ b->sign;
-    r.sign = 0;
+    r.sign = a->sign;
 
-    trim_bignum(&q);
-    trim_bignum(&r);
+    // Ensure the remainder is non-negative
+    if (r.sign > 0) {
+        // Add n to the remainder to make it non-negative
+        bignum_t adjusted_remainder = add(&r, b);
+        free_bignum(&r);         // Free the original negative remainder
+        r = adjusted_remainder;  // Return the adjusted, non-negative remainder
+    }
+
+    trim_leading_zeros_bignum(&q);
+    trim_leading_zeros_bignum(&r);
     free_bignum(&zero);
     free_bignum(&shifted_b);
     return (div_result_t){.quotient = q, .remainder = r};
