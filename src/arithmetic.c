@@ -278,29 +278,40 @@ int expmod(bignum_t *res, bignum_t *a, bignum_t *b, bignum_t *n) {
 
 int extended_gcd(bignum_t *res, bignum_t a, bignum_t b, bignum_t *x, bignum_t *y) {
     // WARN: This funtion is leaking memory
+    bignum_t a_1;
+    int ret = init_bignum_(&a_1, a.size);
+    if (ret) return ret;  // init failed
+    memcpy(a_1.digits, a.digits, a.size * sizeof(uint8_t));
+
+    bignum_t b_1;
+    ret = init_bignum_(&b_1, b.size);
+    if (ret) return ret;  // init failed
+    memcpy(b_1.digits, b.digits, b.size * sizeof(uint8_t));
+
     bignum_t zero;
     str2bignum_(&zero, "0");
-    printf("a: \n");
 
-    if (compare_bignum(&a, &zero) == 0) {
+    if (compare_bignum(&a_1, &zero) == 0) {
         // free_bignum(&a);
         free_bignum(&zero);
         str2bignum_(x, "0");
         str2bignum_(y, "1");
-        *res = b;
+        *res = b_1;
         return 0;
     }
+    ret = init_bignum_(res, 1);
+    if (ret) return ret;  // init failed
 
     bignum_t x1;
     bignum_t y1;
 
     bignum_t b_mod_a;
-    bignum_mod(&b_mod_a, &b, &a);
-    extended_gcd(res, b_mod_a, a, &x1, &y1);
+    bignum_mod(&b_mod_a, &b_1, &a_1);
+    ret = extended_gcd(res, b_mod_a, a_1, &x1, &y1);
 
     bignum_t q;
     bignum_t r;
-    div_bignum(&q, &r, &b, &a);
+    div_bignum(&q, &r, &b_1, &a_1);
 
     bignum_t tmp;
     mult_bignum(&tmp, &q, &x1);
@@ -313,7 +324,9 @@ int extended_gcd(bignum_t *res, bignum_t a, bignum_t b, bignum_t *x, bignum_t *y
     free_bignum(&q);
     free_bignum(&r);
     free_bignum(&y1);
-    // free_bignum(&b_mod_a);
+    free_bignum(&a_1);
+    free_bignum(&b_1);
+    free_bignum(&b_mod_a);
 
     return 0;
 }
