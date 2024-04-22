@@ -80,7 +80,6 @@ void bignum_mod_tests_to_suite(CU_pSuite suite) {
     CU_add_test(suite, "test_bignum_mod", test_mod_simple);
     CU_add_test(suite, "test_bignum_mod_negative", test_mod_negative);
     CU_add_test(suite, "test_bignum_mod_zero", test_mod_zero);
-    // TODO: When the correct behavior is ready, uncomment the test below
     CU_add_test(suite, "test_bignum_mod_zero_divisor", test_mod_zero_divisor);
     CU_add_test(suite, "test_bignum_mod_large", test_mod_large);
 }

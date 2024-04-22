@@ -232,8 +232,8 @@ int div_bignum(bignum_t *q, bignum_t *r, bignum_t *a, bignum_t *b, bool r_pos) {
 int bignum_mod(bignum_t *res, bignum_t *a, bignum_t *n) {
     bignum_t q;
     int ret = div_bignum(&q, res, a, n, true);
-    if (ret) return 1;  // div failed
     free_bignum(&q);
+    if (ret) return 1;  // div failed
     return 0;
 }
 
