@@ -5,6 +5,7 @@
 #include "bignum.h"
 #include "config.h"
 #include "utils.h"
+#include "stdbool.h"
 
 int compare_bignum(bignum_t *a, bignum_t *b) {
     // First, compare signs
@@ -278,33 +279,45 @@ int expmod(bignum_t *res, bignum_t *a, bignum_t *b, bignum_t *n) {
 
 int extended_gcd(bignum_t *res, bignum_t a, bignum_t b, bignum_t *x, bignum_t *y) {
     int ret;
-    bignum_t a_1;
+    bignum_t a_1, b_1;
     copy_bignum(&a_1, &a);
-
-    bignum_t b_1;
     copy_bignum(&b_1, &b);
-
+    
+    bool negated_a = false, negated_b = false;
     bignum_t zero;
     str2bignum_(&zero, "0");
+    
+    // Normalize a
+    if (compare_bignum(&a_1, &zero) < 0) {
+        a_1.sign = 0;
+        negated_a = true;
+    }
+    
+    // Normalize b
+    if (compare_bignum(&b_1, &zero) < 0) {
+        b_1.sign = 0;
+        negated_b = true;
+    }
 
     if (compare_bignum(&a_1, &zero) == 0) {
         free_bignum(&zero);
         str2bignum_(x, "0");
         str2bignum_(y, "1");
+        if (negated_b) {
+            y->sign = 1;  
+        }
         free_bignum(&a_1);
         *res = b_1;
         return 0;
     }
 
-    bignum_t x1;
-    bignum_t y1;
+    bignum_t x1, y1;
     bignum_t b_mod_a;
     bignum_mod(&b_mod_a, &b_1, &a_1);
     ret = extended_gcd(res, b_mod_a, a_1, &x1, &y1);
     if (ret) return ret;
 
-    bignum_t q;
-    bignum_t r;
+    bignum_t q, r;
     div_bignum(&q, &r, &b_1, &a_1);
 
     bignum_t tmp;
@@ -313,6 +326,13 @@ int extended_gcd(bignum_t *res, bignum_t a, bignum_t b, bignum_t *x, bignum_t *y
     free_bignum(&tmp);
 
     *y = x1;
+
+    if (negated_a) {
+        x->sign = 1;  
+    }
+    if (negated_b) {
+        y ->sign = 0;  
+    }
 
     free_bignum(&zero);
     free_bignum(&q);
@@ -324,6 +344,7 @@ int extended_gcd(bignum_t *res, bignum_t a, bignum_t b, bignum_t *x, bignum_t *y
 
     return 0;
 }
+
 
 int inversemod(bignum_t *res, bignum_t *a, bignum_t *n) {
     bignum_t x;
