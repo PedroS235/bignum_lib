@@ -351,34 +351,26 @@ int extended_gcd(bignum_t *res, bignum_t a, bignum_t b, bignum_t *x, bignum_t *y
 
 int inversemod(bignum_t *res, bignum_t *a, bignum_t *n) {
     bignum_t x, y, a_normalized, n_normalized;
-    bignum_t one;
-    int ret;
-    bignum_t zero;
-    str2bignum_(&zero, "0");
-
-    // Initialize one to 1
-    ret = str2bignum_(&one, "1");
-    if (ret) return ret;
+    bignum_t one = ONE();
+    bignum_t zero = ZERO();
 
     // Normalize a and n to be positive
     copy_bignum(&a_normalized, a);
-    if (a_normalized.sign == 1) {
-        a_normalized.sign = 0;
-    }
+    abs_bignum(&a_normalized);
 
     copy_bignum(&n_normalized, n);
-    if (n_normalized.sign == 1) {
-        n_normalized.sign = 0;
-    }
+    abs_bignum(&n_normalized);
+
     bignum_t temp1;
     // Compute extended gcd
-    ret = extended_gcd(&temp1, a_normalized, n_normalized, &x, &y);
+    int ret = extended_gcd(&temp1, a_normalized, n_normalized, &x, &y);
     copy_bignum(res, &temp1);
     free_bignum(&temp1);
     if (ret) return ret;
+
     // Check if the gcd is 1
     if (compare_bignum(res, &one) == 0) {
-        bignum_t temp; 
+        bignum_t temp;
         bignum_mod(&temp, &x, n);  // Reduce modulo n to ensure within range
         free_bignum(res);
         *res = temp;  // Store the corrected x as result
@@ -399,11 +391,4 @@ int inversemod(bignum_t *res, bignum_t *a, bignum_t *n) {
         free_bignum(&zero);
         return 1;
     }
-    free_bignum(&a_normalized);
-    free_bignum(&n_normalized);
-    free_bignum(&zero);
-    free_bignum(&one);
-    free_bignum(&x);
-    free_bignum(&y);
 }
-
