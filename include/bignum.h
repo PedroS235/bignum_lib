@@ -65,4 +65,7 @@ bignum_t str2bignum(char *str);
  */
 int str2bignum_(bignum_t *num, char *str);
 
+bignum_t ZERO();
+bignum_t ONE();
+
 #endif  // !BIGNUM_H

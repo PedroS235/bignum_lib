@@ -127,3 +127,14 @@ int str2bignum_(bignum_t *num, char *str) {
 
     return 0;
 }
+
+bignum_t ZERO() {
+    bignum_t zero;
+    init_bignum_(&zero, 1, POS);
+    return zero;
+}
+bignum_t ONE() {
+    bignum_t one;
+    str2bignum_(&one, "1");
+    return one;
+}
