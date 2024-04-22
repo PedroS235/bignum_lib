@@ -33,7 +33,12 @@ int init_bignum_(bignum_t *num, int size) {
     return 0;
 }
 
-void free_bignum(bignum_t *a) { free(a->digits); }
+void free_bignum(bignum_t *a) {
+    free(a->digits);
+    a->digits = NULL;
+    a->sign = POS;
+    a->size = 0;
+}
 
 bignum_t str2bignum(char *str) {
     size_t size = strlen(str);
