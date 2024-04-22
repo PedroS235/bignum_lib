@@ -5,28 +5,19 @@
 #include "utils.h"
 
 int main() {
-    bignum_t a = str2bignum("35");
-    bignum_t b = str2bignum("15");
-    bignum_t x;
-    bignum_t y;
-    bignum_t gcd;
-    extended_gcd(&gcd, a, b, &x, &y);
-    bignum_t expected_gcd = str2bignum("5");
-    bignum_t expected_x = str2bignum("1");
-    bignum_t expected_y = str2bignum("-2");
-
-    print_bignum(&gcd);
-    print_bignum(&x);
-    print_bignum(&y);
-
+    bignum_t a = str2bignum("3402823669209384634");
+    bignum_t b = str2bignum("-18446744073709551615");
+    bignum_t n = str2bignum("1042");
+    bignum_t c;
+    multmod_bignum(&c, &a, &b, &n);
+    print_bignum(&c);
+    bignum_t expected = str2bignum("736");
+    // CU_ASSERT(compare_bignum(&c, &expected) == 0)
     free_bignum(&a);
     free_bignum(&b);
-    free_bignum(&x);
-    free_bignum(&y);
-    free_bignum(&gcd);
-    free_bignum(&expected_gcd);
-    free_bignum(&expected_x);
-    free_bignum(&expected_y);
+    free_bignum(&c);
+    free_bignum(&n);
+    free_bignum(&expected);
 
     return 0;
 }

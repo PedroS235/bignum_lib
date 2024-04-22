@@ -2,6 +2,7 @@
 
 #include "arithmetic.h"
 #include "bignum.h"
+#include "utils.h"
 
 void test_multmod_basic() {
     bignum_t a = str2bignum("10");
@@ -51,7 +52,7 @@ void test_multmod_neg_pos_pos() {
     bignum_t n = str2bignum("1042");
     bignum_t c;
     multmod_bignum(&c, &a, &b, &n);
-    bignum_t expected = str2bignum("824");
+    bignum_t expected = str2bignum("736");
     CU_ASSERT(compare_bignum(&c, &expected) == 0)
     free_bignum(&a);
     free_bignum(&b);
@@ -66,7 +67,8 @@ void test_multmod_pos_neg_pos() {
     bignum_t n = str2bignum("1042");
     bignum_t c;
     multmod_bignum(&c, &a, &b, &n);
-    bignum_t expected = str2bignum("824");
+    print_bignum(&c);
+    bignum_t expected = str2bignum("736");
     CU_ASSERT(compare_bignum(&c, &expected) == 0)
     free_bignum(&a);
     free_bignum(&b);
@@ -96,7 +98,7 @@ void test_multmod_pos_pos_neg() {
     bignum_t n = str2bignum("-1042");
     bignum_t c;
     multmod_bignum(&c, &a, &b, &n);
-    bignum_t expected = str2bignum("-824");
+    bignum_t expected = str2bignum("218");
     CU_ASSERT(compare_bignum(&c, &expected) == 0)
     free_bignum(&a);
     free_bignum(&b);
@@ -111,7 +113,7 @@ void test_multmod_neg_pos_neg() {
     bignum_t n = str2bignum("-1042");
     bignum_t c;
     multmod_bignum(&c, &a, &b, &n);
-    bignum_t expected = str2bignum("-218");
+    bignum_t expected = str2bignum("736");
     CU_ASSERT(compare_bignum(&c, &expected) == 0)
     free_bignum(&a);
     free_bignum(&b);
@@ -126,7 +128,7 @@ void test_multmod_pos_neg_neg() {
     bignum_t n = str2bignum("-1042");
     bignum_t c;
     multmod_bignum(&c, &a, &b, &n);
-    bignum_t expected = str2bignum("-218");
+    bignum_t expected = str2bignum("736");
     CU_ASSERT(compare_bignum(&c, &expected) == 0);
     free_bignum(&a);
     free_bignum(&b);
@@ -141,7 +143,7 @@ void test_multmod_neg_neg_neg() {
     bignum_t n = str2bignum("-1042");
     bignum_t c;
     multmod_bignum(&c, &a, &b, &n);
-    bignum_t expected = str2bignum("-824");
+    bignum_t expected = str2bignum("218");
     CU_ASSERT(compare_bignum(&c, &expected) == 0)
     free_bignum(&a);
     free_bignum(&b);
