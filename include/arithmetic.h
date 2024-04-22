@@ -37,6 +37,16 @@ int compare_bignum_unsigned(bignum_t *a, bignum_t *b);
 int add_bignum(bignum_t *res, bignum_t *a, bignum_t *b);
 
 /**
+ * @brief Add two big numbers, ignoring sign
+ *
+ * @param res Result will be stored here
+ * @param a First big number
+ * @param b Second big number
+ * @return 0 if success, 1 if failure
+ */
+int add_bignum_unsigned(bignum_t *res, bignum_t *a, bignum_t *b);
+
+/**
  * @brief Add two big numbers modulo m
  *
  * @param res Result will be stored here

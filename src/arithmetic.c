@@ -1,7 +1,6 @@
 #include "arithmetic.h"
 
 #include <stdio.h>
-#include <string.h>
 
 #include "bignum.h"
 #include "config.h"
@@ -58,6 +57,10 @@ int add_bignum(bignum_t *res, bignum_t *a, bignum_t *b) {
         }
     }
 
+    return add_bignum_unsigned(res, a, b);
+}
+
+int add_bignum_unsigned(bignum_t *res, bignum_t *a, bignum_t *b) {
     size_t size = a->size > b->size ? a->size : b->size;
     int ret = init_bignum_(res, size + 1, a->sign);
     if (ret) return ret;  // init failed
@@ -77,14 +80,15 @@ int add_bignum(bignum_t *res, bignum_t *a, bignum_t *b) {
     } else {
         res->size = size;
     }
-
     return 0;
 }
 
 int sub_bignum(bignum_t *res, bignum_t *a, bignum_t *b) {
     if (a->sign != b->sign) {
-        b->sign = a->sign;
-        return add_bignum(res, a, b);
+        if (compare_bignum(a, b) < 0) {
+            b->sign = a->sign;
+        }
+        return add_bignum_unsigned(res, a, b);
     }
     // Same signs
     if (compare_bignum_unsigned(a, b) >= 0) {
