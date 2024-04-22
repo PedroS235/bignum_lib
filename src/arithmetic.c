@@ -209,12 +209,14 @@ int div_bignum(bignum_t *q, bignum_t *r, bignum_t *a, bignum_t *b, bool r_pos) {
     q->sign = a->sign ^ b->sign;
     r->sign = a->sign;
 
-    abs_bignum(b);
+    bignum_t tmp_b;
+    copy_bignum(&tmp_b, b);
+    abs_bignum(&tmp_b);
 
     // Ensure the remainder is non-negative
     while (r->sign > 0 && r_pos) {
         bignum_t adjusted_remainder;
-        int ret = add_bignum(&adjusted_remainder, r, b);
+        int ret = add_bignum(&adjusted_remainder, r, &tmp_b);
         if (ret) {
             free_bignum(&zero);
             free_bignum(&shifted_b);
@@ -227,6 +229,7 @@ int div_bignum(bignum_t *q, bignum_t *r, bignum_t *a, bignum_t *b, bool r_pos) {
     trim_leading_zeros_bignum(q);
     trim_leading_zeros_bignum(r);
     free_bignum(&zero);
+    free_bignum(&tmp_b);
     free_bignum(&shifted_b);
     return 0;
 }
@@ -240,7 +243,6 @@ int bignum_mod(bignum_t *res, bignum_t *a, bignum_t *n) {
 }
 
 int addmod_bignum(bignum_t *res, bignum_t *a, bignum_t *b, bignum_t *n) {
-    // First, add a and b
     int ret = add_bignum(res, a, b);
     if (ret) return ret;  // add failed
 
