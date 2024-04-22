@@ -209,8 +209,10 @@ int div_bignum(bignum_t *q, bignum_t *r, bignum_t *a, bignum_t *b, bool r_pos) {
     q->sign = a->sign ^ b->sign;
     r->sign = a->sign;
 
+    abs_bignum(b);
+
     // Ensure the remainder is non-negative
-    if (r->sign > 0 && r_pos) {
+    while (r->sign > 0 && r_pos) {
         bignum_t adjusted_remainder;
         int ret = add_bignum(&adjusted_remainder, r, b);
         if (ret) {
@@ -258,9 +260,9 @@ int multmod_bignum(bignum_t *res, bignum_t *a, bignum_t *b, bignum_t *n) {
     // Then, calculate the remainder of product divided by n
     bignum_t tmp;
     ret = bignum_mod(&tmp, res, n);
-    if (ret) return ret;  // remainder failed
     free_bignum(res);
     *res = tmp;
+    if (ret) return ret;  // remainder failed
 
     return 0;
 }
