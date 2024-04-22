@@ -2,17 +2,7 @@
 
 #include "arithmetic.h"
 #include "bignum.h"
-
-void test_sub_basic() {
-    bignum_t a = str2bignum("1");
-    bignum_t b = str2bignum("0");
-    bignum_t c;
-    sub_bignum(&c, &a, &b);
-    CU_ASSERT(compare_bignum(&a, &c) == 0)
-    free_bignum(&a);
-    free_bignum(&b);
-    free_bignum(&c);
-}
+#include "utils.h"
 
 void test_sub_simple() {
     bignum_t a = str2bignum("50");
@@ -27,7 +17,7 @@ void test_sub_simple() {
     free_bignum(&expected);
 }
 
-void test_sub_w_max_uint64() {
+void test_sub_pos_pos() {
     bignum_t a = str2bignum("36893488147419103230");
     bignum_t b = str2bignum("18446744073709551615");
     bignum_t c;
@@ -40,33 +30,7 @@ void test_sub_w_max_uint64() {
     free_bignum(&expected);
 }
 
-void test_sub_w_negative_simple() {
-    bignum_t a = str2bignum("-10");
-    bignum_t b = str2bignum("-5");
-    bignum_t c;
-    sub_bignum(&c, &a, &b);
-    bignum_t expected = str2bignum("-5");
-    CU_ASSERT(compare_bignum(&c, &expected) == 0)
-    free_bignum(&a);
-    free_bignum(&b);
-    free_bignum(&c);
-    free_bignum(&expected);
-}
-
-void test_sub_w_negative_large() {
-    bignum_t a = str2bignum("-36893488147419103230");
-    bignum_t b = str2bignum("18446744073709551615");
-    bignum_t c;
-    sub_bignum(&c, &a, &b);
-    bignum_t expected = str2bignum("-55340232221128654845");
-    CU_ASSERT(compare_bignum(&c, &expected) == 0)
-    free_bignum(&a);
-    free_bignum(&b);
-    free_bignum(&c);
-    free_bignum(&expected);
-}
-
-void test_sub_w_negative_large_2() {
+void test_sub_neg_neg() {
     bignum_t a = str2bignum("-36893488147419103230");
     bignum_t b = str2bignum("-18446744073709551615");
     bignum_t c;
@@ -79,12 +43,25 @@ void test_sub_w_negative_large_2() {
     free_bignum(&expected);
 }
 
-void test_sub_w_larger_negative() {
-    bignum_t a = str2bignum("10");
-    bignum_t b = str2bignum("-15");
+void test_sub_neg_pos() {
+    bignum_t a = str2bignum("-36893488147419103230");
+    bignum_t b = str2bignum("18446744073709551615");
     bignum_t c;
     sub_bignum(&c, &a, &b);
-    bignum_t expected = str2bignum("-5");
+    bignum_t expected = str2bignum("-55340232221128654845");
+    CU_ASSERT(compare_bignum(&c, &expected) == 0)
+    free_bignum(&a);
+    free_bignum(&b);
+    free_bignum(&c);
+    free_bignum(&expected);
+}
+
+void test_sub_pos_neg() {
+    bignum_t a = str2bignum("36893488147419103230");
+    bignum_t b = str2bignum("-18446744073709551615");
+    bignum_t c;
+    sub_bignum(&c, &a, &b);
+    bignum_t expected = str2bignum("55340232221128654845");
     CU_ASSERT(compare_bignum(&c, &expected) == 0)
     free_bignum(&a);
     free_bignum(&b);
@@ -93,13 +70,9 @@ void test_sub_w_larger_negative() {
 }
 
 void bignum_sub_tests_to_suite(CU_pSuite suite) {
-    CU_add_test(suite, "test_bignum_sub_basic", test_sub_basic);
     CU_add_test(suite, "test_bignum_sub_simple", test_sub_simple);
-    CU_add_test(suite, "test_bignum_sub_w_max_uint64", test_sub_w_max_uint64);
-    CU_add_test(suite, "test_bignum_sub_w_negative_large", test_sub_w_negative_large);
-    CU_add_test(
-        suite, "test_bignum_sub_basic_w_negative_large_2", test_sub_w_negative_large_2);
-    CU_add_test(
-        suite, "test_sub_w_larger_negative", test_sub_w_larger_negative);
-
+    CU_add_test(suite, "test_bignum_sub_pos_pos", test_sub_pos_pos);
+    CU_add_test(suite, "test_bignum_sub_neg_neg", test_sub_neg_neg);
+    CU_add_test(suite, "test_bignum_sub_neg_pos", test_sub_neg_pos);
+    CU_add_test(suite, "test_bignum_sub_pos_neg", test_sub_pos_neg);
 }
