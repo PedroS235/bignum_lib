@@ -68,8 +68,7 @@ void test_mod_pos_neg() {
     bignum_t c;
     bignum_mod(&c, &a, &b);
 
-    print_bignum(&c);
-    bignum_t r_c = str2bignum("-7695830");
+    bignum_t r_c = str2bignum("4620713");
 
     CU_ASSERT(compare_bignum(&c, &r_c) == 0);
 
@@ -84,7 +83,8 @@ void test_mod_neg_neg() {
     bignum_t b = str2bignum("-12316543");
     bignum_t c;
     bignum_mod(&c, &a, &b);
-    bignum_t r_c = str2bignum("-4620713");
+    print_bignum(&c);
+    bignum_t r_c = str2bignum("7695830");
 
     CU_ASSERT(compare_bignum(&c, &r_c) == 0);
 
