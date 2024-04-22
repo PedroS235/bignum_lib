@@ -102,7 +102,6 @@ bignum_t left_shift(bignum_t a, size_t shift) {
 
     int new_size = a.size + shift;
     bignum_t result = init_bignum(new_size);
-    memset(result.digits, 0, new_size * sizeof(uint8_t));  // Initialize all to zero
     memcpy(result.digits + shift,
            a.digits,
            a.size * sizeof(uint8_t));  // Shift digits left
@@ -121,7 +120,6 @@ bignum_t right_shift(bignum_t a, size_t shift) {
 
     int new_size = a.size - shift;
     bignum_t result = init_bignum(new_size);
-    memset(result.digits, 0, new_size * sizeof(uint8_t));  // Initialize all to zero
     memcpy(result.digits,
            a.digits + shift,
            new_size * sizeof(uint8_t));  // Shift digits right
