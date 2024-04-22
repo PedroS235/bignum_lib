@@ -102,6 +102,7 @@ void test_inversemod_neg_neg() {
 
 void bignum_inversemod_tests_to_suite(CU_pSuite suite) {
     CU_add_test(suite, "test_inversemod_simple", test_inversemod_simple);
+    CU_add_test(suite, "test_inversemod_noinv", test_inversemod_noinv);
     CU_add_test(suite, "test_inversemod_pos_pos", test_inversemod_pos_pos);
     CU_add_test(suite, "test_inversemod_pos_neg", test_inversemod_pos_neg);
     CU_add_test(suite, "test_inversemod_neg_pos", test_inversemod_neg_pos);
