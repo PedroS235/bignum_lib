@@ -20,9 +20,9 @@ bignum_t init_bignum(int size) {
     return num;
 }
 
-int init_bignum_(bignum_t *num, int size) {
+int init_bignum_(bignum_t *num, size_t size, uint8_t sign) {
     num->size = size;
-    num->sign = 0;
+    num->sign = sign;
     num->digits = (uint8_t *)calloc(size, sizeof(int));
 
     if (num->digits == NULL) {
@@ -87,20 +87,22 @@ bignum_t str2bignum(char *str) {
 int str2bignum_(bignum_t *num, char *str) {
     size_t size = strlen(str);
     size_t max_digits = size * MAX_DIGIT_SIZE;
-    init_bignum_(num, max_digits);
 
+    int sign;
     // Decide the sign of the number
     if (str[0] == '-') {
-        num->sign = NEG;
+        sign = NEG;
         str++;
         size--;
     } else if (str[0] == '+') {
-        num->sign = POS;
+        sign = POS;
         str++;
         size--;
     } else {
-        num->sign = POS;
+        sign = POS;
     }
+
+    init_bignum_(num, max_digits, sign);
 
     for (size_t i = 0; i < size; i++) {
         if (str[i] < '0' || str[i] > '9') {

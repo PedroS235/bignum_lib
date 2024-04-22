@@ -36,9 +36,10 @@ bignum_t init_bignum(int size);
  *
  * @param num Big number to initialize
  * @param size Size of the big number
+ * @param sign Sign that the big number should have
  * @return 0 if success, 1 otherwise
  */
-int init_bignum_(bignum_t *num, int size);
+int init_bignum_(bignum_t *num, size_t size, uint8_t sign);
 
 /**
  * @brief Free a big number
