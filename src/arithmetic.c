@@ -243,9 +243,10 @@ int addmod_bignum(bignum_t *res, bignum_t *a, bignum_t *b, bignum_t *n) {
     if (ret) return ret;  // add failed
 
     bignum_t tmp;
-    bignum_mod(&tmp, res, n);
+    ret = bignum_mod(&tmp, res, n);
     free_bignum(res);
     *res = tmp;
+    if (ret) return ret;  // mod failed
 
     return 0;
 }
