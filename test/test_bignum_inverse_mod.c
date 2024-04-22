@@ -38,7 +38,6 @@ void test_inversemod_pos_pos() {
     bignum_t b = str2bignum("3241234");
     bignum_t mod_inverse;
     inversemod(&mod_inverse, &a, &b);
-    print_bignum(&mod_inverse);
     bignum_t expected = str2bignum("1498259");
 
     CU_ASSERT(compare_bignum(&mod_inverse, &expected) == 0);
@@ -54,7 +53,6 @@ void test_inversemod_pos_neg() {
     bignum_t b = str2bignum("-3241234");
     bignum_t mod_inverse;
     inversemod(&mod_inverse, &a, &b);
-    print_bignum(&mod_inverse);
 
     bignum_t expected = str2bignum("1498259");
 
@@ -71,7 +69,6 @@ void test_inversemod_neg_pos() {
     bignum_t b = str2bignum("3241234");
     bignum_t mod_inverse;
     inversemod(&mod_inverse, &a, &b);
-    print_bignum(&mod_inverse);
 
     bignum_t expected = str2bignum("1498259");
 
@@ -88,7 +85,6 @@ void test_inversemod_neg_neg() {
     bignum_t b = str2bignum("-3241234");
     bignum_t mod_inverse;
     inversemod(&mod_inverse, &a, &b);
-    print_bignum(&mod_inverse);
 
     bignum_t expected = str2bignum("1498259");
 
