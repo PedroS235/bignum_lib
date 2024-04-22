@@ -19,19 +19,19 @@ void bignum_inversemod_tests_to_suite(
 int main() {
     if (CU_initialize_registry() != CUE_SUCCESS) return CU_get_error();
 
+    CU_pSuite compare_suite = CU_add_suite("Comparison Tests", NULL, NULL);
+    if (NULL == compare_suite) {
+        CU_cleanup_registry();
+        return CU_get_error();
+    }
+    bignum_compare_tests_to_suite(compare_suite);
+
     CU_pSuite add_suite = CU_add_suite("Addition Tests", NULL, NULL);
     if (NULL == add_suite) {
         CU_cleanup_registry();
         return CU_get_error();
     }
     bignum_add_tests_to_suite(add_suite);
-
-    CU_pSuite addmod_suite = CU_add_suite("Addition with mod Tests", NULL, NULL);
-    if (NULL == addmod_suite) {
-        CU_cleanup_registry();
-        return CU_get_error();
-    }
-    bignum_addmod_tests_to_suite(addmod_suite);
 
     CU_pSuite subtract_suite = CU_add_suite("Subtraction Tests", NULL, NULL);
     if (NULL == subtract_suite) {
@@ -54,19 +54,19 @@ int main() {
     }
     bignum_div_tests_to_suite(division_suite);
 
-    CU_pSuite compare_suite = CU_add_suite("Comparison Tests", NULL, NULL);
-    if (NULL == compare_suite) {
-        CU_cleanup_registry();
-        return CU_get_error();
-    }
-    bignum_compare_tests_to_suite(compare_suite);
-
     CU_pSuite mod_suite = CU_add_suite("mod Tests", NULL, NULL);
     if (NULL == mod_suite) {
         CU_cleanup_registry();
         return CU_get_error();
     }
     bignum_mod_tests_to_suite(mod_suite);
+
+    CU_pSuite addmod_suite = CU_add_suite("Addition with mod Tests", NULL, NULL);
+    if (NULL == addmod_suite) {
+        CU_cleanup_registry();
+        return CU_get_error();
+    }
+    bignum_addmod_tests_to_suite(addmod_suite);
 
     CU_pSuite multmod_suite = CU_add_suite("Multiplication with mod Tests", NULL, NULL);
     if (NULL == multmod_suite) {
