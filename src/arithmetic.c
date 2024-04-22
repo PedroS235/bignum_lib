@@ -158,9 +158,8 @@ int div_bignum(bignum_t *q, bignum_t *r, bignum_t *a, bignum_t *b) {
     }
 
     int ret1 = init_bignum_(q, a->size);
-    int ret2 = init_bignum_(r, a->size);
-    if (ret1 || ret2) return 1;  // init failed
-    memcpy(r->digits, a->digits, a->size * sizeof(uint8_t));
+    if (ret1) return 1;  // init failed
+    copy_bignum(r, a);
 
     int shift = a->size - b->size;
 
@@ -253,9 +252,7 @@ int expmod(bignum_t *res, bignum_t *a, bignum_t *b, bignum_t *n) {
     res->digits[0] = 1;   // Initialize result to 1
 
     bignum_t base;
-    ret = init_bignum_(&base, a->size);
-    if (ret) return ret;  // init failed
-    memcpy(base.digits, a->digits, a->size * sizeof(uint8_t));
+    copy_bignum(&base, a);
 
     size_t i;
     for (i = 0; i < b->size; i++) {
@@ -277,15 +274,12 @@ int expmod(bignum_t *res, bignum_t *a, bignum_t *b, bignum_t *n) {
 }
 
 int extended_gcd(bignum_t *res, bignum_t a, bignum_t b, bignum_t *x, bignum_t *y) {
+    int ret;
     bignum_t a_1;
-    int ret = init_bignum_(&a_1, a.size);
-    if (ret) return ret;  // init failed
-    memcpy(a_1.digits, a.digits, a.size * sizeof(uint8_t));
+    copy_bignum(&a_1, &a);
 
     bignum_t b_1;
-    ret = init_bignum_(&b_1, b.size);
-    if (ret) return ret;  // init failed
-    memcpy(b_1.digits, b.digits, b.size * sizeof(uint8_t));
+    copy_bignum(&b_1, &b);
 
     bignum_t zero;
     str2bignum_(&zero, "0");
@@ -304,6 +298,7 @@ int extended_gcd(bignum_t *res, bignum_t a, bignum_t b, bignum_t *x, bignum_t *y
     bignum_t b_mod_a;
     bignum_mod(&b_mod_a, &b_1, &a_1);
     ret = extended_gcd(res, b_mod_a, a_1, &x1, &y1);
+    if (ret) return ret;
 
     bignum_t q;
     bignum_t r;
