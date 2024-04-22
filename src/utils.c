@@ -141,3 +141,24 @@ bignum_t binary_shift(bignum_t a, int shift) {
         return result;
     }
 }
+
+void copy_bignum(bignum_t *destination, const bignum_t *source) {
+    // TODO: Consider this. When using it, it will create a double free
+    // if (destination->digits != NULL) {
+    //     free(destination->digits);  // Free old memory to prevent leaks
+    // }
+
+    destination->size = source->size;  // Copy size
+    destination->sign = source->sign;  // Copy sign
+    destination->digits =
+        malloc(source->size * sizeof(uint8_t));  // Allocate new memory
+
+    if (destination->digits != NULL) {
+        memcpy(destination->digits,
+               source->digits,
+               source->size);  // Copy the actual digits
+    } else {
+        // Handle memory allocation failure; set size to 0 to indicate an empty state
+        destination->size = 0;
+    }
+}

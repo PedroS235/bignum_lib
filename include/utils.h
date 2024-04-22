@@ -57,4 +57,6 @@ bignum_t right_shift(bignum_t a, size_t shift);
  */
 bignum_t binary_shift(bignum_t a, int shift);
 
+void copy_bignum(bignum_t *destination, const bignum_t *source);
+
 #endif  // !UTILS_H
