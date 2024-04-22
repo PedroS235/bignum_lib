@@ -11,6 +11,9 @@
         "ranges": "c",
         "utility": "c",
         "cmath": "c",
-        "random": "c"
+        "random": "c",
+        "arithmetic.h": "c",
+        "random.h": "c",
+        "bignum.h": "c"
     }
 }
