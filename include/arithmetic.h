@@ -1,6 +1,8 @@
 #ifndef ARITHMETIC_H
 #define ARITHMETIC_H
 
+#include <stdbool.h>
+
 #include "bignum.h"
 
 typedef struct div_result {
@@ -97,7 +99,7 @@ int mult_bignum(bignum_t *res, bignum_t *a, bignum_t *b);
  * @param b Second big number
  * @return 0 if success, 1 if failure
  */
-int div_bignum(bignum_t *q, bignum_t *r, bignum_t *a, bignum_t *b);
+int div_bignum(bignum_t *q, bignum_t *r, bignum_t *a, bignum_t *b, bool r_pos);
 
 /**
  * @brief Multiply two big numbers modulo m

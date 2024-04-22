@@ -4,8 +4,8 @@
 
 #include "bignum.h"
 #include "config.h"
-#include "utils.h"
 #include "stdbool.h"
+#include "utils.h"
 
 int compare_bignum(bignum_t *a, bignum_t *b) {
     // First, compare signs
@@ -154,9 +154,10 @@ int mult_bignum(bignum_t *res, bignum_t *a, bignum_t *b) {
     return 0;
 }
 
-int div_bignum(bignum_t *q, bignum_t *r, bignum_t *a, bignum_t *b) {
+int div_bignum(bignum_t *q, bignum_t *r, bignum_t *a, bignum_t *b, bool r_pos) {
     bignum_t zero = str2bignum("0");
     if (compare_bignum(b, &zero) == 0) {
+        free_bignum(&zero);
         fprintf(stderr, "Division by zero in div_bignum(...)\n");
         return 1;
     }
@@ -196,7 +197,7 @@ int div_bignum(bignum_t *q, bignum_t *r, bignum_t *a, bignum_t *b) {
     r->sign = a->sign;
 
     // Ensure the remainder is non-negative
-    if (r->sign > 0) {
+    if (r->sign > 0 && r_pos) {
         bignum_t adjusted_remainder;
         int ret = add_bignum(&adjusted_remainder, r, b);
         if (ret) {
@@ -217,7 +218,7 @@ int div_bignum(bignum_t *q, bignum_t *r, bignum_t *a, bignum_t *b) {
 
 int bignum_mod(bignum_t *res, bignum_t *a, bignum_t *n) {
     bignum_t q;
-    int ret = div_bignum(&q, res, a, n);
+    int ret = div_bignum(&q, res, a, n, true);
     if (ret) return 1;  // div failed
     free_bignum(&q);
     return 0;
@@ -282,17 +283,17 @@ int extended_gcd(bignum_t *res, bignum_t a, bignum_t b, bignum_t *x, bignum_t *y
     bignum_t a_1, b_1;
     copy_bignum(&a_1, &a);
     copy_bignum(&b_1, &b);
-    
+
     bool negated_a = false, negated_b = false;
     bignum_t zero;
     str2bignum_(&zero, "0");
-    
+
     // Normalize a
     if (compare_bignum(&a_1, &zero) < 0) {
         a_1.sign = 0;
         negated_a = true;
     }
-    
+
     // Normalize b
     if (compare_bignum(&b_1, &zero) < 0) {
         b_1.sign = 0;
@@ -304,7 +305,7 @@ int extended_gcd(bignum_t *res, bignum_t a, bignum_t b, bignum_t *x, bignum_t *y
         str2bignum_(x, "0");
         str2bignum_(y, "1");
         if (negated_b) {
-            y->sign = 1;  
+            y->sign = 1;
         }
         free_bignum(&a_1);
         *res = b_1;
@@ -318,7 +319,7 @@ int extended_gcd(bignum_t *res, bignum_t a, bignum_t b, bignum_t *x, bignum_t *y
     if (ret) return ret;
 
     bignum_t q, r;
-    div_bignum(&q, &r, &b_1, &a_1);
+    div_bignum(&q, &r, &b_1, &a_1, true);
 
     bignum_t tmp;
     mult_bignum(&tmp, &q, &x1);
@@ -328,10 +329,10 @@ int extended_gcd(bignum_t *res, bignum_t a, bignum_t b, bignum_t *x, bignum_t *y
     *y = x1;
 
     if (negated_a) {
-        x->sign = 1;  
+        x->sign = 1;
     }
     if (negated_b) {
-        y ->sign = 0;  
+        y->sign = 0;
     }
 
     free_bignum(&zero);
@@ -344,7 +345,6 @@ int extended_gcd(bignum_t *res, bignum_t a, bignum_t b, bignum_t *x, bignum_t *y
 
     return 0;
 }
-
 
 int inversemod(bignum_t *res, bignum_t *a, bignum_t *n) {
     bignum_t x;
