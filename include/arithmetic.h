@@ -28,6 +28,9 @@ int compare_bignum(bignum_t *a, bignum_t *b);
  */
 int compare_bignum_unsigned(bignum_t *a, bignum_t *b);
 
+// TODO: docstring
+bool abs_bignum(bignum_t *n);
+
 /**
  * @brief Add two big numbers
  *

@@ -45,6 +45,17 @@ int compare_bignum_unsigned(bignum_t *a, bignum_t *b) {
     return 0;
 }
 
+bool abs_bignum(bignum_t *n) {
+    bignum_t zero = ZERO();
+    bool is_negative = false;
+    if (compare_bignum(n, &zero) < 0) {
+        n->sign = POS;
+        is_negative = true;
+    }
+    free_bignum(&zero);
+    return is_negative;
+}
+
 int add_bignum(bignum_t *res, bignum_t *a, bignum_t *b) {
     if (a->sign != b->sign) {
         if (compare_bignum_unsigned(a, b) >= 0) {
@@ -155,7 +166,7 @@ int mult_bignum(bignum_t *res, bignum_t *a, bignum_t *b) {
 }
 
 int div_bignum(bignum_t *q, bignum_t *r, bignum_t *a, bignum_t *b, bool r_pos) {
-    bignum_t zero = str2bignum("0");
+    bignum_t zero = ZERO();
     if (compare_bignum(b, &zero) == 0) {
         free_bignum(&zero);
         fprintf(stderr, "Division by zero in div_bignum(...)\n");
@@ -285,20 +296,10 @@ int extended_gcd(bignum_t *res, bignum_t a, bignum_t b, bignum_t *x, bignum_t *y
     copy_bignum(&b_1, &b);
 
     bool negated_a = false, negated_b = false;
-    bignum_t zero;
-    str2bignum_(&zero, "0");
+    bignum_t zero = ZERO();
 
-    // Normalize a
-    if (compare_bignum(&a_1, &zero) < 0) {
-        a_1.sign = 0;
-        negated_a = true;
-    }
-
-    // Normalize b
-    if (compare_bignum(&b_1, &zero) < 0) {
-        b_1.sign = 0;
-        negated_b = true;
-    }
+    negated_a = abs_bignum(&a_1);
+    negated_b = abs_bignum(&b_1);
 
     if (compare_bignum(&a_1, &zero) == 0) {
         free_bignum(&zero);
@@ -347,29 +348,49 @@ int extended_gcd(bignum_t *res, bignum_t a, bignum_t b, bignum_t *x, bignum_t *y
 }
 
 int inversemod(bignum_t *res, bignum_t *a, bignum_t *n) {
-    bignum_t x;
-    bignum_t y;
-    int ret = extended_gcd(res, *a, *n, &x, &y);
-    if (ret) return ret;  // extended gcd failed
+    int ret;
+    bignum_t x, y, a_normalized, n_normalized;
+    bignum_t one = ONE();
+    bignum_t zero = ZERO();
 
-    bignum_t one;
-    ret = str2bignum_(&one, "1");
-    if (ret) return ret;  // init failed
+    // Normalize a and n to be positive
+    copy_bignum(&a_normalized, a);
+    if (a_normalized.sign == 1) {
+        a_normalized.sign = 0;
+    }
 
+    copy_bignum(&n_normalized, n);
+    if (n_normalized.sign == 1) {
+        n_normalized.sign = 0;
+    }
+
+    // Compute extended gcd
+    ret = extended_gcd(res, a_normalized, n_normalized, &x, &y);
+    if (ret) return ret;
+
+    bignum_t a_1;
+    copy_bignum(&a_1, &x);
+
+    // Check if the gcd is 1
     if (compare_bignum(res, &one) == 0) {
-        if (x.sign == 1) {  // Negative sign, adjust by adding n
-            free_bignum(res);
-            add_bignum(res, &x, n);
+        // Adjust x if negative or not in range
+        while (x.sign == 1 || compare_bignum(&x, &zero) < 0) {
+            add_bignum(&x, &a_1, n);
         }
+        copy_bignum(&a_1, &x);
+        bignum_mod(&x, &a_1, n);  // Reduce modulo n to ensure within range
+
+        *res = x;  // Store the corrected x as result
         free_bignum(&y);
-        free_bignum(&x);
+        // free_bignum(&x);
         free_bignum(&one);
+        free_bignum(&zero);
+        free_bignum(&a_1);
         return 0;
     } else {
         fprintf(stderr, "Inverse does not exist since gcd(a, n) != 1\n");
         free_bignum(&x);
         free_bignum(&y);
-        free_bignum(res);
         free_bignum(&one);
         return 1;
     }
