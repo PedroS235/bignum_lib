@@ -168,8 +168,8 @@ int mult_bignum(bignum_t *res, bignum_t *a, bignum_t *b) {
 int div_bignum(bignum_t *q, bignum_t *r, bignum_t *a, bignum_t *b, bool r_pos) {
     bignum_t zero = ZERO();
     if (compare_bignum(b, &zero) == 0) {
-        *q = str2bignum("0");
-        *r = str2bignum("0");
+        *q = ZERO();
+        *r = ZERO();
         free_bignum(&zero);
         fprintf(stderr, "Division by zero in div_bignum(...)\n");
         return 1;
