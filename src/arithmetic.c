@@ -168,6 +168,8 @@ int mult_bignum(bignum_t *res, bignum_t *a, bignum_t *b) {
 int div_bignum(bignum_t *q, bignum_t *r, bignum_t *a, bignum_t *b, bool r_pos) {
     bignum_t zero = ZERO();
     if (compare_bignum(b, &zero) == 0) {
+        *q = str2bignum("0");
+        *r = str2bignum("0");
         free_bignum(&zero);
         fprintf(stderr, "Division by zero in div_bignum(...)\n");
         return 1;
@@ -348,10 +350,15 @@ int extended_gcd(bignum_t *res, bignum_t a, bignum_t b, bignum_t *x, bignum_t *y
 }
 
 int inversemod(bignum_t *res, bignum_t *a, bignum_t *n) {
-    int ret;
     bignum_t x, y, a_normalized, n_normalized;
-    bignum_t one = ONE();
-    bignum_t zero = ZERO();
+    bignum_t one;
+    int ret;
+    bignum_t zero;
+    str2bignum_(&zero, "0");
+
+    // Initialize one to 1
+    ret = str2bignum_(&one, "1");
+    if (ret) return ret;
 
     // Normalize a and n to be positive
     copy_bignum(&a_normalized, a);
@@ -363,35 +370,40 @@ int inversemod(bignum_t *res, bignum_t *a, bignum_t *n) {
     if (n_normalized.sign == 1) {
         n_normalized.sign = 0;
     }
-
+    bignum_t temp1;
     // Compute extended gcd
-    ret = extended_gcd(res, a_normalized, n_normalized, &x, &y);
+    ret = extended_gcd(&temp1, a_normalized, n_normalized, &x, &y);
+    copy_bignum(res, &temp1);
+    free_bignum(&temp1);
     if (ret) return ret;
-
-    bignum_t a_1;
-    copy_bignum(&a_1, &x);
-
     // Check if the gcd is 1
     if (compare_bignum(res, &one) == 0) {
-        // Adjust x if negative or not in range
-        while (x.sign == 1 || compare_bignum(&x, &zero) < 0) {
-            add_bignum(&x, &a_1, n);
-        }
-        copy_bignum(&a_1, &x);
-        bignum_mod(&x, &a_1, n);  // Reduce modulo n to ensure within range
-
-        *res = x;  // Store the corrected x as result
+        bignum_t temp; 
+        bignum_mod(&temp, &x, n);  // Reduce modulo n to ensure within range
+        free_bignum(res);
+        *res = temp;  // Store the corrected x as result
         free_bignum(&y);
-        // free_bignum(&x);
+        free_bignum(&x);
         free_bignum(&one);
         free_bignum(&zero);
-        free_bignum(&a_1);
+        free_bignum(&a_normalized);
+        free_bignum(&n_normalized);
         return 0;
     } else {
         fprintf(stderr, "Inverse does not exist since gcd(a, n) != 1\n");
+        free_bignum(&a_normalized);
+        free_bignum(&n_normalized);
         free_bignum(&x);
         free_bignum(&y);
         free_bignum(&one);
+        free_bignum(&zero);
         return 1;
     }
+    free_bignum(&a_normalized);
+    free_bignum(&n_normalized);
+    free_bignum(&zero);
+    free_bignum(&one);
+    free_bignum(&x);
+    free_bignum(&y);
 }
+
