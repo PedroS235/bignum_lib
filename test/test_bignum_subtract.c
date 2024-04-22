@@ -79,6 +79,19 @@ void test_sub_w_negative_large_2() {
     free_bignum(&expected);
 }
 
+void test_sub_w_larger_negative() {
+    bignum_t a = str2bignum("10");
+    bignum_t b = str2bignum("-15");
+    bignum_t c;
+    sub_bignum(&c, &a, &b);
+    bignum_t expected = str2bignum("-5");
+    CU_ASSERT(compare_bignum(&c, &expected) == 0)
+    free_bignum(&a);
+    free_bignum(&b);
+    free_bignum(&c);
+    free_bignum(&expected);
+}
+
 void bignum_sub_tests_to_suite(CU_pSuite suite) {
     CU_add_test(suite, "test_bignum_sub_basic", test_sub_basic);
     CU_add_test(suite, "test_bignum_sub_simple", test_sub_simple);
@@ -86,4 +99,7 @@ void bignum_sub_tests_to_suite(CU_pSuite suite) {
     CU_add_test(suite, "test_bignum_sub_w_negative_large", test_sub_w_negative_large);
     CU_add_test(
         suite, "test_bignum_sub_basic_w_negative_large_2", test_sub_w_negative_large_2);
+    CU_add_test(
+        suite, "test_sub_w_larger_negative", test_sub_w_larger_negative);
+
 }
