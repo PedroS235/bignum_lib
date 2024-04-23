@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 
+#include "bignum.h"
 #include "bitwise.h"
 #include "common.h"
 
@@ -141,7 +142,9 @@ int div_bignum(bignum_t *q, bignum_t *r, bignum_t *a, bignum_t *b, bool r_pos) {
 
     int shift = a->size - b->size;
 
-    bignum_t shifted_b = binary_shift(*b, shift);
+    bignum_t shifted_b;
+    copy_bignum(&shifted_b, b);
+    binary_shift(&shifted_b, shift);
 
     while (shift >= 0) {
         if (compare_bignum_unsigned(r, &shifted_b) >= 0) {
@@ -160,9 +163,7 @@ int div_bignum(bignum_t *q, bignum_t *r, bignum_t *a, bignum_t *b, bool r_pos) {
         }
 
         shift--;
-        bignum_t shifted_temp = binary_shift(shifted_b, -1);
-        free_bignum(&shifted_b);
-        shifted_b = shifted_temp;
+        binary_shift(&shifted_b, -1);
     }
 
     // Correct signs based on input signs

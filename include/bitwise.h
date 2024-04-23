@@ -15,7 +15,7 @@
  * @param shift Amount to shift
  * @return bignum_t Shifted big number
  */
-bignum_t left_shift(bignum_t a, size_t shift);
+int left_shift(bignum_t *a, size_t shift);
 
 /**
  * @brief Shift a big number to the right by a given amount
@@ -24,7 +24,7 @@ bignum_t left_shift(bignum_t a, size_t shift);
  * @param shift Amount to shift
  * @return bignum_t Shifted big number
  */
-bignum_t right_shift(bignum_t a, size_t shift);
+int right_shift(bignum_t *a, size_t shift);
 
 /**
  * @brief Shift a big number to the right/left by a given amount
@@ -33,6 +33,6 @@ bignum_t right_shift(bignum_t a, size_t shift);
  * @param shift Amount to shift. Positive for left shift, negative for right shift
  * @return bignum_t Shifted big number
  */
-bignum_t binary_shift(bignum_t a, int shift);
+int binary_shift(bignum_t *a, int shift);
 
 #endif  // !BITWISE_H
