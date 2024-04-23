@@ -7,71 +7,80 @@
 
 int bignum_mod(bignum_t *res, bignum_t *a, bignum_t *n) {
     bignum_t q;
-    int ret = div_bignum(&q, res, a, n, true);
+    if (div_bignum(&q, res, a, n, true) != SUCCESS) {
+        return FAILURE;
+    }
     free_bignum(&q);
-    if (ret) return 1;  // div failed
-    return 0;
+    return SUCCESS;
 }
 
 int addmod_bignum(bignum_t *res, bignum_t *a, bignum_t *b, bignum_t *n) {
     int ret = add_bignum(res, a, b);
-    if (ret) return ret;  // add failed
+    if (ret != SUCCESS) return FAILURE;
 
     bignum_t tmp;
-    ret = bignum_mod(&tmp, res, n);
+    if (bignum_mod(&tmp, res, n) != SUCCESS) {
+        return FAILURE;
+    }
     free_bignum(res);
     *res = tmp;
-    if (ret) return ret;  // mod failed
 
-    return 0;
+    return SUCCESS;
 }
 
 int multmod_bignum(bignum_t *res, bignum_t *a, bignum_t *b, bignum_t *n) {
-    int ret = mult_bignum(res, a, b);
-    if (ret) return ret;  // mult failed
+    if (mult_bignum(res, a, b) != SUCCESS) return FAILURE;
 
-    // Then, calculate the remainder of product divided by n
     bignum_t tmp;
-    ret = bignum_mod(&tmp, res, n);
+    if (bignum_mod(&tmp, res, n) != SUCCESS) {
+        return FAILURE;
+    }
     free_bignum(res);
     *res = tmp;
-    if (ret) return ret;  // remainder failed
 
-    return 0;
+    return SUCCESS;
 }
 
 int expmod(bignum_t *res, bignum_t *a, bignum_t *b, bignum_t *n) {
-    int ret = init_bignum(res, 1, POS);
-    if (ret) return ret;  // init failed
-    res->digits[0] = 1;   // Initialize result to 1
+    if (str2bignum(res, "1") != SUCCESS) return FAILURE;
 
     bignum_t base;
-    copy_bignum(&base, a);
+    if (copy_bignum(&base, a) != SUCCESS) return FAILURE;
 
     size_t i;
     for (i = 0; i < b->size; i++) {
         uint8_t bit = b->digits[i];
         if (bit) {
             bignum_t temp;
-            multmod_bignum(&temp, res, &base, n);
+            if (multmod_bignum(&temp, res, &base, n) != SUCCESS) {
+                free_bignum(&base);
+                return FAILURE;
+            }
             free_bignum(res);
             *res = temp;
         }
         bignum_t temp;
-        multmod_bignum(&temp, &base, &base, n);
+        if (multmod_bignum(&temp, &base, &base, n) != SUCCESS) {
+            free_bignum(&base);
+            return FAILURE;
+        }
         free_bignum(&base);
         base = temp;
     }
 
     free_bignum(&base);
-    return 0;
+    return SUCCESS;
 }
 
 int extended_gcd(bignum_t *res, bignum_t a, bignum_t b, bignum_t *x, bignum_t *y) {
     int ret;
     bignum_t a_1, b_1;
-    copy_bignum(&a_1, &a);
-    copy_bignum(&b_1, &b);
+    if (copy_bignum(&a_1, &a) != SUCCESS) return FAILURE;
+
+    if (copy_bignum(&b_1, &b) != SUCCESS) {
+        free_bignum(&a_1);
+        return FAILURE;
+    }
 
     bool negated_a = false, negated_b = false;
     bignum_t zero = ZERO();
@@ -81,28 +90,79 @@ int extended_gcd(bignum_t *res, bignum_t a, bignum_t b, bignum_t *x, bignum_t *y
 
     if (compare_bignum(&a_1, &zero) == 0) {
         free_bignum(&zero);
-        str2bignum(x, "0");
-        str2bignum(y, "1");
+        if (str2bignum(x, "0") != SUCCESS) {
+            free_bignum(&a_1);
+            free_bignum(&b_1);
+            return FAILURE;
+        }
+        if (str2bignum(y, "1") != SUCCESS) {
+            free_bignum(&a_1);
+            free_bignum(&b_1);
+            return FAILURE;
+        }
+
         if (negated_b) {
             y->sign = 1;
         }
         free_bignum(&a_1);
         *res = b_1;
-        return 0;
+        return SUCCESS;
     }
 
     bignum_t x1, y1;
     bignum_t b_mod_a;
-    bignum_mod(&b_mod_a, &b_1, &a_1);
-    ret = extended_gcd(res, b_mod_a, a_1, &x1, &y1);
-    if (ret) return ret;
+    if (bignum_mod(&b_mod_a, &b_1, &a_1) != SUCCESS) {
+        free_bignum(&zero);
+        free_bignum(&a_1);
+        free_bignum(&b_1);
+        return ret;
+    }
+
+    if (extended_gcd(res, b_mod_a, a_1, &x1, &y1) != SUCCESS) {
+        free_bignum(&zero);
+        free_bignum(&a_1);
+        free_bignum(&b_1);
+        free_bignum(&b_mod_a);
+        return FAILURE;
+    }
 
     bignum_t q, r;
-    div_bignum(&q, &r, &b_1, &a_1, true);
+    if (div_bignum(&q, &r, &b_1, &a_1, true) != SUCCESS) {
+        free_bignum(&zero);
+        free_bignum(&a_1);
+        free_bignum(&b_1);
+        free_bignum(&x1);
+        free_bignum(&y1);
+        free_bignum(&b_mod_a);
+        return ret;
+    }
 
     bignum_t tmp;
-    mult_bignum(&tmp, &q, &x1);
-    sub_bignum(x, &y1, &tmp);
+    if (mult_bignum(&tmp, &q, &x1) != SUCCESS) {
+        free_bignum(&zero);
+        free_bignum(&a_1);
+        free_bignum(&b_1);
+        free_bignum(&x1);
+        free_bignum(&y1);
+        free_bignum(&q);
+        free_bignum(&r);
+        free_bignum(&b_mod_a);
+        return FAILURE;
+    }
+
+    if (sub_bignum(x, &y1, &tmp) != SUCCESS) {
+        free_bignum(&zero);
+        free_bignum(&a_1);
+        free_bignum(&b_1);
+        free_bignum(&x1);
+        free_bignum(&y1);
+        free_bignum(&q);
+        free_bignum(&r);
+        free_bignum(&b_mod_a);
+        free_bignum(&tmp);
+        return FAILURE;
+    }
+
     free_bignum(&tmp);
 
     *y = x1;
@@ -122,7 +182,7 @@ int extended_gcd(bignum_t *res, bignum_t a, bignum_t b, bignum_t *x, bignum_t *y
     free_bignum(&b_1);
     free_bignum(&b_mod_a);
 
-    return 0;
+    return SUCCESS;
 }
 
 int inversemod(bignum_t *res, bignum_t *a, bignum_t *n) {
@@ -131,32 +191,66 @@ int inversemod(bignum_t *res, bignum_t *a, bignum_t *n) {
     bignum_t zero = ZERO();
 
     // Normalize a and n to be positive
-    copy_bignum(&a_normalized, a);
+    if (copy_bignum(&a_normalized, a) != SUCCESS) {
+        free_bignum(&one);
+        free_bignum(&zero);
+        return FAILURE;
+    }
+
     abs_bignum(&a_normalized);
 
-    copy_bignum(&n_normalized, n);
+    if (copy_bignum(&n_normalized, n) != SUCCESS) {
+        free_bignum(&one);
+        free_bignum(&zero);
+        free_bignum(&a_normalized);
+        return FAILURE;
+    }
+
     abs_bignum(&n_normalized);
 
     bignum_t temp1;
     // Compute extended gcd
-    int ret = extended_gcd(&temp1, a_normalized, n_normalized, &x, &y);
-    copy_bignum(res, &temp1);
+    if (extended_gcd(&temp1, a_normalized, n_normalized, &x, &y) != SUCCESS) {
+        free_bignum(&one);
+        free_bignum(&zero);
+        free_bignum(&a_normalized);
+        free_bignum(&n_normalized);
+        return FAILURE;
+    }
+
+    if (copy_bignum(res, &temp1) != SUCCESS) {
+        free_bignum(&one);
+        free_bignum(&zero);
+        free_bignum(&a_normalized);
+        free_bignum(&n_normalized);
+        free_bignum(&x);
+        free_bignum(&y);
+        free_bignum(&temp1);
+        return FAILURE;
+    }
     free_bignum(&temp1);
-    if (ret) return ret;
 
     // Check if the gcd is 1
     if (compare_bignum(res, &one) == 0) {
         bignum_t temp;
-        bignum_mod(&temp, &x, n);  // Reduce modulo n to ensure within range
+        if (bignum_mod(&temp, &x, n) != SUCCESS) {
+            free_bignum(&one);
+            free_bignum(&zero);
+            free_bignum(&a_normalized);
+            free_bignum(&n_normalized);
+            free_bignum(&x);
+            free_bignum(&y);
+            return FAILURE;
+        }
         free_bignum(res);
-        *res = temp;  // Store the corrected x as result
+        *res = temp;
         free_bignum(&y);
         free_bignum(&x);
         free_bignum(&one);
         free_bignum(&zero);
         free_bignum(&a_normalized);
         free_bignum(&n_normalized);
-        return 0;
+        return SUCCESS;
     } else {
         fprintf(stderr, "Inverse does not exist since gcd(a, n) != 1\n");
         free_bignum(&a_normalized);
@@ -165,6 +259,6 @@ int inversemod(bignum_t *res, bignum_t *a, bignum_t *n) {
         free_bignum(&y);
         free_bignum(&one);
         free_bignum(&zero);
-        return 1;
+        return FAILURE;
     }
 }

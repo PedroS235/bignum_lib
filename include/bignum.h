@@ -48,7 +48,7 @@ void trim_leading_zeros_bignum(bignum_t *num);
  * @param *num Big number to resize
  * @param new_size New size of the big number
  */
-void resize_bignum(bignum_t *num, size_t new_size);
+int resize_bignum(bignum_t *num, size_t new_size);
 
 /**
  * @brief Convert a string to a big number
@@ -65,6 +65,6 @@ int str2bignum(bignum_t *num, char *str);
  * @param *destination Big number to copy to
  * @return *source Big number to copy from
  */
-void copy_bignum(bignum_t *destination, const bignum_t *source);
+int copy_bignum(bignum_t *destination, const bignum_t *source);
 
 #endif  // !CORE_H

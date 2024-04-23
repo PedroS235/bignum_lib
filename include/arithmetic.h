@@ -68,7 +68,7 @@ int mult_bignum(bignum_t *res, bignum_t *a, bignum_t *b);
  * @param *r Remainder will be stored here
  * @param *a First big number
  * @param *b Second big number
- * @param positive_remainder Ensure remainder is always positive
+ * @param pos_remainder Ensure remainder is always positive
  * @return 0 if success, 1 if failure
  */
 int div_bignum(bignum_t *q, bignum_t *r, bignum_t *a, bignum_t *b, bool pos_remainder);

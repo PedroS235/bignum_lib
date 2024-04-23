@@ -13,10 +13,10 @@ int init_bignum(bignum_t *num, size_t size, uint8_t sign) {
 
     if (num->digits == NULL) {
         fprintf(stderr, "Memory allocation failed in init_bignum(...)\n");
-        return 1;
+        return FAILURE;
     }
 
-    return 0;
+    return SUCCESS;
 }
 
 void free_bignum(bignum_t *a) {
@@ -32,13 +32,15 @@ void trim_leading_zeros_bignum(bignum_t *num) {
     }
 }
 
-void resize_bignum(bignum_t *num, size_t new_size) {
+int resize_bignum(bignum_t *num, size_t new_size) {
     num->digits = (uint8_t *)realloc(num->digits, new_size * sizeof(int));
     if (num->digits == NULL) {
-        printf("Memory reallocation failed\n");
-        exit(1);
+        fprintf(stderr, "Memory allocation failed in resize_bignum(...)\n");
+        return FAILURE;
     }
     num->size = new_size;
+
+    return SUCCESS;
 }
 
 int str2bignum(bignum_t *num, char *str) {
@@ -59,14 +61,14 @@ int str2bignum(bignum_t *num, char *str) {
         sign = POS;
     }
 
-    init_bignum(num, max_digits, sign);
+    if (init_bignum(num, max_digits, sign) != SUCCESS) return FAILURE;
 
     for (size_t i = 0; i < size; i++) {
         if (str[i] < '0' || str[i] > '9') {
             fprintf(stderr,
                     "Invalid character in string (%c) in str2bignum(...)\n",
                     str[i]);
-            return 1;
+            return FAILURE;
         }
 
         int digit = str[i] - '0';
@@ -82,10 +84,10 @@ int str2bignum(bignum_t *num, char *str) {
 
     trim_leading_zeros_bignum(num);
 
-    return 0;
+    return SUCCESS;
 }
 
-void copy_bignum(bignum_t *destination, const bignum_t *source) {
+int copy_bignum(bignum_t *destination, const bignum_t *source) {
     // TODO: Consider this. When using it, it will create a double free
     // if (destination->digits != NULL) {
     //     free(destination->digits);  // Free old memory to prevent leaks
@@ -96,12 +98,15 @@ void copy_bignum(bignum_t *destination, const bignum_t *source) {
     destination->digits =
         malloc(source->size * sizeof(uint8_t));  // Allocate new memory
 
-    if (destination->digits != NULL) {
-        memcpy(destination->digits,
-               source->digits,
-               source->size);  // Copy the actual digits
-    } else {
-        // Handle memory allocation failure; set size to 0 to indicate an empty state
+    if (destination->digits == NULL) {
+        fprintf(stderr, "Memory allocation failed in copy_bignum(...)\n");
         destination->size = 0;
+        return FAILURE;
     }
+
+    memcpy(destination->digits,
+           source->digits,
+           source->size);  // Copy the actual digits
+
+    return SUCCESS;
 }

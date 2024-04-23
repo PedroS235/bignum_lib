@@ -3,52 +3,49 @@
 #include <stdio.h>
 
 int compare_bignum(bignum_t *a, bignum_t *b) {
-    // First, compare signs
     if (a->sign != b->sign) {
-        return a->sign > b->sign ? -1 : 1;
+        return a->sign > b->sign ? LESS : GREATER;
     }
 
-    // Sign is the same: compare sizes
     if (a->size != b->size) {
-        if (a->sign == 0) {  // both non-negative
-            return a->size > b->size ? 1 : -1;
-        } else {  // both negative
-            return a->size > b->size ? -1 : 1;
+        if (a->sign == 0) {
+            return a->size > b->size ? GREATER : LESS;
+        } else {
+            return a->size > b->size ? LESS : GREATER;
         }
     }
 
-    // Same sign and size: compare digits from most significant
     for (int i = a->size - 1; i >= 0; i--) {
         if (a->digits[i] != b->digits[i]) {
-            return (a->digits[i] > b->digits[i]) ? (a->sign == 0 ? 1 : -1)
-                                                 : (a->sign == 0 ? -1 : 1);
+            if (a->digits[i] > b->digits[i]) {
+                return a->sign == POS ? GREATER : LESS;
+            }
+            return (a->sign == POS ? LESS : GREATER);
         }
     }
 
-    // All digits are the same
-    return 0;
+    return EQUAL;
 }
 
 int compare_bignum_unsigned(bignum_t *a, bignum_t *b) {
-    if (a->size > b->size) return 1;
-    if (a->size < b->size) return -1;
+    if (a->size > b->size) return GREATER;
+    if (a->size < b->size) return LESS;
 
     for (int i = a->size - 1; i >= 0; i--) {
-        if (a->digits[i] > b->digits[i]) return 1;
-        if (a->digits[i] < b->digits[i]) return -1;
+        if (a->digits[i] > b->digits[i]) return GREATER;
+        if (a->digits[i] < b->digits[i]) return LESS;
     }
-    return 0;
+    return EQUAL;
 }
 
 void print_bignum(bignum_t *num) {
-    int decimal[MAX_DIGITS] = {0};  // Array to store decimal digits
+    int decimal[MAX_DIGITS] = {0};
     int len = num->size;
     int i, j, carry, temp;
 
     for (i = 0; i < len; i++) {
-        int bit = num->digits[len - 1 - i];  // Current binary bit (0 or 1)
+        int bit = num->digits[len - 1 - i];
 
-        // Add bit*2^i to the decimal number
         carry = bit;
         for (j = 0; j <= i || carry; j++) {
             if (j < MAX_DIGITS) {
@@ -56,7 +53,7 @@ void print_bignum(bignum_t *num) {
                 decimal[j] = temp % 10;
                 carry = temp / 10;
             } else {
-                break;  // Prevent writing outside the bounds of the array
+                break;
             }
         }
     }
@@ -83,6 +80,7 @@ bignum_t ZERO() {
     init_bignum(&zero, 1, POS);
     return zero;
 }
+
 bignum_t ONE() {
     bignum_t one;
     str2bignum(&one, "1");

@@ -8,8 +8,7 @@ int left_shift(bignum_t *a, size_t shift) {
 
     int new_size = a->size + shift;
     bignum_t result;
-    int ret = init_bignum(&result, new_size, a->sign);
-    if (ret != SUCCESS) return FAILURE;
+    if (init_bignum(&result, new_size, a->sign) != SUCCESS) return FAILURE;
 
     memcpy(result.digits + shift,
            a->digits,
@@ -32,8 +31,7 @@ int right_shift(bignum_t *a, size_t shift) {
 
     int new_size = a->size - shift;
     bignum_t result;
-    int ret = init_bignum(&result, new_size, a->sign);
-    if (ret != SUCCESS) return FAILURE;
+    if (init_bignum(&result, new_size, a->sign) != SUCCESS) return FAILURE;
 
     memcpy(result.digits,
            a->digits + shift,

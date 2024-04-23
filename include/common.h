@@ -11,6 +11,9 @@
 #define BASE 2              // Base of the number system. SHOULD NOT BE CHANGED
 #define POS 0               // Positive sign
 #define NEG 1               // Negative sign
+#define EQUAL 0             // Equal return value
+#define GREATER 1           // Greater return value
+#define LESS -1             // Less return value
 #define SUCCESS 0           // Success return value
 #define FAILURE 1           // Failure return value
 #define DIVISION_BY_ZERO 2  // Division by zero return value

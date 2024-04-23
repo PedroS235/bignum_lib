@@ -18,13 +18,15 @@ bool abs_bignum(bignum_t *n) {
 int add_bignum(bignum_t *res, bignum_t *a, bignum_t *b) {
     if (a->sign != b->sign) {
         if (compare_bignum_unsigned(a, b) >= 0) {
-            sub_bignum_unsigned(res, a, b);
+            int ret = sub_bignum_unsigned(res, a, b);
+            if (ret != SUCCESS) return FAILURE;
             res->sign = a->sign;
-            return 0;
+            return SUCCESS;
         } else {
-            sub_bignum_unsigned(res, b, a);
+            int ret = sub_bignum_unsigned(res, b, a);
+            if (ret != SUCCESS) return FAILURE;
             res->sign = b->sign;
-            return 0;
+            return SUCCESS;
         }
     }
 
@@ -34,7 +36,7 @@ int add_bignum(bignum_t *res, bignum_t *a, bignum_t *b) {
 int add_bignum_unsigned(bignum_t *res, bignum_t *a, bignum_t *b) {
     size_t size = a->size > b->size ? a->size : b->size;
     int ret = init_bignum(res, size + 1, a->sign);
-    if (ret) return ret;  // init failed
+    if (ret != SUCCESS) return FAILURE;
 
     int carry = 0;
     for (size_t i = 0; i < size; i++) {
@@ -51,7 +53,7 @@ int add_bignum_unsigned(bignum_t *res, bignum_t *a, bignum_t *b) {
     } else {
         res->size = size;
     }
-    return 0;
+    return SUCCESS;
 }
 
 int sub_bignum(bignum_t *res, bignum_t *a, bignum_t *b) {
@@ -64,19 +66,21 @@ int sub_bignum(bignum_t *res, bignum_t *a, bignum_t *b) {
     // Same signs
     if (compare_bignum_unsigned(a, b) >= 0) {
         int ret = sub_bignum_unsigned(res, a, b);
+        if (ret != SUCCESS) return FAILURE;
         res->sign = a->sign;
-        return ret;
+        return SUCCESS;
     } else {
         int ret = sub_bignum_unsigned(res, b, a);
+        if (ret != SUCCESS) return FAILURE;
         res->sign = 1 - a->sign;
-        return ret;
+        return SUCCESS;
     }
 }
 
 int sub_bignum_unsigned(bignum_t *res, bignum_t *a, bignum_t *b) {
     size_t size = a->size > b->size ? a->size : b->size;
     int ret = init_bignum(res, size, POS);
-    if (ret) return ret;  // init failed
+    if (ret != SUCCESS) return FAILURE;
 
     int carry = 0;
     for (size_t i = 0; i < size; i++) {
@@ -98,14 +102,14 @@ int sub_bignum_unsigned(bignum_t *res, bignum_t *a, bignum_t *b) {
         res->size--;
     }
 
-    return 0;
+    return SUCCESS;
 }
 
 int mult_bignum(bignum_t *res, bignum_t *a, bignum_t *b) {
     size_t size = a->size + b->size;
 
     int ret = init_bignum(res, size, a->sign ^ b->sign);
-    if (ret) return ret;  // init failed
+    if (ret != SUCCESS) return FAILURE;
 
     for (size_t i = 0; i < a->size; i++) {
         int carry = 0;
@@ -117,25 +121,27 @@ int mult_bignum(bignum_t *res, bignum_t *a, bignum_t *b) {
         res->digits[i + b->size] = carry;
     }
 
+    // TODO: Use trim_leading_zeros_bignum
     while (res->size > 1 && res->digits[res->size - 1] == 0) {
         res->size--;
     }
 
-    return 0;
+    return SUCCESS;
 }
 
-int div_bignum(bignum_t *q, bignum_t *r, bignum_t *a, bignum_t *b, bool r_pos) {
+int div_bignum(bignum_t *q, bignum_t *r, bignum_t *a, bignum_t *b, bool pos_remainder) {
     bignum_t zero = ZERO();
     if (compare_bignum(b, &zero) == 0) {
         *q = ZERO();
         *r = ZERO();
         free_bignum(&zero);
         fprintf(stderr, "Division by zero in div_bignum(...)\n");
-        return 1;
+        return DIVISION_BY_ZERO;
     }
 
-    int ret1 = init_bignum(q, a->size, a->sign ^ b->sign);
-    if (ret1) return 1;  // init failed
+    int ret = init_bignum(q, a->size, a->sign ^ b->sign);
+    if (ret != SUCCESS) return FAILURE;
+
     copy_bignum(r, a);
 
     int shift = a->size - b->size;
@@ -148,11 +154,11 @@ int div_bignum(bignum_t *q, bignum_t *r, bignum_t *a, bignum_t *b, bool r_pos) {
         if (compare_bignum_unsigned(r, &shifted_b) >= 0) {
             bignum_t temp_r;
             int ret = sub_bignum_unsigned(&temp_r, r, &shifted_b);
-            if (ret) {
+            if (ret != SUCCESS) {
                 free_bignum(&zero);
                 free_bignum(&shifted_b);
-                return ret;
-            }  // sub failed
+                return FAILURE;
+            }
             free_bignum(r);
             *r = temp_r;
             q->digits[shift] = 1;
@@ -173,14 +179,14 @@ int div_bignum(bignum_t *q, bignum_t *r, bignum_t *a, bignum_t *b, bool r_pos) {
     abs_bignum(&tmp_b);
 
     // Ensure the remainder is non-negative
-    while (r->sign > 0 && r_pos) {
+    while (r->sign > 0 && pos_remainder) {
         bignum_t adjusted_remainder;
         int ret = add_bignum(&adjusted_remainder, r, &tmp_b);
-        if (ret) {
+        if (ret != SUCCESS) {
             free_bignum(&zero);
             free_bignum(&shifted_b);
-            return ret;
-        }  // sub failed
+            return FAILURE;
+        }
         free_bignum(r);
         *r = adjusted_remainder;
     }
@@ -190,5 +196,5 @@ int div_bignum(bignum_t *q, bignum_t *r, bignum_t *a, bignum_t *b, bool r_pos) {
     free_bignum(&zero);
     free_bignum(&tmp_b);
     free_bignum(&shifted_b);
-    return 0;
+    return SUCCESS;
 }
