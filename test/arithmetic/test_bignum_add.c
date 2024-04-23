@@ -1,6 +1,5 @@
 #include <CUnit/CUnit.h>
 
-#include "arithmetic.h"
 #include "bignum.h"
 
 void test_add_simple() {

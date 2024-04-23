@@ -1,10 +1,10 @@
-#include "bignum.h"
+#include "core.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "utils.h"
+#include "common.h"
 
 bignum_t init_bignum(int size) {
     bignum_t num;
@@ -38,6 +38,21 @@ void free_bignum(bignum_t *a) {
     a->digits = NULL;
     a->sign = POS;
     a->size = 0;
+}
+
+void trim_leading_zeros_bignum(bignum_t *num) {
+    while (num->size > 1 && num->digits[num->size - 1] == 0) {
+        num->size--;
+    }
+}
+
+void resize_bignum(bignum_t *num, size_t new_size) {
+    num->digits = (uint8_t *)realloc(num->digits, new_size * sizeof(int));
+    if (num->digits == NULL) {
+        printf("Memory reallocation failed\n");
+        exit(1);
+    }
+    num->size = new_size;
 }
 
 bignum_t str2bignum(char *str) {
@@ -128,13 +143,23 @@ int str2bignum_(bignum_t *num, char *str) {
     return 0;
 }
 
-bignum_t ZERO() {
-    bignum_t zero;
-    init_bignum_(&zero, 1, POS);
-    return zero;
-}
-bignum_t ONE() {
-    bignum_t one;
-    str2bignum_(&one, "1");
-    return one;
+void copy_bignum(bignum_t *destination, const bignum_t *source) {
+    // TODO: Consider this. When using it, it will create a double free
+    // if (destination->digits != NULL) {
+    //     free(destination->digits);  // Free old memory to prevent leaks
+    // }
+
+    destination->size = source->size;  // Copy size
+    destination->sign = source->sign;  // Copy sign
+    destination->digits =
+        malloc(source->size * sizeof(uint8_t));  // Allocate new memory
+
+    if (destination->digits != NULL) {
+        memcpy(destination->digits,
+               source->digits,
+               source->size);  // Copy the actual digits
+    } else {
+        // Handle memory allocation failure; set size to 0 to indicate an empty state
+        destination->size = 0;
+    }
 }

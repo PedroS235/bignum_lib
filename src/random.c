@@ -1,9 +1,12 @@
 #include <random.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <time.h>
 
 #include "arithmetic.h"
-#include "utils.h"
+#include "common.h"
+#include "modular_arithmetic.h"
+
 void init_seed() {
     struct timespec ts;
     timespec_get(&ts, TIME_UTC);
@@ -11,25 +14,24 @@ void init_seed() {
     return;
 }
 
-int genrandom(bignum_t *res, int bit_length) {
-    if (bit_length < 0) {
+int genrandom(bignum_t *res, int length) {
+    if (length < 0) {
         return 1;
     }
-    int ret = init_bignum_(res, bit_length, 0);
+    int ret = init_bignum_(res, length, 0);
     if (ret) {
         return ret;
     }
     // Set each bit randomly
-    for (int i = 0; i < bit_length; i++) {
+    for (int i = 0; i < length; i++) {
         res->digits[i] = rand() % 2;  // Each digit is only a single bit, set to 0 or 1
     }
 
     // Set the MSB to 1
-    res->digits[bit_length - 1] = 1;
+    res->digits[length - 1] = 1;
     return 0;
 }
 
-// Fermat primality test
 bool fermat_test(bignum_t p, int iterations) {
     bignum_t temp_p;
     copy_bignum(&temp_p, &p);

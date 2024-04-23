@@ -1,8 +1,6 @@
 #include <CUnit/CUnit.h>
 
-#include "arithmetic.h"
 #include "bignum.h"
-#include "utils.h"
 
 void test_extended_gcd_pos_pos_simple() {
     bignum_t a = str2bignum("35");
