@@ -11,7 +11,7 @@ LIBRARY := $(BUILD_DIR)/libmylib.a
 EXECUTABLE := $(BUILD_DIR)/myprogram
 
 # All test sources
-TEST_SOURCES := $(wildcard $(TEST_DIR)/*.c)
+TEST_SOURCES = $(wildcard test/*.c) $(wildcard test/arithmetic/*.c)
 TEST_OBJECTS := $(patsubst $(TEST_DIR)/%.c, $(BUILD_DIR)/test_%.o, $(TEST_SOURCES))
 TEST_EXECUTABLE := $(BUILD_DIR)/test_program
 
