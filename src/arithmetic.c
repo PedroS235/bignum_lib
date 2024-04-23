@@ -131,6 +131,8 @@ int div_bignum(bignum_t *q, bignum_t *r, bignum_t *a, bignum_t *b, bool pos_rema
     if (compare_bignum(b, &zero) == 0) {
         *q = ZERO();
         *r = ZERO();
+        free_bignum(q);
+        free_bignum(r);
         free_bignum(&zero);
         fprintf(stderr, "Division by zero in div_bignum(...)\n");
         return DIVISION_BY_ZERO;
