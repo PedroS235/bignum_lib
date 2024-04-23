@@ -12,19 +12,20 @@ void init_seed() {
 }
 
 int genrandom(bignum_t *res, int bit_length) {
+    if (bit_length < 0) {
+        return 1;
+    }
     int ret = init_bignum_(res, bit_length, 0);
-    if (ret || (bit_length == 0)) {
+    if (ret) {
         return ret;
     }
     // Set each bit randomly
     for (int i = 0; i < bit_length; i++) {
         res->digits[i] = rand() % 2;  // Each digit is only a single bit, set to 0 or 1
     }
-    while (res->size > 1 && res->digits[res->size - 1] == 0) {
-        res->size--;
-    }
-    int random_position = rand() % res->size;
-    res->digits[random_position] = 1;
+
+    // Set the MSB to 1
+    res->digits[bit_length - 1] = 1;
     return 0;
 }
 
