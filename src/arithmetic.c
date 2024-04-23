@@ -121,10 +121,7 @@ int mult_bignum(bignum_t *res, bignum_t *a, bignum_t *b) {
         res->digits[i + b->size] = carry;
     }
 
-    // TODO: Use trim_leading_zeros_bignum
-    while (res->size > 1 && res->digits[res->size - 1] == 0) {
-        res->size--;
-    }
+    trim_leading_zeros_bignum(res);
 
     return SUCCESS;
 }
