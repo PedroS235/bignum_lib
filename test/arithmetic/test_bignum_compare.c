@@ -2,6 +2,17 @@
 
 #include "arithmetic.h"
 #include "bignum.h"
+#include "utils.h"
+
+void test_compare_zero() {
+    bignum_t a = str2bignum("000000000000");
+    bignum_t b = ZERO();
+    print_bignum(&a);
+    print_bignum(&b);
+    CU_ASSERT(compare_bignum(&a, &b) == 0)
+    free_bignum(&a);
+    free_bignum(&b);
+}
 
 void test_compare_equal_positive() {
     bignum_t a = str2bignum("18446744073709551615");
@@ -68,6 +79,7 @@ void test_compare_smaller_neg_neg() {
 }
 
 void bignum_compare_tests_to_suite(CU_pSuite suite) {
+    CU_add_test(suite, "test_compare_zero", test_compare_zero);
     CU_add_test(suite, "test_compare_equal_positive", test_compare_equal_positive);
     CU_add_test(suite, "test_compare_equal_negative", test_compare_equal_negative);
     CU_add_test(suite, "test_compare_greater_pos_pos", test_compare_greater_pos_pos);
