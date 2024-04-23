@@ -12,7 +12,7 @@ void init_seed() {
 }
 
 int genrandom(bignum_t *res, int bit_length) {
-    int ret = init_bignum_(res, bit_length, POS);
+    int ret = init_bignum_(res, bit_length, 0);
     if (ret || (bit_length == 0)) {
         return ret;
     }
@@ -20,45 +20,48 @@ int genrandom(bignum_t *res, int bit_length) {
     for (int i = 0; i < bit_length; i++) {
         res->digits[i] = rand() % 2;  // Each digit is only a single bit, set to 0 or 1
     }
-    int random_position = rand() % bit_length;
+    while (res->size > 1 && res->digits[res->size - 1] == 0) {
+        res->size--;
+    }
+    int random_position = rand() % res->size;
     res->digits[random_position] = 1;
     return 0;
 }
 
 // Fermat primality test
 bool fermat_test(bignum_t p, int iterations) {
+    bignum_t temp_p;
+    copy_bignum(&temp_p, &p);
     bignum_t one = ONE();
     if (compare_bignum(&p, &one) == 0) {
         free_bignum(&one);
         return 0;  // 1 is not a prime
     }
     bignum_t temp;
+    int leng = temp_p.size - 1;
+    sub_bignum(&temp, &temp_p, &one);
 
-    sub_bignum(&temp, &p, &one);
-
-    for (int i = 0; i <= iterations; i++) {
+    for (int i = 0; i < iterations; i++) {
         bignum_t res, a;
-        genrandom(&a, p.size - 1);  // Needs refinement to ensure a < p
-        printf("p_inside: ");
-        print_bignum(&p);
-        printf("a: ");
-        print_bignum(&a);
-        printf("p-1: ");
-        print_bignum(&temp);
-
-        expmod(&res, &a, &temp, &p);  // a^(p-1) % p should be 1
-        printf("res: ");
+        genrandom(&a, leng);  // Needs refinement to ensure a < p
+        bignum_t t4;
+        printf("DEB\n");
+        expmod(&t4, &a, &temp, &p);  // a^(p-1) % p should be 1
+        printf("FIN\n");
+        copy_bignum(&res, &t4);
+        free_bignum(&t4);
+        printf("res interior: ");
         print_bignum(&res);
 
         if (compare_bignum(&res, &one) != 0) {
+            free_bignum(&res);
             free_bignum(&one);
             free_bignum(&temp);
-            free_bignum(&res);
             free_bignum(&a);
             return 0;  // Composite found
         }
-        free_bignum(&a);  // Free a after each loop iteration
         free_bignum(&res);
+        free_bignum(&a);  // Free a after each loop iteration
     }
 
     free_bignum(&one);
