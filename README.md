@@ -9,8 +9,8 @@
 - [x] expomod
 - [x] inversemod
 - [x] genrandom
-- [ ] fermat
-- [ ] genrandomprime
+- [x] fermat
+- [x] genrandomprime
 - [ ] RSA
 
 ## Installation
