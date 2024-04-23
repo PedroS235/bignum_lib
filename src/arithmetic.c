@@ -7,13 +7,11 @@
 #include "common.h"
 
 bool abs_bignum(bignum_t *n) {
-    bignum_t zero = ZERO();
     bool is_negative = false;
-    if (compare_bignum(n, &zero) < 0) {
+    if (n->sign == NEG) {
         n->sign = POS;
         is_negative = true;
     }
-    free_bignum(&zero);
     return is_negative;
 }
 
