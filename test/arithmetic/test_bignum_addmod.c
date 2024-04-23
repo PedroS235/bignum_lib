@@ -1,14 +1,15 @@
 #include <CUnit/CUnit.h>
 
-#include "bignum.h"
+#include "common.h"
+#include "modular_arithmetic.h"
 
 void test_addmod_basic() {
-    bignum_t a = str2bignum("10");
-    bignum_t b = str2bignum("20");
-    bignum_t n = str2bignum("4");
-    bignum_t c;
+    bignum_t a, b, n, c, expected;
+    str2bignum(&a, "10");
+    str2bignum(&b, "20");
+    str2bignum(&n, "4");
     addmod_bignum(&c, &a, &b, &n);
-    bignum_t expected = str2bignum("2");
+    str2bignum(&expected, "2");
     CU_ASSERT(compare_bignum(&c, &expected) == 0)
     free_bignum(&a);
     free_bignum(&b);
@@ -18,10 +19,10 @@ void test_addmod_basic() {
 }
 
 void test_addmod_modzero() {
-    bignum_t a = str2bignum("340282366920938463426481119284349108225");
-    bignum_t b = str2bignum("18446744073709551615");
-    bignum_t n = str2bignum("0");
-    bignum_t c;
+    bignum_t a, b, n, c;
+    str2bignum(&a, "340282366920938463426481119284349108225");
+    str2bignum(&b, "18446744073709551615");
+    str2bignum(&n, "0");
     int ret = addmod_bignum(&c, &a, &b, &n);
     CU_ASSERT(ret);
     free_bignum(&a);
@@ -31,12 +32,12 @@ void test_addmod_modzero() {
 }
 
 void test_addmod_pos_pos_pos() {
-    bignum_t a = str2bignum("340282366920938463426481119284349108225");
-    bignum_t b = str2bignum("18446744073709551615");
-    bignum_t n = str2bignum("1042");
-    bignum_t c;
+    bignum_t a, b, n, c, expected;
+    str2bignum(&a, "340282366920938463426481119284349108225");
+    str2bignum(&b, "18446744073709551615");
+    str2bignum(&n, "1042");
     addmod_bignum(&c, &a, &b, &n);
-    bignum_t expected = str2bignum("508");
+    str2bignum(&expected, "508");
     CU_ASSERT(compare_bignum(&c, &expected) == 0)
     free_bignum(&a);
     free_bignum(&b);
@@ -46,12 +47,12 @@ void test_addmod_pos_pos_pos() {
 }
 
 void test_addmod_neg_pos_pos() {
-    bignum_t a = str2bignum("-340282366920938463426481119284349108225");
-    bignum_t b = str2bignum("18446744073709551615");
-    bignum_t n = str2bignum("1042");
-    bignum_t c;
+    bignum_t a, b, n, c, expected;
+    str2bignum(&a, "-340282366920938463426481119284349108225");
+    str2bignum(&b, "18446744073709551615");
+    str2bignum(&n, "1042");
     addmod_bignum(&c, &a, &b, &n);
-    bignum_t expected = str2bignum("818");
+    str2bignum(&expected, "818");
     CU_ASSERT(compare_bignum(&c, &expected) == 0)
     free_bignum(&a);
     free_bignum(&b);
@@ -61,12 +62,12 @@ void test_addmod_neg_pos_pos() {
 }
 
 void test_addmod_pos_neg_pos() {
-    bignum_t a = str2bignum("18446744073709551615");
-    bignum_t b = str2bignum("-340282366920938463426481119284349108225");
-    bignum_t n = str2bignum("1042");
-    bignum_t c;
+    bignum_t a, b, n, c, expected;
+    str2bignum(&a, "18446744073709551615");
+    str2bignum(&b, "-340282366920938463426481119284349108225");
+    str2bignum(&n, "1042");
     addmod_bignum(&c, &a, &b, &n);
-    bignum_t expected = str2bignum("818");
+    str2bignum(&expected, "818");
     CU_ASSERT(compare_bignum(&c, &expected) == 0)
     free_bignum(&a);
     free_bignum(&b);
@@ -76,12 +77,12 @@ void test_addmod_pos_neg_pos() {
 }
 
 void test_addmod_neg_neg_pos() {
-    bignum_t a = str2bignum("-340282366920938463426481119284349108225");
-    bignum_t b = str2bignum("-18446744073709551615");
-    bignum_t n = str2bignum("1042");
-    bignum_t c;
+    bignum_t a, b, n, c, expected;
+    str2bignum(&a, "-340282366920938463426481119284349108225");
+    str2bignum(&b, "-18446744073709551615");
+    str2bignum(&n, "1042");
     addmod_bignum(&c, &a, &b, &n);
-    bignum_t expected = str2bignum("534");
+    str2bignum(&expected, "534");
     CU_ASSERT(compare_bignum(&c, &expected) == 0)
     free_bignum(&a);
     free_bignum(&b);
@@ -91,12 +92,12 @@ void test_addmod_neg_neg_pos() {
 }
 
 void test_addmod_pos_pos_neg() {
-    bignum_t a = str2bignum("34028236692093846342");
-    bignum_t b = str2bignum("18446744073709551615");
-    bignum_t n = str2bignum("-1042");
-    bignum_t c;
+    bignum_t a, b, n, c, expected;
+    str2bignum(&a, "34028236692093846342");
+    str2bignum(&b, "18446744073709551615");
+    str2bignum(&n, "-1042");
     addmod_bignum(&c, &a, &b, &n);
-    bignum_t expected = str2bignum("349");
+    str2bignum(&expected, "349");
     CU_ASSERT(compare_bignum(&c, &expected) == 0)
     free_bignum(&a);
     free_bignum(&b);
@@ -106,12 +107,12 @@ void test_addmod_pos_pos_neg() {
 }
 
 void test_addmod_neg_neg_neg() {
-    bignum_t a = str2bignum("-34028236692093846342");
-    bignum_t b = str2bignum("-18446744073709551615");
-    bignum_t n = str2bignum("-1042");
-    bignum_t c;
+    bignum_t a, b, n, c, expected;
+    str2bignum(&a, "-34028236692093846342");
+    str2bignum(&b, "-18446744073709551615");
+    str2bignum(&n, "-1042");
     addmod_bignum(&c, &a, &b, &n);
-    bignum_t expected = str2bignum("693");
+    str2bignum(&expected, "693");
     CU_ASSERT(compare_bignum(&c, &expected) == 0)
     free_bignum(&a);
     free_bignum(&b);
@@ -121,12 +122,12 @@ void test_addmod_neg_neg_neg() {
 }
 
 void test_addmod_neg_pos_neg() {
-    bignum_t a = str2bignum("-34028236692093846342");
-    bignum_t b = str2bignum("18446744073709551615");
-    bignum_t n = str2bignum("-1042");
-    bignum_t c;
+    bignum_t a, b, n, c, expected;
+    str2bignum(&a, "-34028236692093846342");
+    str2bignum(&b, "18446744073709551615");
+    str2bignum(&n, "-1042");
     addmod_bignum(&c, &a, &b, &n);
-    bignum_t expected = str2bignum("977");
+    str2bignum(&expected, "977");
     CU_ASSERT(compare_bignum(&c, &expected) == 0)
     free_bignum(&a);
     free_bignum(&b);
@@ -136,12 +137,12 @@ void test_addmod_neg_pos_neg() {
 }
 
 void test_addmod_pos_neg_neg() {
-    bignum_t a = str2bignum("18446744073709551615");
-    bignum_t b = str2bignum("-34028236692093846342");
-    bignum_t n = str2bignum("-1042");
-    bignum_t c;
+    bignum_t a, b, n, c, expected;
+    str2bignum(&a, "18446744073709551615");
+    str2bignum(&b, "-34028236692093846342");
+    str2bignum(&n, "-1042");
     addmod_bignum(&c, &a, &b, &n);
-    bignum_t expected = str2bignum("977");
+    str2bignum(&expected, "977");
     CU_ASSERT(compare_bignum(&c, &expected) == 0);
     free_bignum(&a);
     free_bignum(&b);

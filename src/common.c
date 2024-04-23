@@ -80,11 +80,11 @@ void print_bignum(bignum_t *num) {
 
 bignum_t ZERO() {
     bignum_t zero;
-    init_bignum_(&zero, 1, POS);
+    init_bignum(&zero, 1, POS);
     return zero;
 }
 bignum_t ONE() {
     bignum_t one;
-    str2bignum_(&one, "1");
+    str2bignum(&one, "1");
     return one;
 }

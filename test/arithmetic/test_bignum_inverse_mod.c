@@ -1,14 +1,16 @@
 #include <CUnit/CUnit.h>
 
-#include "bignum.h"
+#include "common.h"
+#include "modular_arithmetic.h"
 
 void test_inversemod_simple() {
-    bignum_t a = str2bignum("35");
-    bignum_t b = str2bignum("18");
-    bignum_t mod_inverse;
+    bignum_t a, b, mod_inverse;
+    str2bignum(&a, "35");
+    str2bignum(&b, "18");
     inversemod(&mod_inverse, &a, &b);
 
-    bignum_t expected = str2bignum("17");
+    bignum_t expected;
+    str2bignum(&expected, "17");
 
     CU_ASSERT(compare_bignum(&mod_inverse, &expected) == 0);
 
@@ -19,9 +21,9 @@ void test_inversemod_simple() {
 }
 
 void test_inversemod_noinv() {
-    bignum_t a = str2bignum("39");
-    bignum_t b = str2bignum("9");
-    bignum_t mod_inverse;
+    bignum_t a, b, mod_inverse;
+    str2bignum(&a, "39");
+    str2bignum(&b, "9");
     int ret = inversemod(&mod_inverse, &a, &b);
 
     CU_ASSERT(ret);
@@ -32,11 +34,11 @@ void test_inversemod_noinv() {
 }
 
 void test_inversemod_pos_pos() {
-    bignum_t a = str2bignum("314234123421343243242134123");
-    bignum_t b = str2bignum("3241234");
-    bignum_t mod_inverse;
+    bignum_t a, b, mod_inverse, expected;
+    str2bignum(&a, "314234123421343243242134123");
+    str2bignum(&b, "3241234");
     inversemod(&mod_inverse, &a, &b);
-    bignum_t expected = str2bignum("1498259");
+    str2bignum(&expected, "1498259");
 
     CU_ASSERT(compare_bignum(&mod_inverse, &expected) == 0);
 
@@ -47,12 +49,11 @@ void test_inversemod_pos_pos() {
 }
 
 void test_inversemod_pos_neg() {
-    bignum_t a = str2bignum("314234123421343243242134123");
-    bignum_t b = str2bignum("-3241234");
-    bignum_t mod_inverse;
+    bignum_t a, b, mod_inverse, expected;
+    str2bignum(&a, "314234123421343243242134123");
+    str2bignum(&b, "-3241234");
     inversemod(&mod_inverse, &a, &b);
-
-    bignum_t expected = str2bignum("1498259");
+    str2bignum(&expected, "1498259");
 
     CU_ASSERT(compare_bignum(&mod_inverse, &expected) == 0);
 
@@ -63,12 +64,12 @@ void test_inversemod_pos_neg() {
 }
 
 void test_inversemod_neg_pos() {
-    bignum_t a = str2bignum("-314234123421343243242134123");
-    bignum_t b = str2bignum("3241234");
-    bignum_t mod_inverse;
+    bignum_t a, b, mod_inverse, expected;
+    str2bignum(&a, "-314234123421343243242134123");
+    str2bignum(&b, "3241234");
     inversemod(&mod_inverse, &a, &b);
 
-    bignum_t expected = str2bignum("1498259");
+    str2bignum(&expected, "1498259");
 
     CU_ASSERT(compare_bignum(&mod_inverse, &expected) == 0);
 
@@ -79,12 +80,12 @@ void test_inversemod_neg_pos() {
 }
 
 void test_inversemod_neg_neg() {
-    bignum_t a = str2bignum("-314234123421343243242134123");
-    bignum_t b = str2bignum("-3241234");
-    bignum_t mod_inverse;
+    bignum_t a, b, mod_inverse, expected;
+    str2bignum(&a, "-314234123421343243242134123");
+    str2bignum(&b, "-3241234");
     inversemod(&mod_inverse, &a, &b);
 
-    bignum_t expected = str2bignum("1498259");
+    str2bignum(&expected, "1498259");
 
     CU_ASSERT(compare_bignum(&mod_inverse, &expected) == 0);
 

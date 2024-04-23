@@ -7,7 +7,7 @@
 #define RANDOM_H
 #include <stdbool.h>
 
-#include "core.h"
+#include "bignum.h"
 
 /**
  * @brief Initialize the randomness seed
@@ -31,5 +31,14 @@ int genrandom(bignum_t *res, int length);
  * @return true if prime, false otherwise
  */
 bool fermat_test(bignum_t p, int iterations);
+
+/**
+ * @brief Random Prime Big Number
+ *
+ * @param *res Result will be stored here
+ * @param length Bit length of the random BigNum
+ * @return 0 if success, 1 if failure
+ */
+int gen_random_prime(bignum_t *res, int length);
 
 #endif

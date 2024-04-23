@@ -1,10 +1,12 @@
 #include <CUnit/CUnit.h>
 
-#include "bignum.h"
+#include "arithmetic.h"
+#include "common.h"
 
 void test_div_by_zero() {
-    bignum_t a = str2bignum("999999999999999999999");
-    bignum_t b = str2bignum("0");
+    bignum_t a;
+    str2bignum(&a, "999999999999999999999");
+    bignum_t b = ZERO();
     bignum_t q, r;
     int ret = div_bignum(&q, &r, &a, &b, false);
 
@@ -17,14 +19,13 @@ void test_div_by_zero() {
 }
 
 void test_div_simple() {
-    bignum_t a = str2bignum("25");
-    bignum_t b = str2bignum("3");
-    bignum_t q;
-    bignum_t r;
+    bignum_t a, b, q, r, q_c, r_c;
+    str2bignum(&a, "25");
+    str2bignum(&b, "3");
     div_bignum(&q, &r, &a, &b, false);
 
-    bignum_t q_c = str2bignum("8");
-    bignum_t r_c = str2bignum("1");
+    str2bignum(&q_c, "8");
+    str2bignum(&r_c, "1");
 
     CU_ASSERT(compare_bignum(&q_c, &q) == 0)
     CU_ASSERT(compare_bignum(&r_c, &r) == 0)
@@ -38,14 +39,13 @@ void test_div_simple() {
 }
 
 void test_div_pos_pos() {
-    bignum_t a = str2bignum("32423423523423423433423");
-    bignum_t b = str2bignum("2342342346767456");
-    bignum_t q;
-    bignum_t r;
+    bignum_t a, b, q, r, q_c, r_c;
+    str2bignum(&a, "32423423523423423433423");
+    str2bignum(&b, "2342342346767456");
     div_bignum(&q, &r, &a, &b, false);
 
-    bignum_t q_c = str2bignum("13842307");
-    bignum_t r_c = str2bignum("1660367839872431");
+    str2bignum(&q_c, "13842307");
+    str2bignum(&r_c, "1660367839872431");
 
     CU_ASSERT(compare_bignum(&q_c, &q) == 0)
     CU_ASSERT(compare_bignum(&r_c, &r) == 0)
@@ -59,14 +59,13 @@ void test_div_pos_pos() {
 }
 
 void test_div_neg_pos() {
-    bignum_t a = str2bignum("-32423423523423423433423");
-    bignum_t b = str2bignum("2342342346767456");
-    bignum_t q;
-    bignum_t r;
+    bignum_t a, b, q, r, q_c, r_c;
+    str2bignum(&a, "-32423423523423423433423");
+    str2bignum(&b, "2342342346767456");
     div_bignum(&q, &r, &a, &b, false);
 
-    bignum_t q_c = str2bignum("-13842307");
-    bignum_t r_c = str2bignum("-1660367839872431");
+    str2bignum(&q_c, "-13842307");
+    str2bignum(&r_c, "-1660367839872431");
 
     CU_ASSERT(compare_bignum(&q_c, &q) == 0)
     CU_ASSERT(compare_bignum(&r_c, &r) == 0)
@@ -80,14 +79,13 @@ void test_div_neg_pos() {
 }
 
 void test_div_pos_neg() {
-    bignum_t a = str2bignum("32423423523423423433423");
-    bignum_t b = str2bignum("-2342342346767456");
-    bignum_t q;
-    bignum_t r;
+    bignum_t a, b, q, r, q_c, r_c;
+    str2bignum(&a, "32423423523423423433423");
+    str2bignum(&b, "-2342342346767456");
     div_bignum(&q, &r, &a, &b, false);
 
-    bignum_t q_c = str2bignum("-13842307");
-    bignum_t r_c = str2bignum("1660367839872431");
+    str2bignum(&q_c, "-13842307");
+    str2bignum(&r_c, "1660367839872431");
 
     CU_ASSERT(compare_bignum(&q_c, &q) == 0)
     CU_ASSERT(compare_bignum(&r_c, &r) == 0)
@@ -101,14 +99,13 @@ void test_div_pos_neg() {
 }
 
 void test_div_neg_neg() {
-    bignum_t a = str2bignum("-32423423523423423433423");
-    bignum_t b = str2bignum("-2342342346767456");
-    bignum_t q;
-    bignum_t r;
+    bignum_t a, b, q, r, q_c, r_c;
+    str2bignum(&a, "-32423423523423423433423");
+    str2bignum(&b, "-2342342346767456");
     div_bignum(&q, &r, &a, &b, false);
 
-    bignum_t q_c = str2bignum("13842307");
-    bignum_t r_c = str2bignum("-1660367839872431");
+    str2bignum(&q_c, "13842307");
+    str2bignum(&r_c, "-1660367839872431");
 
     CU_ASSERT(compare_bignum(&q_c, &q) == 0)
     CU_ASSERT(compare_bignum(&r_c, &r) == 0)

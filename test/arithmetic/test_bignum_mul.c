@@ -1,11 +1,12 @@
 #include <CUnit/CUnit.h>
 
-#include "bignum.h"
+#include "arithmetic.h"
+#include "common.h"
 
 void test_mul_zero_num() {
-    bignum_t a = str2bignum("0");
-    bignum_t b = str2bignum("18446744073709551615");
-    bignum_t c;
+    bignum_t a, b, c;
+    str2bignum(&a, "0");
+    str2bignum(&b, "18446744073709551615");
     mult_bignum(&c, &a, &b);
     CU_ASSERT(compare_bignum(&a, &c) == 0)
     free_bignum(&a);
@@ -14,9 +15,9 @@ void test_mul_zero_num() {
 }
 
 void test_mul_num_zero() {
-    bignum_t a = str2bignum("18446744073709551615");
-    bignum_t b = str2bignum("0");
-    bignum_t c;
+    bignum_t a, b, c;
+    str2bignum(&a, "18446744073709551615");
+    str2bignum(&b, "0");
     mult_bignum(&c, &a, &b);
     CU_ASSERT(compare_bignum(&b, &c) == 0)
     free_bignum(&a);
@@ -25,11 +26,11 @@ void test_mul_num_zero() {
 }
 
 void test_mul_simple() {
-    bignum_t a = str2bignum("50");
-    bignum_t b = str2bignum("50");
-    bignum_t c;
+    bignum_t a, b, c, expected;
+    str2bignum(&a, "50");
+    str2bignum(&b, "50");
     mult_bignum(&c, &a, &b);
-    bignum_t expected = str2bignum("2500");
+    str2bignum(&expected, "2500");
     CU_ASSERT(compare_bignum(&c, &expected) == 0)
     free_bignum(&a);
     free_bignum(&b);
@@ -38,11 +39,11 @@ void test_mul_simple() {
 }
 
 void test_mul_pos_pos() {
-    bignum_t a = str2bignum("18446744073709551615");
-    bignum_t b = str2bignum("18446744073709551615");
-    bignum_t c;
+    bignum_t a, b, c, expected;
+    str2bignum(&a, "18446744073709551615");
+    str2bignum(&b, "18446744073709551615");
     mult_bignum(&c, &a, &b);
-    bignum_t expected = str2bignum("340282366920938463426481119284349108225");
+    str2bignum(&expected, "340282366920938463426481119284349108225");
     CU_ASSERT(compare_bignum(&c, &expected) == 0)
     free_bignum(&a);
     free_bignum(&b);
@@ -51,11 +52,11 @@ void test_mul_pos_pos() {
 }
 
 void test_mul_neg_pos() {
-    bignum_t a = str2bignum("-18446744073709551615");
-    bignum_t b = str2bignum("18446744073709551615");
-    bignum_t c;
+    bignum_t a, b, c, expected;
+    str2bignum(&a, "-18446744073709551615");
+    str2bignum(&b, "18446744073709551615");
     mult_bignum(&c, &a, &b);
-    bignum_t expected = str2bignum("-340282366920938463426481119284349108225");
+    str2bignum(&expected, "-340282366920938463426481119284349108225");
     CU_ASSERT(compare_bignum(&c, &expected) == 0)
     free_bignum(&a);
     free_bignum(&b);
@@ -64,11 +65,11 @@ void test_mul_neg_pos() {
 }
 
 void test_mul_pos_neg() {
-    bignum_t a = str2bignum("18446744073709551615");
-    bignum_t b = str2bignum("-18446744073709551615");
-    bignum_t c;
+    bignum_t a, b, c, expected;
+    str2bignum(&a, "18446744073709551615");
+    str2bignum(&b, "-18446744073709551615");
     mult_bignum(&c, &a, &b);
-    bignum_t expected = str2bignum("-340282366920938463426481119284349108225");
+    str2bignum(&expected, "-340282366920938463426481119284349108225");
     CU_ASSERT(compare_bignum(&c, &expected) == 0)
     free_bignum(&a);
     free_bignum(&b);
@@ -77,11 +78,11 @@ void test_mul_pos_neg() {
 }
 
 void test_mul_neg_neg() {
-    bignum_t a = str2bignum("-18446744073709551615");
-    bignum_t b = str2bignum("-18446744073709551615");
-    bignum_t c;
+    bignum_t a, b, c, expected;
+    str2bignum(&a, "-18446744073709551615");
+    str2bignum(&b, "-18446744073709551615");
     mult_bignum(&c, &a, &b);
-    bignum_t expected = str2bignum("340282366920938463426481119284349108225");
+    str2bignum(&expected, "340282366920938463426481119284349108225");
     CU_ASSERT(compare_bignum(&c, &expected) == 0)
     free_bignum(&a);
     free_bignum(&b);

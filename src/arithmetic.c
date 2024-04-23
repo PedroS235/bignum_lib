@@ -34,7 +34,7 @@ int add_bignum(bignum_t *res, bignum_t *a, bignum_t *b) {
 
 int add_bignum_unsigned(bignum_t *res, bignum_t *a, bignum_t *b) {
     size_t size = a->size > b->size ? a->size : b->size;
-    int ret = init_bignum_(res, size + 1, a->sign);
+    int ret = init_bignum(res, size + 1, a->sign);
     if (ret) return ret;  // init failed
 
     int carry = 0;
@@ -76,7 +76,7 @@ int sub_bignum(bignum_t *res, bignum_t *a, bignum_t *b) {
 
 int sub_bignum_unsigned(bignum_t *res, bignum_t *a, bignum_t *b) {
     size_t size = a->size > b->size ? a->size : b->size;
-    int ret = init_bignum_(res, size, POS);
+    int ret = init_bignum(res, size, POS);
     if (ret) return ret;  // init failed
 
     int carry = 0;
@@ -105,7 +105,7 @@ int sub_bignum_unsigned(bignum_t *res, bignum_t *a, bignum_t *b) {
 int mult_bignum(bignum_t *res, bignum_t *a, bignum_t *b) {
     size_t size = a->size + b->size;
 
-    int ret = init_bignum_(res, size, a->sign ^ b->sign);
+    int ret = init_bignum(res, size, a->sign ^ b->sign);
     if (ret) return ret;  // init failed
 
     for (size_t i = 0; i < a->size; i++) {
@@ -135,7 +135,7 @@ int div_bignum(bignum_t *q, bignum_t *r, bignum_t *a, bignum_t *b, bool r_pos) {
         return 1;
     }
 
-    int ret1 = init_bignum_(q, a->size, a->sign ^ b->sign);
+    int ret1 = init_bignum(q, a->size, a->sign ^ b->sign);
     if (ret1) return 1;  // init failed
     copy_bignum(r, a);
 

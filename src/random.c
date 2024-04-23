@@ -18,7 +18,7 @@ int genrandom(bignum_t *res, int length) {
     if (length < 0) {
         return 1;
     }
-    int ret = init_bignum_(res, length, 0);
+    int ret = init_bignum(res, length, 0);
     if (ret) {
         return ret;
     }
@@ -70,4 +70,19 @@ bool fermat_test(bignum_t p, int iterations) {
     free_bignum(&one);
     free_bignum(&temp);
     return 1;  // Probably prime
+}
+
+int gen_random_prime(bignum_t *res, int length) {
+    bool ok = 0;
+    while (!ok) {
+        bignum_t a;
+        genrandom(&a, length);
+
+        if (fermat_test(a, 10)) {
+            copy_bignum(res, &a);
+            ok = 1;
+        }
+        free_bignum(&a);
+    }
+    return 0;
 }

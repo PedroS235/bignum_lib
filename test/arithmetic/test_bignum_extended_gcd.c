@@ -1,17 +1,16 @@
 #include <CUnit/CUnit.h>
 
-#include "bignum.h"
+#include "common.h"
+#include "modular_arithmetic.h"
 
 void test_extended_gcd_pos_pos_simple() {
-    bignum_t a = str2bignum("35");
-    bignum_t b = str2bignum("15");
-    bignum_t x;
-    bignum_t y;
-    bignum_t gcd;
+    bignum_t a, b, x, y, gcd, expected_gcd, expected_x, expected_y;
+    str2bignum(&a, "35");
+    str2bignum(&b, "15");
     extended_gcd(&gcd, a, b, &x, &y);
-    bignum_t expected_gcd = str2bignum("5");
-    bignum_t expected_x = str2bignum("1");
-    bignum_t expected_y = str2bignum("-2");
+    str2bignum(&expected_gcd, "5");
+    str2bignum(&expected_x, "1");
+    str2bignum(&expected_y, "-2");
 
     CU_ASSERT(compare_bignum(&gcd, &expected_gcd) == 0);
     CU_ASSERT(compare_bignum(&x, &expected_x) == 0);
@@ -28,15 +27,13 @@ void test_extended_gcd_pos_pos_simple() {
 }
 
 void test_extended_gcd_pos_pos() {
-    bignum_t a = str2bignum("334212341355133416799837891234");
-    bignum_t b = str2bignum("6431434556123412341123412");
-    bignum_t x;
-    bignum_t y;
-    bignum_t gcd;
+    bignum_t a, b, x, y, gcd, expected_gcd, expected_x, expected_y;
+    str2bignum(&a, "334212341355133416799837891234");
+    str2bignum(&b, "6431434556123412341123412");
     extended_gcd(&gcd, a, b, &x, &y);
-    bignum_t expected_gcd = str2bignum("2");
-    bignum_t expected_x = str2bignum("1522489363060904105881595");
-    bignum_t expected_y = str2bignum("-79116833153873196738571871969");
+    str2bignum(&expected_gcd, "2");
+    str2bignum(&expected_x, "1522489363060904105881595");
+    str2bignum(&expected_y, "-79116833153873196738571871969");
 
     CU_ASSERT(compare_bignum(&gcd, &expected_gcd) == 0);
     CU_ASSERT(compare_bignum(&x, &expected_x) == 0);
@@ -53,19 +50,13 @@ void test_extended_gcd_pos_pos() {
 }
 
 void test_extended_gcd_neg_neg() {
-    bignum_t a = str2bignum("-35");
-    bignum_t b = str2bignum("-15");
-    bignum_t x;
-    bignum_t y;
-    bignum_t gcd;
+    bignum_t a, b, x, y, gcd, expected_gcd, expected_x, expected_y;
+    str2bignum(&a, "-35");
+    str2bignum(&b, "-15");
     extended_gcd(&gcd, a, b, &x, &y);
-    bignum_t expected_gcd = str2bignum("5");
-    bignum_t expected_x = str2bignum("-1");
-    bignum_t expected_y = str2bignum("2");
-
-    // print_bignum(&gcd);
-    // print_bignum(&x);
-    // print_bignum(&y);
+    str2bignum(&expected_gcd, "5");
+    str2bignum(&expected_x, "-1");
+    str2bignum(&expected_y, "2");
 
     CU_ASSERT(compare_bignum(&gcd, &expected_gcd) == 0);
     CU_ASSERT(compare_bignum(&x, &expected_x) == 0);
@@ -82,19 +73,13 @@ void test_extended_gcd_neg_neg() {
 }
 
 void test_extended_gcd_neg_pos() {
-    bignum_t a = str2bignum("-100");
-    bignum_t b = str2bignum("40");
-    bignum_t x;
-    bignum_t y;
-    bignum_t gcd;
+    bignum_t a, b, x, y, gcd, expected_gcd, expected_x, expected_y;
+    str2bignum(&a, "-100");
+    str2bignum(&b, "40");
     extended_gcd(&gcd, a, b, &x, &y);
-    bignum_t expected_gcd = str2bignum("20");
-    bignum_t expected_x = str2bignum("-1");
-    bignum_t expected_y = str2bignum("-2");
-
-    // print_bignum(&gcd);
-    // print_bignum(&x);
-    // print_bignum(&y);
+    str2bignum(&expected_gcd, "20");
+    str2bignum(&expected_x, "-1");
+    str2bignum(&expected_y, "-2");
 
     CU_ASSERT(compare_bignum(&gcd, &expected_gcd) == 0);
     CU_ASSERT(compare_bignum(&x, &expected_x) == 0);
@@ -111,23 +96,17 @@ void test_extended_gcd_neg_pos() {
 }
 
 void test_extended_gcd_pos_neg() {
-    bignum_t a = str2bignum("100");
-    bignum_t b = str2bignum("-40");
-    bignum_t x;
-    bignum_t y;
-    bignum_t gcd;
+    bignum_t a, b, x, y, gcd, expected_gcd, expected_x, expected_y;
+    str2bignum(&a, "100");
+    str2bignum(&b, "-40");
     extended_gcd(&gcd, a, b, &x, &y);
-    bignum_t expected_gcd = str2bignum("20");
-    bignum_t expected_x = str2bignum("1");
-    bignum_t expected_y = str2bignum("2");
+    str2bignum(&expected_gcd, "20");
+    str2bignum(&expected_x, "1");
+    str2bignum(&expected_y, "2");
 
     CU_ASSERT(compare_bignum(&gcd, &expected_gcd) == 0);
     CU_ASSERT(compare_bignum(&x, &expected_x) == 0);
     CU_ASSERT(compare_bignum(&y, &expected_y) == 0);
-
-    // print_bignum(&gcd);
-    // print_bignum(&x);
-    // print_bignum(&y);
 
     free_bignum(&a);
     free_bignum(&b);

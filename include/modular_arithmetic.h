@@ -6,7 +6,7 @@
 #ifndef MODULAR_ARITHMETIC_H
 #define MODULAR_ARITHMETIC_H
 
-#include "core.h"
+#include "bignum.h"
 
 /**
  * @brief Add two big numbers modulo m

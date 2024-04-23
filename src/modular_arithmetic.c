@@ -41,7 +41,7 @@ int multmod_bignum(bignum_t *res, bignum_t *a, bignum_t *b, bignum_t *n) {
 }
 
 int expmod(bignum_t *res, bignum_t *a, bignum_t *b, bignum_t *n) {
-    int ret = init_bignum_(res, 1, POS);
+    int ret = init_bignum(res, 1, POS);
     if (ret) return ret;  // init failed
     res->digits[0] = 1;   // Initialize result to 1
 
@@ -81,8 +81,8 @@ int extended_gcd(bignum_t *res, bignum_t a, bignum_t b, bignum_t *x, bignum_t *y
 
     if (compare_bignum(&a_1, &zero) == 0) {
         free_bignum(&zero);
-        str2bignum_(x, "0");
-        str2bignum_(y, "1");
+        str2bignum(x, "0");
+        str2bignum(y, "1");
         if (negated_b) {
             y->sign = 1;
         }

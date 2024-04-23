@@ -1,13 +1,14 @@
 #include <CUnit/CUnit.h>
 
-#include "bignum.h"
+#include "arithmetic.h"
+#include "common.h"
 
 void test_sub_simple() {
-    bignum_t a = str2bignum("50");
-    bignum_t b = str2bignum("40");
-    bignum_t c;
+    bignum_t a, b, c, expected;
+    str2bignum(&a, "50");
+    str2bignum(&b, "40");
     sub_bignum(&c, &a, &b);
-    bignum_t expected = str2bignum("10");
+    str2bignum(&expected, "10");
     CU_ASSERT(compare_bignum(&c, &expected) == 0)
     free_bignum(&a);
     free_bignum(&b);
@@ -16,11 +17,11 @@ void test_sub_simple() {
 }
 
 void test_sub_pos_pos() {
-    bignum_t a = str2bignum("36893488147419103230");
-    bignum_t b = str2bignum("18446744073709551615");
-    bignum_t c;
+    bignum_t a, b, c, expected;
+    str2bignum(&a, "36893488147419103230");
+    str2bignum(&b, "18446744073709551615");
     sub_bignum(&c, &a, &b);
-    bignum_t expected = str2bignum("18446744073709551615");
+    str2bignum(&expected, "18446744073709551615");
     CU_ASSERT(compare_bignum(&c, &expected) == 0)
     free_bignum(&a);
     free_bignum(&b);
@@ -29,11 +30,11 @@ void test_sub_pos_pos() {
 }
 
 void test_sub_neg_neg() {
-    bignum_t a = str2bignum("-36893488147419103230");
-    bignum_t b = str2bignum("-18446744073709551615");
-    bignum_t c;
+    bignum_t a, b, c, expected;
+    str2bignum(&a, "-36893488147419103230");
+    str2bignum(&b, "-18446744073709551615");
     sub_bignum(&c, &a, &b);
-    bignum_t expected = str2bignum("-18446744073709551615");
+    str2bignum(&expected, "-18446744073709551615");
     CU_ASSERT(compare_bignum(&c, &expected) == 0)
     free_bignum(&a);
     free_bignum(&b);
@@ -42,11 +43,11 @@ void test_sub_neg_neg() {
 }
 
 void test_sub_neg_pos() {
-    bignum_t a = str2bignum("-36893488147419103230");
-    bignum_t b = str2bignum("18446744073709551615");
-    bignum_t c;
+    bignum_t a, b, c, expected;
+    str2bignum(&a, "-36893488147419103230");
+    str2bignum(&b, "18446744073709551615");
     sub_bignum(&c, &a, &b);
-    bignum_t expected = str2bignum("-55340232221128654845");
+    str2bignum(&expected, "-55340232221128654845");
     CU_ASSERT(compare_bignum(&c, &expected) == 0)
     free_bignum(&a);
     free_bignum(&b);
@@ -55,11 +56,11 @@ void test_sub_neg_pos() {
 }
 
 void test_sub_pos_neg() {
-    bignum_t a = str2bignum("36893488147419103230");
-    bignum_t b = str2bignum("-18446744073709551615");
-    bignum_t c;
+    bignum_t a, b, c, expected;
+    str2bignum(&a, "36893488147419103230");
+    str2bignum(&b, "-18446744073709551615");
     sub_bignum(&c, &a, &b);
-    bignum_t expected = str2bignum("55340232221128654845");
+    str2bignum(&expected, "55340232221128654845");
     CU_ASSERT(compare_bignum(&c, &expected) == 0)
     free_bignum(&a);
     free_bignum(&b);
