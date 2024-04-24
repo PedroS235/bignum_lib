@@ -1,10 +1,13 @@
 #include <CUnit/CUnit.h>
 
+#include "bignum.h"
 #include "common.h"
 #include "modular_arithmetic.h"
 
 void test_inversemod_simple() {
-    bignum_t a, b, mod_inverse;
+    bignum_t a = bignum_new();
+    bignum_t b = bignum_new();
+    bignum_t mod_inverse = bignum_new();
     str2bignum(&a, "35");
     str2bignum(&b, "18");
     inversemod(&mod_inverse, &a, &b);
@@ -21,7 +24,9 @@ void test_inversemod_simple() {
 }
 
 void test_inversemod_noinv() {
-    bignum_t a, b, mod_inverse;
+    bignum_t a = bignum_new();
+    bignum_t b = bignum_new();
+    bignum_t mod_inverse = bignum_new();
     str2bignum(&a, "39");
     str2bignum(&b, "9");
     int ret = inversemod(&mod_inverse, &a, &b);
@@ -34,7 +39,10 @@ void test_inversemod_noinv() {
 }
 
 void test_inversemod_pos_pos() {
-    bignum_t a, b, mod_inverse, expected;
+    bignum_t a = bignum_new();
+    bignum_t b = bignum_new();
+    bignum_t mod_inverse = bignum_new();
+    bignum_t expected = bignum_new();
     str2bignum(&a, "314234123421343243242134123");
     str2bignum(&b, "3241234");
     inversemod(&mod_inverse, &a, &b);
@@ -49,7 +57,10 @@ void test_inversemod_pos_pos() {
 }
 
 void test_inversemod_pos_neg() {
-    bignum_t a, b, mod_inverse, expected;
+    bignum_t a = bignum_new();
+    bignum_t b = bignum_new();
+    bignum_t mod_inverse = bignum_new();
+    bignum_t expected = bignum_new();
     str2bignum(&a, "314234123421343243242134123");
     str2bignum(&b, "-3241234");
     inversemod(&mod_inverse, &a, &b);
@@ -64,7 +75,10 @@ void test_inversemod_pos_neg() {
 }
 
 void test_inversemod_neg_pos() {
-    bignum_t a, b, mod_inverse, expected;
+    bignum_t a = bignum_new();
+    bignum_t b = bignum_new();
+    bignum_t mod_inverse = bignum_new();
+    bignum_t expected = bignum_new();
     str2bignum(&a, "-314234123421343243242134123");
     str2bignum(&b, "3241234");
     inversemod(&mod_inverse, &a, &b);
@@ -80,7 +94,10 @@ void test_inversemod_neg_pos() {
 }
 
 void test_inversemod_neg_neg() {
-    bignum_t a, b, mod_inverse, expected;
+    bignum_t a = bignum_new();
+    bignum_t b = bignum_new();
+    bignum_t mod_inverse = bignum_new();
+    bignum_t expected = bignum_new();
     str2bignum(&a, "-314234123421343243242134123");
     str2bignum(&b, "-3241234");
     inversemod(&mod_inverse, &a, &b);

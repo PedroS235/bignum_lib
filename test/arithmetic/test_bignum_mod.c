@@ -1,11 +1,14 @@
 #include <CUnit/CUnit.h>
 
+#include "bignum.h"
 #include "common.h"
 #include "modular_arithmetic.h"
 
 void test_mod_simple() {
     bignum_t a = ZERO();
-    bignum_t b, c, r_c;
+    bignum_t b = bignum_new();
+    bignum_t c = bignum_new();
+    bignum_t r_c = bignum_new();
     str2bignum(&b, "99999999999999");
     bignum_mod(&c, &a, &b);
     str2bignum(&r_c, "0");
@@ -19,7 +22,8 @@ void test_mod_simple() {
 }
 
 void test_mod_zero_divisor() {
-    bignum_t a, c;
+    bignum_t a = bignum_new();
+    bignum_t c = bignum_new();
     str2bignum(&a, "99999999999");
     bignum_t b = ZERO();
     int ret = bignum_mod(&c, &a, &b);
@@ -32,7 +36,10 @@ void test_mod_zero_divisor() {
 }
 
 void test_mod_pos_pos() {
-    bignum_t a, b, c, r_c;
+    bignum_t a = bignum_new();
+    bignum_t b = bignum_new();
+    bignum_t c = bignum_new();
+    bignum_t r_c = bignum_new();
     str2bignum(&a, "55931291235123512515151");
     str2bignum(&b, "12316543");
     bignum_mod(&c, &a, &b);
@@ -47,7 +54,10 @@ void test_mod_pos_pos() {
 }
 
 void test_mod_neg_pos() {
-    bignum_t a, b, c, r_c;
+    bignum_t a = bignum_new();
+    bignum_t b = bignum_new();
+    bignum_t c = bignum_new();
+    bignum_t r_c = bignum_new();
     str2bignum(&a, "-55931291235123512515151");
     str2bignum(&b, "12316543");
     bignum_mod(&c, &a, &b);
@@ -62,7 +72,10 @@ void test_mod_neg_pos() {
 }
 
 void test_mod_pos_neg() {
-    bignum_t a, b, c, r_c;
+    bignum_t a = bignum_new();
+    bignum_t b = bignum_new();
+    bignum_t c = bignum_new();
+    bignum_t r_c = bignum_new();
     str2bignum(&a, "55931291235123512515151");
     str2bignum(&b, "-12316543");
     bignum_mod(&c, &a, &b);
@@ -78,7 +91,10 @@ void test_mod_pos_neg() {
 }
 
 void test_mod_neg_neg() {
-    bignum_t a, b, c, r_c;
+    bignum_t a = bignum_new();
+    bignum_t b = bignum_new();
+    bignum_t c = bignum_new();
+    bignum_t r_c = bignum_new();
     str2bignum(&a, "-55931291235123512515151");
     str2bignum(&b, "-12316543");
     bignum_mod(&c, &a, &b);

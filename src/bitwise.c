@@ -14,8 +14,7 @@ int left_shift(bignum_t *a, size_t shift) {
            a->digits,
            a->size * sizeof(uint8_t));  // Shift digits left
 
-    free_bignum(a);
-    copy_bignum(a, &result);
+    if (copy_bignum(a, &result) != SUCCESS) return FAILURE;
     free_bignum(&result);
 
     return SUCCESS;
@@ -37,8 +36,7 @@ int right_shift(bignum_t *a, size_t shift) {
            a->digits + shift,
            new_size * sizeof(uint8_t));  // Shift digits right
 
-    free_bignum(a);
-    copy_bignum(a, &result);
+    if (copy_bignum(a, &result) != SUCCESS) return FAILURE;
     free_bignum(&result);
 
     return SUCCESS;

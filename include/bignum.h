@@ -19,6 +19,13 @@ typedef struct bignum {
 } bignum_t;
 
 /**
+ * @brief Create a new big number
+ *
+ * @return *bignum_t Pointer to the new big number
+ */
+bignum_t bignum_new();
+
+/**
  * @brief Initialize a big number
  *
  * @param *num Big number to initialize

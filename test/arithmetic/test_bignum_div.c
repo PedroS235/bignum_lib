@@ -1,13 +1,15 @@
 #include <CUnit/CUnit.h>
 
 #include "arithmetic.h"
+#include "bignum.h"
 #include "common.h"
 
 void test_div_by_zero() {
     bignum_t a;
     str2bignum(&a, "999999999999999999999");
     bignum_t b = ZERO();
-    bignum_t q, r;
+    bignum_t q = bignum_new();
+    bignum_t r = bignum_new();
     int ret = div_bignum(&q, &r, &a, &b, false);
 
     CU_ASSERT(ret);
@@ -19,7 +21,11 @@ void test_div_by_zero() {
 }
 
 void test_div_simple() {
-    bignum_t a, b, q, r, q_c, r_c;
+    bignum_t a, b;
+    bignum_t q = bignum_new();
+    bignum_t r = bignum_new();
+    bignum_t q_c = bignum_new();
+    bignum_t r_c = bignum_new();
     str2bignum(&a, "25");
     str2bignum(&b, "3");
     div_bignum(&q, &r, &a, &b, false);
@@ -39,7 +45,11 @@ void test_div_simple() {
 }
 
 void test_div_pos_pos() {
-    bignum_t a, b, q, r, q_c, r_c;
+    bignum_t a, b;
+    bignum_t q = bignum_new();
+    bignum_t r = bignum_new();
+    bignum_t q_c = bignum_new();
+    bignum_t r_c = bignum_new();
     str2bignum(&a, "32423423523423423433423");
     str2bignum(&b, "2342342346767456");
     div_bignum(&q, &r, &a, &b, false);
@@ -59,7 +69,11 @@ void test_div_pos_pos() {
 }
 
 void test_div_neg_pos() {
-    bignum_t a, b, q, r, q_c, r_c;
+    bignum_t a, b;
+    bignum_t q = bignum_new();
+    bignum_t r = bignum_new();
+    bignum_t q_c = bignum_new();
+    bignum_t r_c = bignum_new();
     str2bignum(&a, "-32423423523423423433423");
     str2bignum(&b, "2342342346767456");
     div_bignum(&q, &r, &a, &b, false);
@@ -79,7 +93,11 @@ void test_div_neg_pos() {
 }
 
 void test_div_pos_neg() {
-    bignum_t a, b, q, r, q_c, r_c;
+    bignum_t a, b;
+    bignum_t q = bignum_new();
+    bignum_t r = bignum_new();
+    bignum_t q_c = bignum_new();
+    bignum_t r_c = bignum_new();
     str2bignum(&a, "32423423523423423433423");
     str2bignum(&b, "-2342342346767456");
     div_bignum(&q, &r, &a, &b, false);
@@ -99,7 +117,11 @@ void test_div_pos_neg() {
 }
 
 void test_div_neg_neg() {
-    bignum_t a, b, q, r, q_c, r_c;
+    bignum_t a, b;
+    bignum_t q = bignum_new();
+    bignum_t r = bignum_new();
+    bignum_t q_c = bignum_new();
+    bignum_t r_c = bignum_new();
     str2bignum(&a, "-32423423523423423433423");
     str2bignum(&b, "-2342342346767456");
     div_bignum(&q, &r, &a, &b, false);

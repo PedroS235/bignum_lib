@@ -138,56 +138,70 @@ int div_bignum(bignum_t *q, bignum_t *r, bignum_t *a, bignum_t *b, bool pos_rema
         return DIVISION_BY_ZERO;
     }
 
-    int ret = init_bignum(q, a->size, a->sign ^ b->sign);
-    if (ret != SUCCESS) return FAILURE;
+    if (init_bignum(q, a->size, a->sign ^ b->sign) != SUCCESS) return FAILURE;
 
-    copy_bignum(r, a);
+    if (copy_bignum(r, a) != SUCCESS) return FAILURE;
 
     int shift = a->size - b->size;
 
-    bignum_t shifted_b;
-    copy_bignum(&shifted_b, b);
-    binary_shift(&shifted_b, shift);
+    bignum_t shifted_b = bignum_new();
+    if (copy_bignum(&shifted_b, b) != SUCCESS) return FAILURE;
+    if (binary_shift(&shifted_b, shift) != SUCCESS) return FAILURE;
 
     while (shift >= 0) {
         if (compare_bignum_unsigned(r, &shifted_b) >= 0) {
-            bignum_t temp_r;
-            int ret = sub_bignum_unsigned(&temp_r, r, &shifted_b);
-            if (ret != SUCCESS) {
+            bignum_t temp_r = bignum_new();
+            if (sub_bignum_unsigned(&temp_r, r, &shifted_b) != SUCCESS) {
                 free_bignum(&zero);
                 free_bignum(&shifted_b);
                 return FAILURE;
             }
-            free_bignum(r);
-            *r = temp_r;
+            if (copy_bignum(r, &temp_r) != SUCCESS) {
+                free_bignum(&zero);
+                free_bignum(&shifted_b);
+                return FAILURE;
+            }
+            free_bignum(&temp_r);
             q->digits[shift] = 1;
         } else {
             q->digits[shift] = 0;
         }
 
         shift--;
-        binary_shift(&shifted_b, -1);
+        if (binary_shift(&shifted_b, -1) != SUCCESS) {
+            free_bignum(&zero);
+            free_bignum(&shifted_b);
+            return FAILURE;
+        }
     }
 
     // Correct signs based on input signs
     q->sign = a->sign ^ b->sign;
     r->sign = a->sign;
 
-    bignum_t tmp_b;
-    copy_bignum(&tmp_b, b);
+    bignum_t tmp_b = bignum_new();
+    if (copy_bignum(&tmp_b, b) != SUCCESS) {
+        free_bignum(&zero);
+        free_bignum(&shifted_b);
+        return FAILURE;
+    }
     abs_bignum(&tmp_b);
 
     // Ensure the remainder is non-negative
     while (r->sign > 0 && pos_remainder) {
-        bignum_t adjusted_remainder;
-        int ret = add_bignum(&adjusted_remainder, r, &tmp_b);
-        if (ret != SUCCESS) {
+        bignum_t adjusted_remainder = bignum_new();
+        if (add_bignum(&adjusted_remainder, r, &tmp_b) != SUCCESS) {
             free_bignum(&zero);
             free_bignum(&shifted_b);
             return FAILURE;
         }
-        free_bignum(r);
-        *r = adjusted_remainder;
+        if (copy_bignum(r, &adjusted_remainder) != SUCCESS) {
+            free_bignum(&zero);
+            free_bignum(&shifted_b);
+            free_bignum(&tmp_b);
+            return FAILURE;
+        }
+        free_bignum(&adjusted_remainder);
     }
 
     trim_leading_zeros_bignum(q);

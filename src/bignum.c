@@ -6,6 +6,8 @@
 
 #include "common.h"
 
+bignum_t bignum_new() { return (bignum_t){.digits = NULL, .size = 0, .sign = POS}; }
+
 int init_bignum(bignum_t *num, size_t size, uint8_t sign) {
     num->size = size;
     num->sign = sign;
@@ -88,10 +90,9 @@ int str2bignum(bignum_t *num, char *str) {
 }
 
 int copy_bignum(bignum_t *destination, const bignum_t *source) {
-    // TODO: Consider this. When using it, it will create a double free
-    // if (destination->digits != NULL) {
-    //     free(destination->digits);  // Free old memory to prevent leaks
-    // }
+    if (destination->digits != NULL && destination->size != 0) {
+        free(destination->digits);  // Free old memory to prevent leaks
+    }
 
     destination->size = source->size;  // Copy size
     destination->sign = source->sign;  // Copy sign

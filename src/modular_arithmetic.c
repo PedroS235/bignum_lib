@@ -3,10 +3,11 @@
 #include <stdio.h>
 
 #include "arithmetic.h"
+#include "bignum.h"
 #include "common.h"
 
 int bignum_mod(bignum_t *res, bignum_t *a, bignum_t *n) {
-    bignum_t q;
+    bignum_t q = bignum_new();
     if (div_bignum(&q, res, a, n, true) != SUCCESS) {
         return FAILURE;
     }
@@ -18,7 +19,7 @@ int addmod_bignum(bignum_t *res, bignum_t *a, bignum_t *b, bignum_t *n) {
     int ret = add_bignum(res, a, b);
     if (ret != SUCCESS) return FAILURE;
 
-    bignum_t tmp;
+    bignum_t tmp = bignum_new();
     if (bignum_mod(&tmp, res, n) != SUCCESS) {
         return FAILURE;
     }
@@ -31,7 +32,7 @@ int addmod_bignum(bignum_t *res, bignum_t *a, bignum_t *b, bignum_t *n) {
 int multmod_bignum(bignum_t *res, bignum_t *a, bignum_t *b, bignum_t *n) {
     if (mult_bignum(res, a, b) != SUCCESS) return FAILURE;
 
-    bignum_t tmp;
+    bignum_t tmp = bignum_new();
     if (bignum_mod(&tmp, res, n) != SUCCESS) {
         return FAILURE;
     }
@@ -44,28 +45,35 @@ int multmod_bignum(bignum_t *res, bignum_t *a, bignum_t *b, bignum_t *n) {
 int expmod(bignum_t *res, bignum_t *a, bignum_t *b, bignum_t *n) {
     if (str2bignum(res, "1") != SUCCESS) return FAILURE;
 
-    bignum_t base;
+    bignum_t base = bignum_new();
     if (copy_bignum(&base, a) != SUCCESS) return FAILURE;
 
-    size_t i;
-    for (i = 0; i < b->size; i++) {
+    for (size_t i = 0; i < b->size; i++) {
         uint8_t bit = b->digits[i];
         if (bit) {
-            bignum_t temp;
+            bignum_t temp = bignum_new();
             if (multmod_bignum(&temp, res, &base, n) != SUCCESS) {
                 free_bignum(&base);
                 return FAILURE;
             }
-            free_bignum(res);
-            *res = temp;
+            if (copy_bignum(res, &temp) != SUCCESS) {
+                free_bignum(&base);
+                free_bignum(&temp);
+                return FAILURE;
+            }
+            free_bignum(&temp);
         }
-        bignum_t temp;
+        bignum_t temp = bignum_new();
         if (multmod_bignum(&temp, &base, &base, n) != SUCCESS) {
             free_bignum(&base);
             return FAILURE;
         }
-        free_bignum(&base);
-        base = temp;
+        if (copy_bignum(&base, &temp) != SUCCESS) {
+            free_bignum(&base);
+            free_bignum(&temp);
+            return FAILURE;
+        }
+        free_bignum(&temp);
     }
 
     free_bignum(&base);
@@ -73,8 +81,8 @@ int expmod(bignum_t *res, bignum_t *a, bignum_t *b, bignum_t *n) {
 }
 
 int extended_gcd(bignum_t *res, bignum_t a, bignum_t b, bignum_t *x, bignum_t *y) {
-    int ret;
-    bignum_t a_1, b_1;
+    bignum_t a_1 = bignum_new();
+    bignum_t b_1 = bignum_new();
     if (copy_bignum(&a_1, &a) != SUCCESS) return FAILURE;
 
     if (copy_bignum(&b_1, &b) != SUCCESS) {
@@ -109,13 +117,14 @@ int extended_gcd(bignum_t *res, bignum_t a, bignum_t b, bignum_t *x, bignum_t *y
         return SUCCESS;
     }
 
-    bignum_t x1, y1;
-    bignum_t b_mod_a;
+    bignum_t x1 = bignum_new();
+    bignum_t y1 = bignum_new();
+    bignum_t b_mod_a = bignum_new();
     if (bignum_mod(&b_mod_a, &b_1, &a_1) != SUCCESS) {
         free_bignum(&zero);
         free_bignum(&a_1);
         free_bignum(&b_1);
-        return ret;
+        return FAILURE;
     }
 
     if (extended_gcd(res, b_mod_a, a_1, &x1, &y1) != SUCCESS) {
@@ -126,7 +135,8 @@ int extended_gcd(bignum_t *res, bignum_t a, bignum_t b, bignum_t *x, bignum_t *y
         return FAILURE;
     }
 
-    bignum_t q, r;
+    bignum_t q = bignum_new();
+    bignum_t r = bignum_new();
     if (div_bignum(&q, &r, &b_1, &a_1, true) != SUCCESS) {
         free_bignum(&zero);
         free_bignum(&a_1);
@@ -134,10 +144,10 @@ int extended_gcd(bignum_t *res, bignum_t a, bignum_t b, bignum_t *x, bignum_t *y
         free_bignum(&x1);
         free_bignum(&y1);
         free_bignum(&b_mod_a);
-        return ret;
+        return FAILURE;
     }
 
-    bignum_t tmp;
+    bignum_t tmp = bignum_new();
     if (mult_bignum(&tmp, &q, &x1) != SUCCESS) {
         free_bignum(&zero);
         free_bignum(&a_1);
@@ -165,7 +175,18 @@ int extended_gcd(bignum_t *res, bignum_t a, bignum_t b, bignum_t *x, bignum_t *y
 
     free_bignum(&tmp);
 
-    *y = x1;
+    if (copy_bignum(y, &x1) != SUCCESS) {
+        free_bignum(&zero);
+        free_bignum(&a_1);
+        free_bignum(&b_1);
+        free_bignum(&x1);
+        free_bignum(&y1);
+        free_bignum(&q);
+        free_bignum(&r);
+        free_bignum(&b_mod_a);
+        return FAILURE;
+    }
+    free_bignum(&x1);
 
     if (negated_a) {
         x->sign = 1;
@@ -186,11 +207,13 @@ int extended_gcd(bignum_t *res, bignum_t a, bignum_t b, bignum_t *x, bignum_t *y
 }
 
 int inversemod(bignum_t *res, bignum_t *a, bignum_t *n) {
-    bignum_t x, y, a_normalized, n_normalized;
+    bignum_t x = bignum_new();
+    bignum_t y = bignum_new();
+    bignum_t a_normalized = bignum_new();
+    bignum_t n_normalized = bignum_new();
     bignum_t one = ONE();
     bignum_t zero = ZERO();
 
-    // Normalize a and n to be positive
     if (copy_bignum(&a_normalized, a) != SUCCESS) {
         free_bignum(&one);
         free_bignum(&zero);
@@ -208,7 +231,7 @@ int inversemod(bignum_t *res, bignum_t *a, bignum_t *n) {
 
     abs_bignum(&n_normalized);
 
-    bignum_t temp1;
+    bignum_t temp1 = bignum_new();
     // Compute extended gcd
     if (extended_gcd(&temp1, a_normalized, n_normalized, &x, &y) != SUCCESS) {
         free_bignum(&one);
@@ -232,7 +255,7 @@ int inversemod(bignum_t *res, bignum_t *a, bignum_t *n) {
 
     // Check if the gcd is 1
     if (compare_bignum(res, &one) == 0) {
-        bignum_t temp;
+        bignum_t temp = bignum_new();
         if (bignum_mod(&temp, &x, n) != SUCCESS) {
             free_bignum(&one);
             free_bignum(&zero);
@@ -242,15 +265,15 @@ int inversemod(bignum_t *res, bignum_t *a, bignum_t *n) {
             free_bignum(&y);
             return FAILURE;
         }
-        free_bignum(res);
-        *res = temp;
+        int ret = copy_bignum(res, &temp);
+        free_bignum(&temp);
         free_bignum(&y);
         free_bignum(&x);
         free_bignum(&one);
         free_bignum(&zero);
         free_bignum(&a_normalized);
         free_bignum(&n_normalized);
-        return SUCCESS;
+        return ret;
     } else {
         fprintf(stderr, "Inverse does not exist since gcd(a, n) != 1\n");
         free_bignum(&a_normalized);

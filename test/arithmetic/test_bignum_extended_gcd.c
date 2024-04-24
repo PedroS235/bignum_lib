@@ -4,7 +4,14 @@
 #include "modular_arithmetic.h"
 
 void test_extended_gcd_pos_pos_simple() {
-    bignum_t a, b, x, y, gcd, expected_gcd, expected_x, expected_y;
+    bignum_t a = bignum_new();
+    bignum_t b = bignum_new();
+    bignum_t x = bignum_new();
+    bignum_t y = bignum_new();
+    bignum_t gcd = bignum_new();
+    bignum_t expected_gcd = bignum_new();
+    bignum_t expected_x = bignum_new();
+    bignum_t expected_y = bignum_new();
     str2bignum(&a, "35");
     str2bignum(&b, "15");
     extended_gcd(&gcd, a, b, &x, &y);
@@ -27,7 +34,14 @@ void test_extended_gcd_pos_pos_simple() {
 }
 
 void test_extended_gcd_pos_pos() {
-    bignum_t a, b, x, y, gcd, expected_gcd, expected_x, expected_y;
+    bignum_t a = bignum_new();
+    bignum_t b = bignum_new();
+    bignum_t x = bignum_new();
+    bignum_t y = bignum_new();
+    bignum_t gcd = bignum_new();
+    bignum_t expected_gcd = bignum_new();
+    bignum_t expected_x = bignum_new();
+    bignum_t expected_y = bignum_new();
     str2bignum(&a, "334212341355133416799837891234");
     str2bignum(&b, "6431434556123412341123412");
     extended_gcd(&gcd, a, b, &x, &y);
@@ -50,7 +64,14 @@ void test_extended_gcd_pos_pos() {
 }
 
 void test_extended_gcd_neg_neg() {
-    bignum_t a, b, x, y, gcd, expected_gcd, expected_x, expected_y;
+    bignum_t a = bignum_new();
+    bignum_t b = bignum_new();
+    bignum_t x = bignum_new();
+    bignum_t y = bignum_new();
+    bignum_t gcd = bignum_new();
+    bignum_t expected_gcd = bignum_new();
+    bignum_t expected_x = bignum_new();
+    bignum_t expected_y = bignum_new();
     str2bignum(&a, "-35");
     str2bignum(&b, "-15");
     extended_gcd(&gcd, a, b, &x, &y);
@@ -73,7 +94,14 @@ void test_extended_gcd_neg_neg() {
 }
 
 void test_extended_gcd_neg_pos() {
-    bignum_t a, b, x, y, gcd, expected_gcd, expected_x, expected_y;
+    bignum_t a = bignum_new();
+    bignum_t b = bignum_new();
+    bignum_t x = bignum_new();
+    bignum_t y = bignum_new();
+    bignum_t gcd = bignum_new();
+    bignum_t expected_gcd = bignum_new();
+    bignum_t expected_x = bignum_new();
+    bignum_t expected_y = bignum_new();
     str2bignum(&a, "-100");
     str2bignum(&b, "40");
     extended_gcd(&gcd, a, b, &x, &y);
@@ -96,7 +124,14 @@ void test_extended_gcd_neg_pos() {
 }
 
 void test_extended_gcd_pos_neg() {
-    bignum_t a, b, x, y, gcd, expected_gcd, expected_x, expected_y;
+    bignum_t a = bignum_new();
+    bignum_t b = bignum_new();
+    bignum_t x = bignum_new();
+    bignum_t y = bignum_new();
+    bignum_t gcd = bignum_new();
+    bignum_t expected_gcd = bignum_new();
+    bignum_t expected_x = bignum_new();
+    bignum_t expected_y = bignum_new();
     str2bignum(&a, "100");
     str2bignum(&b, "-40");
     extended_gcd(&gcd, a, b, &x, &y);

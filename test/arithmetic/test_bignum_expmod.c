@@ -4,7 +4,12 @@
 #include "modular_arithmetic.h"
 
 void test_expmod_simple() {
-    bignum_t base, exp, n, result, expected;
+    bignum_t base = bignum_new();
+    bignum_t exp = bignum_new();
+    bignum_t n = bignum_new();
+    bignum_t result = bignum_new();
+    bignum_t expected = bignum_new();
+
     str2bignum(&base, "2342");
     str2bignum(&exp, "6762");
     str2bignum(&n, "9343");
@@ -21,7 +26,11 @@ void test_expmod_simple() {
 }
 
 void test_expmod_large() {
-    bignum_t base, exp, n, result, expected;
+    bignum_t base = bignum_new();
+    bignum_t exp = bignum_new();
+    bignum_t n = bignum_new();
+    bignum_t result = bignum_new();
+    bignum_t expected = bignum_new();
     str2bignum(&base, "12345513512345552134123423");
     str2bignum(&exp, "33415533412333412341234");
     str2bignum(&n, "51234123412223413341341");
