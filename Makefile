@@ -1,60 +1,35 @@
-CC := gcc
-SRC_DIR := ./src
-INCLUDE_DIR := ./include
-BUILD_DIR := ./build
-TEST_DIR := ./test
+.PHONY: all setup run test clean
 
-# Exclude src/main.c from the list of source files for the library
-SOURCES := $(filter-out $(SRC_DIR)/main.c, $(wildcard $(SRC_DIR)/*.c))
-OBJECTS := $(patsubst $(SRC_DIR)/%.c, $(BUILD_DIR)/%.o, $(SOURCES))
-LIBRARY := $(BUILD_DIR)/libmylib.a
-EXECUTABLE := $(BUILD_DIR)/myprogram
+# Default build directory
+BUILD_DIR := build
 
-# All test sources
-TEST_SOURCES = $(wildcard test/*.c) $(wildcard test/arithmetic/*.c)
-TEST_OBJECTS := $(patsubst $(TEST_DIR)/%.c, $(BUILD_DIR)/test_%.o, $(TEST_SOURCES))
-TEST_EXECUTABLE := $(BUILD_DIR)/test_program
+# Build type (Release, Debug, etc)
+BUILD_TYPE ?= Release
 
-CFLAGS := -I$(INCLUDE_DIR) -Wall -Wextra -O2
-LDFLAGS := -L$(BUILD_DIR) -lmylib
-TEST_LDFLAGS := -L$(BUILD_DIR) -lmylib -lcunit
+# Default target executed when no arguments are given to make.
+default: run
 
-all: $(LIBRARY) $(EXECUTABLE) test
+# Setup the build system with CMake
+setup: $(BUILD_DIR)
+	cd $(BUILD_DIR) && cmake -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) ..
 
-$(LIBRARY): $(OBJECTS)
-	ar rcs $@ $(OBJECTS)
+# Target to build the project
+all: setup
+	cd $(BUILD_DIR) && $(MAKE)
 
-$(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
-	$(CC) $(CFLAGS) -c $< -o $@
+# Target to run the main executable
+run: all
+	./$(BUILD_DIR)/bignum
 
-$(BUILD_DIR)/test_%.o: $(TEST_DIR)/%.c
-	$(CC) $(CFLAGS) -I$(SRC_DIR) -c $< -o $@
+# Target to run tests
+test: all
+	./$(BUILD_DIR)/bignum_test
 
-$(EXECUTABLE): $(SRC_DIR)/main.c $(LIBRARY)
-	$(CC) $(CFLAGS) $< -o $@ $(LDFLAGS)
-
-$(TEST_EXECUTABLE): $(TEST_OBJECTS) $(LIBRARY)
-	$(CC) $(CFLAGS) $^ -o $@ $(TEST_LDFLAGS)
-
-test: $(TEST_EXECUTABLE)
-	./$(TEST_EXECUTABLE)
-
-run: $(EXECUTABLE)
-	./$(EXECUTABLE)
-
-$(OBJECTS): | $(BUILD_DIR)
-$(TEST_OBJECTS): | $(BUILD_DIR)
-
-$(BUILD_DIR):
-	mkdir -p $(BUILD_DIR)
-
+# Clean up build directory
 clean:
 	rm -rf $(BUILD_DIR)
 
-compdb:
-	echo '[' > compile_commands.json
-	$(foreach SRC,$(SOURCES),echo '{ "directory": "$(CURDIR)", "command": "$(CC) $(CFLAGS) -c $(SRC) -o $(BUILD_DIR)/$$(notdir $$(SRC:.c=.o))", "file": "$(SRC)" },' >> compile_commands.json;)
-	sed -i '$$ s/.$$//' compile_commands.json
-	echo ']' >> compile_commands.json
+# Ensure the build directory exists
+$(BUILD_DIR):
+	mkdir -p $(BUILD_DIR)
 
-.PHONY: all clean run test compdb
