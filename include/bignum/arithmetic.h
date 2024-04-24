@@ -8,7 +8,7 @@
 
 #include <stdbool.h>
 
-#include "bignum.h"
+#include "bignum/bignum.h"
 
 /**
  * @brief Add two big numbers

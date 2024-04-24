@@ -7,7 +7,7 @@
 #define RANDOM_H
 #include <stdbool.h>
 
-#include "bignum.h"
+#include "bignum/bignum.h"
 
 /**
  * @brief Initialize the randomness seed

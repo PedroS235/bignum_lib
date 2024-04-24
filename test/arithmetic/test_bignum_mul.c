@@ -1,7 +1,7 @@
 #include <CUnit/CUnit.h>
 
-#include "arithmetic.h"
-#include "common.h"
+#include "bignum/arithmetic.h"
+#include "bignum/common.h"
 
 void test_mul_zero_num() {
     bignum_t a, b, c;

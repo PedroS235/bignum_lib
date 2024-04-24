@@ -1,7 +1,7 @@
 #include <CUnit/CUnit.h>
 
-#include "common.h"
-#include "modular_arithmetic.h"
+#include "bignum/common.h"
+#include "bignum/modular_arithmetic.h"
 
 void test_addmod_basic() {
     bignum_t a, b, n, c, expected;

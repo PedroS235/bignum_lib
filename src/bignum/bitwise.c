@@ -1,7 +1,8 @@
-#include "bitwise.h"
+#include "bignum/bitwise.h"
 
-#include <common.h>
 #include <string.h>
+
+#include "bignum/common.h"
 
 int left_shift(bignum_t *a, size_t shift) {
     if (shift == 0) return SUCCESS;  // No shift needed

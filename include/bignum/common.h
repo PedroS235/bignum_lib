@@ -6,7 +6,7 @@
 #ifndef COMMON_H
 #define COMMON_H
 
-#include "bignum.h"
+#include "bignum/bignum.h"
 
 #define BASE 2              // Base of the number system. SHOULD NOT BE CHANGED
 #define POS 0               // Positive sign

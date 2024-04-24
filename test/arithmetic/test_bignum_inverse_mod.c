@@ -1,8 +1,8 @@
 #include <CUnit/CUnit.h>
 
-#include "bignum.h"
-#include "common.h"
-#include "modular_arithmetic.h"
+#include "bignum/bignum.h"
+#include "bignum/common.h"
+#include "bignum/modular_arithmetic.h"
 
 void test_inversemod_simple() {
     bignum_t a = bignum_new();

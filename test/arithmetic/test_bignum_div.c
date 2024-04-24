@@ -1,8 +1,8 @@
 #include <CUnit/CUnit.h>
 
-#include "arithmetic.h"
-#include "bignum.h"
-#include "common.h"
+#include "bignum/arithmetic.h"
+#include "bignum/bignum.h"
+#include "bignum/common.h"
 
 void test_div_by_zero() {
     bignum_t a;

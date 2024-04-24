@@ -1,7 +1,7 @@
 #include <CUnit/CUnit.h>
 
-#include "common.h"
-#include "modular_arithmetic.h"
+#include "bignum/common.h"
+#include "bignum/modular_arithmetic.h"
 
 void test_extended_gcd_pos_pos_simple() {
     bignum_t a = bignum_new();

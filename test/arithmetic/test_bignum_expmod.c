@@ -1,7 +1,7 @@
 #include <CUnit/CUnit.h>
 
-#include "common.h"
-#include "modular_arithmetic.h"
+#include "bignum/common.h"
+#include "bignum/modular_arithmetic.h"
 
 void test_expmod_simple() {
     bignum_t base = bignum_new();

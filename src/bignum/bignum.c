@@ -1,10 +1,10 @@
-#include "bignum.h"
+#include "bignum/bignum.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "common.h"
+#include "bignum/common.h"
 
 bignum_t bignum_new() { return (bignum_t){.digits = NULL, .size = 0, .sign = POS}; }
 

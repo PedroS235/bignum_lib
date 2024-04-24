@@ -1,4 +1,4 @@
-#include "common.h"
+#include "bignum/common.h"
 
 #include <stdio.h>
 

@@ -1,10 +1,10 @@
-#include "arithmetic.h"
+#include "bignum/arithmetic.h"
 
 #include <stdio.h>
 
-#include "bignum.h"
-#include "bitwise.h"
-#include "common.h"
+#include "bignum/bignum.h"
+#include "bignum/bitwise.h"
+#include "bignum/common.h"
 
 bool abs_bignum(bignum_t *n) {
     bool is_negative = false;

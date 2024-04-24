@@ -6,7 +6,7 @@
 #ifndef BITWISE_H
 #define BITWISE_H
 
-#include "bignum.h"
+#include "bignum/bignum.h"
 
 /**
  * @brief Shift a big number to the left by a given amount

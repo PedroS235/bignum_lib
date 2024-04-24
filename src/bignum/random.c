@@ -1,16 +1,16 @@
-#include <random.h>
+#include "bignum/random.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 
-#include "arithmetic.h"
-#include "common.h"
-#include "modular_arithmetic.h"
+#include "bignum/arithmetic.h"
+#include "bignum/bignum.h"
+#include "bignum/common.h"
+#include "bignum/modular_arithmetic.h"
 
 void init_seed() {
-    struct timespec ts;
-    timespec_get(&ts, TIME_UTC);
-    srand(ts.tv_nsec);
+    srand(time(NULL));
     return;
 }
 
@@ -18,10 +18,8 @@ int genrandom(bignum_t *res, int length) {
     if (length < 0) {
         return FAILURE;
     }
-    int ret = init_bignum(res, length, 0);
-    if (ret != SUCCESS) {
-        return FAILURE;
-    }
+    if (init_bignum(res, length, 0) != SUCCESS) return FAILURE;
+
     // Set each bit randomly
     for (int i = 0; i < length; i++) {
         res->digits[i] = rand() % 2;  // Each digit is only a single bit, set to 0 or 1
@@ -33,7 +31,25 @@ int genrandom(bignum_t *res, int length) {
 }
 
 bool fermat_test(bignum_t p, int iterations) {
-    bignum_t temp_p;
+    // Check first if p mod 2 == 0
+    if (p.digits[0] == 0) {
+        return false;
+    }
+
+    // Check if p mod 3 == 0
+    bignum_t res = bignum_new();
+    bignum_t three, zero;
+    zero = ZERO();
+    str2bignum(&three, "3");
+    bignum_mod(&res, &p, &three);
+    if (compare_bignum(&res, &zero) == 0) {
+        free_bignum(&res);
+        free_bignum(&three);
+        free_bignum(&zero);
+        return false;
+    }
+
+    bignum_t temp_p = bignum_new();
     if (copy_bignum(&temp_p, &p) != SUCCESS) return FAILURE;
 
     bignum_t one = ONE();
@@ -41,7 +57,7 @@ bool fermat_test(bignum_t p, int iterations) {
         free_bignum(&one);
         return 0;  // 1 is not a prime
     }
-    bignum_t temp;
+    bignum_t temp = bignum_new();
     int length = temp_p.size - 1;
     if (sub_bignum(&temp, &temp_p, &one) != SUCCESS) {
         free_bignum(&one);
@@ -50,14 +66,15 @@ bool fermat_test(bignum_t p, int iterations) {
     }
 
     for (int i = 0; i < iterations; i++) {
-        bignum_t res, a;
+        bignum_t res = bignum_new();
+        bignum_t a = bignum_new();
         if (genrandom(&a, length) != SUCCESS) {
             free_bignum(&one);
             free_bignum(&temp_p);
             free_bignum(&temp);
             return false;
         }
-        bignum_t t4;
+        bignum_t t4 = bignum_new();
         if (expmod(&t4, &a, &temp, &p) != SUCCESS) {
             free_bignum(&one);
             free_bignum(&temp_p);
@@ -94,7 +111,7 @@ bool fermat_test(bignum_t p, int iterations) {
 int gen_random_prime(bignum_t *res, int length) {
     bool found = false;
     while (!found) {
-        bignum_t a;
+        bignum_t a = bignum_new();
         if (genrandom(&a, length) != SUCCESS) return FAILURE;
 
         if (fermat_test(a, 10)) {

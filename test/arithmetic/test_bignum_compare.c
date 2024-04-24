@@ -1,7 +1,7 @@
 #include <CUnit/CUnit.h>
 
-#include "bignum.h"
-#include "common.h"
+#include "bignum/bignum.h"
+#include "bignum/common.h"
 
 void test_compare_zero() {
     bignum_t a;
