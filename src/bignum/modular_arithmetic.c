@@ -1,9 +1,11 @@
 #include "bignum/modular_arithmetic.h"
 
 #include <stdio.h>
+#include <time.h>
 
 #include "bignum/arithmetic.h"
 #include "bignum/bignum.h"
+#include "bignum/bitwise.h"
 #include "bignum/common.h"
 
 int bignum_mod(bignum_t *res, bignum_t *a, bignum_t *n) {
@@ -44,39 +46,41 @@ int multmod_bignum(bignum_t *res, bignum_t *a, bignum_t *b, bignum_t *n) {
 
 int expmod(bignum_t *res, bignum_t *a, bignum_t *b, bignum_t *n) {
     if (str2bignum(res, "1") != SUCCESS) return FAILURE;
+    bignum_t zero = ZERO();
 
     bignum_t base = bignum_new();
-    if (copy_bignum(&base, a) != SUCCESS) return FAILURE;
+    bignum_mod(&base, a, n);
 
-    for (size_t i = 0; i < b->size; i++) {
-        uint8_t bit = b->digits[i];
-        if (bit) {
+    bignum_t exp = bignum_new();
+    if (copy_bignum(&exp, b) != SUCCESS) {
+        free_bignum(&base);
+        return FAILURE;
+    }
+
+    if (compare_bignum(&base, &zero) == 0) {
+        copy_bignum(res, &zero);
+        return SUCCESS;
+    }
+
+    while (compare_bignum(&exp, &zero) > 0) {
+        if (exp.digits[0] % 2 == 1) {
             bignum_t temp = bignum_new();
-            if (multmod_bignum(&temp, res, &base, n) != SUCCESS) {
-                free_bignum(&base);
-                return FAILURE;
-            }
-            if (copy_bignum(res, &temp) != SUCCESS) {
-                free_bignum(&base);
-                free_bignum(&temp);
-                return FAILURE;
-            }
+            multmod_bignum(&temp, res, &base, n);
+            copy_bignum(res, &temp);
             free_bignum(&temp);
         }
+
+        right_shift(&exp, 1);
         bignum_t temp = bignum_new();
-        if (multmod_bignum(&temp, &base, &base, n) != SUCCESS) {
-            free_bignum(&base);
-            return FAILURE;
-        }
-        if (copy_bignum(&base, &temp) != SUCCESS) {
-            free_bignum(&base);
-            free_bignum(&temp);
-            return FAILURE;
-        }
+        multmod_bignum(&temp, &base, &base, n);
+        copy_bignum(&base, &temp);
         free_bignum(&temp);
     }
 
     free_bignum(&base);
+    free_bignum(&exp);
+    free_bignum(&zero);
+
     return SUCCESS;
 }
 
