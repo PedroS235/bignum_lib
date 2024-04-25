@@ -41,4 +41,13 @@ bool fermat_test(bignum_t p, int iterations);
  */
 int gen_random_prime(bignum_t *res, int length);
 
+/**
+ * @brief Random Co-prime Big Number
+ *
+ * @param *e Result will be stored here
+ * @param *phi Euler's totient function
+ * @return 0 if success, 1 if failure
+ */
+int gen_random_coprime(bignum_t *e, bignum_t *phi);
+
 #endif

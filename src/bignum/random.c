@@ -125,3 +125,50 @@ int gen_random_prime(bignum_t *res, int length) {
     }
     return SUCCESS;
 }
+
+int gen_random_coprime(bignum_t *e, bignum_t *phi) {
+    bignum_t one = ONE();
+    bignum_t two = bignum_new();
+    str2bignum(&two, "2");
+
+    while (true) {
+        free_bignum(e);
+        if (genrandom(e, phi->size) != SUCCESS) {
+            free_bignum(&one);
+            free_bignum(&two);
+            return FAILURE;
+        }
+
+        if (compare_bignum(e, &one) == 0) {
+            continue;
+        }
+
+        if (compare_bignum(e, phi) >= 0) {
+            continue;
+        }
+
+        bignum_t x = bignum_new();
+        bignum_t y = bignum_new();
+
+        bignum_t gcd = bignum_new();
+        if (extended_gcd(&gcd, *e, *phi, &x, &y) != SUCCESS) {
+            free_bignum(&one);
+            free_bignum(&two);
+            free_bignum(&gcd);
+            free_bignum(&x);
+            free_bignum(&y);
+            return FAILURE;
+        }
+
+        if (compare_bignum(&gcd, &one) == 0) {
+            free_bignum(&one);
+            free_bignum(&two);
+            free_bignum(&gcd);
+            free_bignum(&x);
+            free_bignum(&y);
+            return SUCCESS;
+        }
+
+        free_bignum(&gcd);
+    }
+}
