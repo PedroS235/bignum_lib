@@ -15,6 +15,7 @@ set(SOURCES
     src/bignum/arithmetic.c
     src/bignum/modular_arithmetic.c
     src/bignum/random.c
+    src/rsa.c
 )
 
 set(TEST_SOURCES 
