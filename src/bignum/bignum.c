@@ -22,8 +22,8 @@ int init_bignum(bignum_t *num, size_t size, uint8_t sign) {
 }
 
 void free_bignum(bignum_t *a) {
-    if (a == NULL) return;
-    if (a->digits != NULL) return;
+    // if (a == NULL) return;
+    // if (a->digits != NULL) return;
     free(a->digits);
     a->digits = NULL;
     a->sign = POS;
