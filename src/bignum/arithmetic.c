@@ -98,9 +98,7 @@ int sub_bignum_unsigned(bignum_t *res, bignum_t *a, bignum_t *b) {
         res->digits[i] = sum;
     }
 
-    while (res->size > 1 && res->digits[res->size - 1] == 0) {
-        res->size--;
-    }
+    trim_leading_zeros_bignum(res);
 
     return SUCCESS;
 }
