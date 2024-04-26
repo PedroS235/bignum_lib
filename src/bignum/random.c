@@ -31,37 +31,48 @@ int genrandom(bignum_t *res, int length) {
 }
 
 bool fermat_test(bignum_t p, int iterations) {
+    // 2 is prime
+    if (p.size == 2 && p.digits[1] == 1 && p.digits[0] == 0) {
+        return true;
+    }
+
+    // 3 is prime
+    if (p.size == 2 && p.digits[0] == 1 && p.digits[1] == 1) {
+        return true;
+    }
+
     // Check first if p mod 2 == 0
-    if (p.digits[0] == 0) {
+    if (p.digits[0] == 0 && p.size > 2) {
         return false;
     }
 
     // Check if p mod 3 == 0
-    bignum_t res = bignum_new();
+    bignum_t tmp = bignum_new();
     bignum_t three, zero;
     zero = ZERO();
     str2bignum(&three, "3");
-    bignum_mod(&res, &p, &three);
-    if (compare_bignum(&res, &zero) == 0) {
-        free_bignum(&res);
+    bignum_mod(&tmp, &p, &three);
+    if (compare_bignum(&tmp, &zero) == 0) {
+        free_bignum(&tmp);
         free_bignum(&three);
         free_bignum(&zero);
         return false;
     }
 
-    bignum_t temp_p = bignum_new();
-    if (copy_bignum(&temp_p, &p) != SUCCESS) return FAILURE;
+    free_bignum(&tmp);
+    free_bignum(&three);
+    free_bignum(&zero);
 
     bignum_t one = ONE();
     if (compare_bignum(&p, &one) == 0) {
         free_bignum(&one);
         return 0;  // 1 is not a prime
     }
+
     bignum_t temp = bignum_new();
-    int length = temp_p.size - 1;
-    if (sub_bignum(&temp, &temp_p, &one) != SUCCESS) {
+    int length = p.size - 1;
+    if (sub_bignum(&temp, &p, &one) != SUCCESS) {
         free_bignum(&one);
-        free_bignum(&temp_p);
         return false;
     }
 
@@ -70,21 +81,19 @@ bool fermat_test(bignum_t p, int iterations) {
         bignum_t a = bignum_new();
         if (genrandom(&a, length) != SUCCESS) {
             free_bignum(&one);
-            free_bignum(&temp_p);
             free_bignum(&temp);
+            fprintf(stderr, "Error generating random number\n");
             return false;
         }
         bignum_t t4 = bignum_new();
         if (expmod(&t4, &a, &temp, &p) != SUCCESS) {
             free_bignum(&one);
-            free_bignum(&temp_p);
             free_bignum(&temp);
             free_bignum(&a);
             return false;
         }
         if (copy_bignum(&res, &t4) != SUCCESS) {
             free_bignum(&one);
-            free_bignum(&temp_p);
             free_bignum(&temp);
             free_bignum(&a);
             free_bignum(&t4);
@@ -159,13 +168,13 @@ int gen_random_coprime(bignum_t *e, bignum_t *phi) {
             free_bignum(&y);
             return FAILURE;
         }
+        free_bignum(&x);
+        free_bignum(&y);
 
         if (compare_bignum(&gcd, &one) == 0) {
             free_bignum(&one);
             free_bignum(&two);
             free_bignum(&gcd);
-            free_bignum(&x);
-            free_bignum(&y);
             return SUCCESS;
         }
 

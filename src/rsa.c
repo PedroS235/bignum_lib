@@ -15,6 +15,7 @@ int rsa_keygen(bignum_t *n, bignum_t *e, bignum_t *d, int length) {
     gen_random_prime(&q, length);
 
     while (compare_bignum(&p, &q) == 0) {
+        free_bignum(&q);
         gen_random_prime(&q, length);
     }
 
