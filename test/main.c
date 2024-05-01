@@ -1,5 +1,6 @@
 #include <CUnit/Basic.h>
 #include <CUnit/CUnit.h>
+#include <CUnit/TestDB.h>
 
 // Functions to add test cases from other files
 void bignum_compare_tests_to_suite(CU_pSuite suite);  // From test_bignum_compare.c
@@ -15,6 +16,7 @@ void bignum_extended_gcd_tests_to_suite(
     CU_pSuite suite);  // From test_bignum_extended_gcd.c
 void bignum_inversemod_tests_to_suite(
     CU_pSuite suite);  // From test_bignum_inversemod.c
+void fermat_primality_tests(CU_pSuite suite);
 
 int main() {
     if (CU_initialize_registry() != CUE_SUCCESS) return CU_get_error();
@@ -95,6 +97,13 @@ int main() {
         return CU_get_error();
     }
     bignum_inversemod_tests_to_suite(inversemod_suite);
+
+    CU_pSuite fermat_test_suite = CU_add_suite("Fermat Primality Tests", NULL, NULL);
+    if (NULL == fermat_test_suite) {
+        CU_cleanup_registry();
+        return CU_get_error();
+    }
+    fermat_primality_tests(fermat_test_suite);
 
     CU_basic_set_mode(CU_BRM_VERBOSE);
     CU_basic_run_tests();
