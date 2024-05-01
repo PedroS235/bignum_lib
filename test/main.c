@@ -17,6 +17,7 @@ void bignum_extended_gcd_tests_to_suite(
 void bignum_inversemod_tests_to_suite(
     CU_pSuite suite);  // From test_bignum_inversemod.c
 void fermat_primality_tests(CU_pSuite suite);
+void rsa_tests(CU_pSuite suite);
 
 int main() {
     if (CU_initialize_registry() != CUE_SUCCESS) return CU_get_error();
@@ -104,6 +105,13 @@ int main() {
         return CU_get_error();
     }
     fermat_primality_tests(fermat_test_suite);
+
+    CU_pSuite rsa_test_suite = CU_add_suite("RSA Tests", NULL, NULL);
+    if (NULL == rsa_test_suite) {
+        CU_cleanup_registry();
+        return CU_get_error();
+    }
+    rsa_tests(rsa_test_suite);
 
     CU_basic_set_mode(CU_BRM_VERBOSE);
     CU_basic_run_tests();

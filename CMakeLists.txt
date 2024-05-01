@@ -31,6 +31,7 @@ set(TEST_SOURCES
     test/arithmetic/test_bignum_mulmod.c
     test/arithmetic/test_bignum_subtract.c
     test/random/test_fermat.c
+    test/rsa/test_rsa.c
 )
 
 include_directories(${PROJECT_SOURCE_DIR}/include)
